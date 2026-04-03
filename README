@@ -1,0 +1,133 @@
+Sanos y Salvos
+Plataforma Inteligente para la localización y recuperación de mascotas perdidas
+
+Descripción
+
+Sanos y Salvos es una plataforma que permite registrar mascotas perdidas o encontradas, visualizar su ubicación geográfica y detectar posibles coincidencias entre reportes para facilitar su recuperación.
+
+El sistema está desarrollado utilizando una arquitectura de microservicios, permitiendo escalabilidad, modularidad y facilidad de mantenimiento.
+
+Tecnologías utilizadas
+
+Frontend
+- Ionic
+- Angular
+- TypeScript
+
+Backend
+- Node.js
+- Express
+
+Base de datos
+- PostgreSQL
+
+Estructura del proyecto
+
+DUOC_FULLSTACK/
+  frontend/
+  api-gateway/
+  reportes-service/
+  coincidencias-service/
+
+Instalación
+
+1. Clonar el repositorio
+
+git clone <URL_DEL_REPOSITORIO>
+cd DUOC_FULLSTACK
+
+2. Instalar dependencias
+
+En cada carpeta ejecutar:
+
+cd frontend
+npm install
+
+cd ../api-gateway
+npm install
+
+cd ../reportes-service
+npm install
+
+cd ../coincidencias-service
+npm install
+
+Ejecución
+
+Backend
+
+Abrir tres terminales:
+
+API Gateway
+cd api-gateway
+npm run dev
+
+Reportes Service
+cd reportes-service
+npm run dev
+
+Coincidencias Service
+cd coincidencias-service
+npm run dev
+
+Frontend
+
+cd frontend
+ionic serve
+
+Endpoints principales
+
+API Gateway
+
+- GET /api/reportes
+- POST /api/reportes
+- GET /api/coincidencias/:reporteId
+
+Microservicios
+
+reportes-service
+Responsable de:
+- registrar mascotas perdidas o encontradas
+- almacenar información en la base de datos
+- exponer endpoints CRUD
+
+coincidencias-service
+Responsable de:
+- analizar reportes
+- identificar coincidencias
+- aplicar lógica de comparación
+
+api-gateway
+Responsable de:
+- actuar como punto único de entrada
+- enrutar solicitudes a los microservicios
+
+Patrones utilizados
+
+- API Gateway
+- Repository Pattern
+- Circuit Breaker (conceptual)
+- Factory Method (conceptual)
+
+Buenas prácticas aplicadas
+
+- Separación de responsabilidades
+- Desacoplamiento entre servicios
+- Uso de API Gateway
+- Estructura modular
+- Uso de variables de entorno
+
+Consideraciones
+
+- Cada microservicio es independiente
+- Solo reportes-service accede directamente a la base de datos
+- coincidencias-service consume datos a través de la API
+
+Equipo
+
+- Carlos Guerrero
+- Carla Poveda
+
+Licencia
+
+Proyecto académico - Duoc UC

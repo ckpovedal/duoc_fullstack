@@ -88,7 +88,7 @@ class ReportesRepository {
 		let idx = 1;
 
 		if (filtros.tipo) {
-			query += ` AND TIPO = $${idx++}`;
+			query += ` AND tipo = $${idx++}`;
 			values.push(filtros.tipo);
 		}
 
@@ -214,9 +214,10 @@ class ReportesRepository {
 			ORDER BY cambiado_en DESC
 		`;
 		const result = await pool.query(query, [reporteId]);
+		return result.rows;
 	}
 
-	async agregarfoto(data) {
+	async agregarFoto(data) {
 		const query = `
 			INSERT INTO fotos_reporte (
 				reporte_id,

@@ -101,7 +101,7 @@ class ReportesService {
 
 		const [fotos, contactos, historial, asignaciones] = await Promise.all([
 			reportesRepository.obtenerFotosPorReporte(id),
-			reportesRepository.obtenerConstactosPorReporte(id),
+			reportesRepository.obtenerContactosPorReporte(id),
 			reportesRepository.obtenerHistorialPorReporte(id),
 			reportesRepository.obtenerAsignacionesPorReporte(id),
 		]);
@@ -126,7 +126,7 @@ class ReportesService {
 		this.validarRecompensa(data.recompensa);
 
 		const actualizado = await reportesRepository.actualizarReporte(id, {
-			... reporteActual,
+			...reporteActual,
 			...data,
 		});
 

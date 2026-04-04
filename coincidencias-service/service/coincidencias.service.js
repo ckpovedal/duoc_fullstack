@@ -28,9 +28,11 @@ class CoincidenciasService {
     const criterios = [];
     let puntaje = 0;
 
-    if (reporteBase.tipo && reporteComparado.tipo && reporteBase.tipo !== reporteComparado.tipo) {
-      puntaje += 20;
-      criterios.push('tipo complementario');
+    const puntajeTipo = this.obtenerPuntajeTipo(reporteBase.tipo, reporteComparado.tipo);
+
+    if (puntajeTipo > 0) {
+      puntaje += puntajeTipo;
+      criterios.push('tipo compatible');
     }
 
     if (reporteBase.comuna && reporteBase.comuna === reporteComparado.comuna) {
@@ -71,6 +73,25 @@ class CoincidenciasService {
     const diferenciaDias = Math.abs(a - b) / (1000 * 60 * 60 * 24);
 
     return diferenciaDias <= 7;
+  }
+
+  obtenerPuntajeTipo(tipoBase, tipoComparado) {
+    const combinaciones = {
+      PERDIDA: {
+        ENCONTRADA: 20,
+        AVISTAMIENTO: 10,
+      },
+      ENCONTRADA: {
+        PERDIDA: 20,
+        AVISTAMIENTO: 5,
+      },
+      AVISTAMIENTO: {
+        PERDIDA: 10,
+        ENCONTRADA: 5,
+      },
+    };
+
+    return combinaciones[tipoBase]?.[tipoComparado] || 0;
   }
 
   obtenerNivel(puntaje) {

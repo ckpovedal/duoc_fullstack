@@ -13,8 +13,10 @@ app.use(express.json());
 
 app.get('/health', (req, res) => {
   res.status(200).json({
-    status: 'ok',
-    service: 'reportes-service',
+    estado: 'OK',
+    codigo: 200,
+    mensaje: 'Reportes service operativo',
+    respuesta: {},
   });
 });
 

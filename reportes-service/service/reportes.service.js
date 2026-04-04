@@ -119,7 +119,7 @@ class ReportesService {
 		const reporteActual = await reportesRepository.obtenerReportePorId(id);
 
 		if (!reporteActual) {
-			throw new AppError('Reporte no encontrado', 400);
+			throw new AppError('Reporte no encontrado', 404);
 		}
 
 		this.validarCoordenadas(data.latitud, data.longitud);

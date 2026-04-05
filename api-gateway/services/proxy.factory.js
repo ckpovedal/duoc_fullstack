@@ -6,6 +6,17 @@ function crearProxyServicio({ target, pathRewrite }) {
     changeOrigin: true,
     pathRewrite,
     on: {
+      proxyReq(proxyReq, req) {
+        if (!req.body || !Object.keys(req.body).length) {
+          return;
+        }
+
+        const bodyData = JSON.stringify(req.body);
+
+        proxyReq.setHeader('Content-Type', 'application/json');
+        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+        proxyReq.write(bodyData);
+      },
       error(error, req, res) {
         if (res.headersSent) {
           return;

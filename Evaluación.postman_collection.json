@@ -1,0 +1,349 @@
+{
+  "info": {
+    "_postman_id": "eac18760-a3d9-4d45-ab1f-c8796f1b2155",
+    "name": "Evaluación",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34677841"
+  },
+  "item": [
+    {
+      "name": "Conexión Api gateway",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Conexión Servicio Reportes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Paso por Api",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/api/reportes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "reportes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Conexión Servicio Coincidencias",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cliente Servicios",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/reportes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "reportes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Conexión Servicio Mascotas",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:3003/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Crear Mascota",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"nombre\": \"Perejil\",\r\n  \"especie\": \"PERRO\",\r\n  \"raza\": \"Mestizo\",\r\n  \"sexo\": \"MACHO\",\r\n  \"tamano\": \"MEDIANO\",\r\n  \"color_principal\": \"Negro\",\r\n  \"color_secundario\": \"Blanco\",\r\n  \"esterilizado\": true,\r\n  \"marcas_distintivas\": \"Manchas negras en el pecho\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3003/mascotas",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "mascotas"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Listar Mascotas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3003/mascotas",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "mascotas"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Crear reporte",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"mascota_id\": \"84ae4fec-2f25-4778-bcd5-5cbfdbefbce9\",\r\n  \"tipo\": \"PERDIDA\",\r\n  \"titulo\": \"Se perdió cerca de la plaza\",\r\n  \"descripcion\": \"Perra mestiza café con blanco\",\r\n  \"comuna\": \"Santiago\",\r\n  \"ciudad\": \"Santiago\",\r\n  \"region\": \"Metropolitana\",\r\n  \"direccion\": \"Cerca de Plaza de Armas\",\r\n  \"es_publico\": true\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/reportes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "reportes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Buscar coincidencias",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3002/coincidencias/8df25f1d-af21-491b-8270-e1fbb6108d01",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3002",
+          "path": [
+            "coincidencias",
+            "8df25f1d-af21-491b-8270-e1fbb6108d01"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Api Mascotas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/api/mascotas",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "mascotas"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Api crear Mascota",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"nombre\": \"Cilantro\",\r\n  \"especie\": \"GATO\",\r\n  \"raza\": \"Mestizo\",\r\n  \"sexo\": \"MACHO\",\r\n  \"tamano\": \"MEDIANO\",\r\n  \"color_principal\": \"Negro\",\r\n  \"color_secundario\": \"Blanco\",\r\n  \"esterilizado\": true,\r\n  \"marcas_distintivas\": \"Manchas negras en el pecho\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3001/api/mascotas",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "mascotas"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Api Crear Reporte",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"mascota_id\": \"3a1eacdd-ab95-4d4f-a8c5-b527271962f1\",\r\n  \"tipo\": \"PERDIDA\",\r\n  \"titulo\": \"Se perdió cerca de la plaza\",\r\n  \"descripcion\": \"Perra mestiza café con blanco\",\r\n  \"comuna\": \"Santiago\",\r\n  \"ciudad\": \"Santiago\",\r\n  \"region\": \"Metropolitana\",\r\n  \"direccion\": \"Cerca de Plaza de Armas\",\r\n  \"es_publico\": true\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3001/api/reportes",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "reportes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Api Buscar coincidencias",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3001/api/coincidencias/ca0a12fa-b11e-4712-a359-50d3b09d56df",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "coincidencias",
+            "ca0a12fa-b11e-4712-a359-50d3b09d56df"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

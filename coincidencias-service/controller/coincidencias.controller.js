@@ -1,4 +1,4 @@
-const coincidenciasService = require('../service/coincidencias.service');
+const coincidenciasService = require('../services/coincidencias.service');
 const RespuestaDTO = require('../dto/respuestaDTO');
 
 class CoincidenciasController {

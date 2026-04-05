@@ -26,6 +26,7 @@ Estructura del proyecto
 DUOC_FULLSTACK/
   frontend/
   api-gateway/
+  mascotas-service/
   reportes-service/
   coincidencias-service/
 
@@ -46,6 +47,9 @@ npm install
 cd ../api-gateway
 npm install
 
+cd ../mascotas-service
+npm install
+
 cd ../reportes-service
 npm install
 
@@ -56,10 +60,14 @@ Ejecución
 
 Backend
 
-Abrir tres terminales:
+Abrir cuatro terminales:
 
 API Gateway
 cd api-gateway
+npm run dev
+
+Mascotas Service
+cd mascotas-service
 npm run dev
 
 Reportes Service
@@ -79,17 +87,26 @@ Endpoints principales
 
 API Gateway
 
+- GET /api/mascotas
+- POST /api/mascotas
+- GET /api/mascotas/:id
 - GET /api/reportes
 - POST /api/reportes
 - GET /api/coincidencias/:reporteId
 
 Microservicios
 
+mascotas-service
+Responsable de:
+- registrar mascotas
+- consultar mascotas
+- almacenar características físicas y datos de identificación
+
 reportes-service
 Responsable de:
-- registrar mascotas perdidas o encontradas
-- almacenar información en la base de datos
-- exponer endpoints CRUD
+- registrar reportes de mascotas perdidas o encontradas
+- almacenar información asociada al reporte
+- exponer endpoints CRUD de reportes
 
 coincidencias-service
 Responsable de:
@@ -106,8 +123,8 @@ Patrones utilizados
 
 - API Gateway
 - Repository Pattern
+- Factory Method
 - Circuit Breaker (conceptual)
-- Factory Method (conceptual)
 
 Buenas prácticas aplicadas
 
@@ -119,9 +136,10 @@ Buenas prácticas aplicadas
 
 Consideraciones
 
-- Cada microservicio es independiente
-- Solo reportes-service accede directamente a la base de datos
+- Cada microservicio es independiente a nivel de código y responsabilidades
+- En esta etapa del proyecto, mascotas-service y reportes-service acceden a la base de datos
 - coincidencias-service consume datos a través de la API
+- api-gateway centraliza el acceso desde el frontend
 
 Equipo
 

@@ -1,13 +1,25 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>inicio</ion-title>
+    <ion-title>Sanos y Salvos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">inicio</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="video-container">
+  
+  <!-- Video de fondo -->
+  <video autoplay muted loop playsinline id="background-video">
+    <source src="assets/video/VideoInicio.mp4" type="video/mp4">
+  </video>
+
+  <!-- Capa oscura superpuesta (opcional, mejora visibilidad) -->
+  <div class="overlay"></div>
+
+  <!-- Botón de inicio -->
+  <div class="button-container">
+    <ion-button expand="block" (click)="irALogin()" class="btn-inicio">
+      <ion-icon name="paw-outline" slot="start"></ion-icon>
+      Comenzar
+    </ion-button>
+  </div>
+
 </ion-content>

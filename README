@@ -47,14 +47,16 @@ npm install
 cd ../api-gateway
 npm install
 
-cd ../mascotas-service
+cd ../hallazgos-service
 npm install
 
-cd ../reportes-service
+cd ../perdidas-service
 npm install
 
-cd ../coincidencias-service
+cd ../buscador-service
 npm install
+
+En usuario-service no se instala npm, ya que es de Spring Boot
 
 Ejecución
 

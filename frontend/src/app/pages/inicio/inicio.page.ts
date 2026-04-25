@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,6 +16,8 @@ import { pawOutline } from 'ionicons/icons';
 })
 export class InicioPage {
 
+  @ViewChild('backgroundVideo') videoElement!: ElementRef<HTMLVideoElement>;
+
   constructor(private router: Router) { 
     addIcons({ pawOutline });
   }
@@ -29,18 +31,23 @@ export class InicioPage {
   }
 
   private reproducirVideo() {
-    setTimeout(() => {
-      const video = document.querySelector('#background-video') as HTMLVideoElement;
-      if (video) {
-        video.play().catch(err => console.log('Error:', err));
-      }
-    }, 100);
+    if (this.videoElement) {
+      const video = this.videoElement.nativeElement;
+      
+      // Forzamos el mute (requisito de navegadores para autoplay)
+      video.muted = true; 
+      
+      video.play().catch(err => {
+        console.warn('La reproducción automática fue bloqueada. Intentando de nuevo...', err);
+        // Re-intento por si el DOM tardó un poco más
+        setTimeout(() => video.play(), 500);
+      });
+    }
   }
 
   private pausarVideo() {
-    const video = document.querySelector('#background-video') as HTMLVideoElement;
-    if (video) {
-      video.pause();
+    if (this.videoElement) {
+      this.videoElement.nativeElement.pause();
     }
   }
 

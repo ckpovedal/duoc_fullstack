@@ -1,7 +1,7 @@
 const reportesClient = require('../clients/reportes.clients');
 const AppError = require('../utils/AppError');
 
-class CoincidenciasService {
+class BuscadorService {
   async buscarCoincidencias(reporteId) {
     const reporteBase = await reportesClient.obtenerReportePorId(reporteId);
 
@@ -107,4 +107,4 @@ class CoincidenciasService {
   }
 }
 
-module.exports = new CoincidenciasService();
+module.exports = new BuscadorService();

@@ -1,7 +1,7 @@
 const coincidenciasService = require('../services/coincidencias.service');
 const RespuestaDTO = require('../dto/respuestaDTO');
 
-class CoincidenciasController {
+class BuscadorController {
   async obtenerCoincidencias(req, res, next) {
     try {
       const data = await coincidenciasService.buscarCoincidencias(req.params.reporteId);
@@ -19,4 +19,4 @@ class CoincidenciasController {
   }
 }
 
-module.exports = new CoincidenciasController();
+module.exports = new BuscadorController();

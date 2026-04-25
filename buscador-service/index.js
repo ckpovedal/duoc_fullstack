@@ -5,11 +5,11 @@ require('dotenv').config({
 
 const express = require('express');
 const cors = require('cors');
-const coincidenciasRoutes = require('./routes/coincidencias.routes');
+const coincidenciasRoutes = require('./routes/buscador.routes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
-const PORT = process.env.COINCIDENCIAS_SERVICE_PORT || 3002;
+const PORT = process.env.BUSCADOR_SERVICE_PORT || 3002;
 
 app.use(cors());
 app.use(express.json());

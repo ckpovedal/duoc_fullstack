@@ -55,6 +55,10 @@ git clone <URL_DEL_REPOSITORIO>
 cd DUOC_FULLSTACK
 ```
 
+Hay dos formas para instalar las dependencias:
+
+--- 01 ---
+
 Instalar dependencias del frontend:
 
 ```bash
@@ -77,6 +81,10 @@ npm install
 cd ../buscador-service
 npm install
 ```
+
+--- 02 ---
+y la otra es ejecutando en la raíz (duoc_fullstack): .\instalar-todos.bat,
+con lo cual se cargan todas las dependencias automáticamente.
 
 `usuario-service` usa Spring Boot, por lo que no requiere `npm install`.
 

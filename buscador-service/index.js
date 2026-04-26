@@ -5,7 +5,7 @@ require('dotenv').config({
 
 const express = require('express');
 const cors = require('cors');
-const coincidenciasRoutes = require('./routes/buscador.routes');
+const buscadorRoutes = require('./routes/buscador.routes');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -18,15 +18,15 @@ app.get('/health', (req, res) => {
   res.status(200).json({
     estado: 'OK',
     codigo: 200,
-    mensaje: 'Coincidencias service operativo',
+    mensaje: 'Buscador service operativo',
     respuesta: {},
   });
 });
 
-app.use('/coincidencias', coincidenciasRoutes);
+app.use('/buscador', buscadorRoutes);
 
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Coincidencias service corriendo en puerto ${PORT}`);
+  console.log(`Buscador service corriendo en puerto ${PORT}`);
 });

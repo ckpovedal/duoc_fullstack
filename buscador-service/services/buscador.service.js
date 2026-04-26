@@ -1,66 +1,101 @@
-const reportesClient = require('../clients/reportes.clients');
+const perdidasClient = require('../clients/perdidas.clients');
+const hallazgosClient = require('../clients/hallazgos.clients');
 const AppError = require('../utils/AppError');
 
 class BuscadorService {
-  async buscarCoincidencias(reporteId) {
-    const reporteBase = await reportesClient.obtenerReportePorId(reporteId);
+  async buscarCoincidencias(perdidaId) {
+    const perdidaBase = await perdidasClient.obtenerPerdidaPorId(perdidaId);
 
-    if (!reporteBase) {
-      throw new AppError('Reporte no encontrado', 404);
+    if (!perdidaBase) {
+      throw new AppError('Perdida no encontrada', 404);
     }
 
-    const reportes = await reportesClient.listarReportes();
+    const hallazgos = await hallazgosClient.listarHallazgos();
 
-    const coincidencias = reportes
-      .filter((reporte) => reporte.id !== reporteBase.id)
-      .map((reporte) => this.construirCoincidencia(reporteBase, reporte))
+    const coincidencias = hallazgos
+      .map((hallazgo) => this.construirCoincidencia(perdidaBase, hallazgo))
       .filter((item) => item.puntaje > 0)
       .sort((a, b) => b.puntaje - a.puntaje);
 
     return {
-      reporteBase,
+      perdidaBase,
       total: coincidencias.length,
       coincidencias,
     };
   }
 
-  construirCoincidencia(reporteBase, reporteComparado) {
+  construirCoincidencia(perdidaBase, hallazgoComparado) {
     const criterios = [];
     let puntaje = 0;
 
-    const puntajeTipo = this.obtenerPuntajeTipo(reporteBase.tipo, reporteComparado.tipo);
-
-    if (puntajeTipo > 0) {
-      puntaje += puntajeTipo;
-      criterios.push('tipo compatible');
+    if (this.valoresIguales(perdidaBase.p_tipo, hallazgoComparado.h_tipo)) {
+      puntaje += 30;
+      criterios.push('mismo tipo');
     }
 
-    if (reporteBase.comuna && reporteBase.comuna === reporteComparado.comuna) {
+    if (this.valoresIguales(perdidaBase.p_comuna, hallazgoComparado.h_comuna)) {
       puntaje += 25;
       criterios.push('misma comuna');
     }
 
-    if (reporteBase.ciudad && reporteBase.ciudad === reporteComparado.ciudad) {
+    if (this.valoresIguales(perdidaBase.p_region, hallazgoComparado.h_region)) {
       puntaje += 15;
-      criterios.push('misma ciudad');
-    }
-
-    if (reporteBase.region && reporteBase.region === reporteComparado.region) {
-      puntaje += 10;
       criterios.push('misma region');
     }
 
-    if (this.fechasCercanas(reporteBase.fecha_evento, reporteComparado.fecha_evento)) {
+    if (this.fechasCercanas(perdidaBase.p_fecha, hallazgoComparado.h_fecha)) {
       puntaje += 10;
       criterios.push('fecha cercana');
     }
 
+    if (this.valoresIguales(perdidaBase.p_genero, hallazgoComparado.h_genero)) {
+      puntaje += 10;
+      criterios.push('mismo genero');
+    }
+
+    if (this.textosParecidos(perdidaBase.p_fisica, hallazgoComparado.h_fisica)) {
+      puntaje += 10;
+      criterios.push('descripcion fisica similar');
+    }
+
+    if (this.valoresIguales(perdidaBase.p_nom_masc, hallazgoComparado.h_nom_masc)) {
+      puntaje += 5;
+      criterios.push('mismo nombre');
+    }
+
     return {
-      reporte: reporteComparado,
+      hallazgo: hallazgoComparado,
       puntaje,
       nivel: this.obtenerNivel(puntaje),
       criterios,
     };
+  }
+
+  valoresIguales(valorBase, valorComparado) {
+    if (valorBase === undefined || valorBase === null || valorComparado === undefined || valorComparado === null) {
+      return false;
+    }
+
+    return String(valorBase).trim().toLowerCase() === String(valorComparado).trim().toLowerCase();
+  }
+
+  textosParecidos(textoBase, textoComparado) {
+    if (!textoBase || !textoComparado) {
+      return false;
+    }
+
+    const palabrasBase = this.obtenerPalabrasClave(textoBase);
+    const palabrasComparadas = this.obtenerPalabrasClave(textoComparado);
+    const coincidencias = palabrasBase.filter((palabra) => palabrasComparadas.includes(palabra));
+
+    return coincidencias.length >= 2;
+  }
+
+  obtenerPalabrasClave(texto) {
+    return String(texto)
+      .toLowerCase()
+      .split(/\W+/)
+      .filter((palabra) => palabra.length >= 4);
   }
 
   fechasCercanas(fecha1, fecha2) {
@@ -70,36 +105,22 @@ class BuscadorService {
 
     const a = new Date(fecha1).getTime();
     const b = new Date(fecha2).getTime();
+
+    if (Number.isNaN(a) || Number.isNaN(b)) {
+      return false;
+    }
+
     const diferenciaDias = Math.abs(a - b) / (1000 * 60 * 60 * 24);
 
     return diferenciaDias <= 7;
   }
 
-  obtenerPuntajeTipo(tipoBase, tipoComparado) {
-    const combinaciones = {
-      PERDIDA: {
-        ENCONTRADA: 20,
-        AVISTAMIENTO: 10,
-      },
-      ENCONTRADA: {
-        PERDIDA: 20,
-        AVISTAMIENTO: 5,
-      },
-      AVISTAMIENTO: {
-        PERDIDA: 10,
-        ENCONTRADA: 5,
-      },
-    };
-
-    return combinaciones[tipoBase]?.[tipoComparado] || 0;
-  }
-
   obtenerNivel(puntaje) {
-    if (puntaje >= 50) {
+    if (puntaje >= 60) {
       return 'ALTA';
     }
 
-    if (puntaje >= 25) {
+    if (puntaje >= 30) {
       return 'MEDIA';
     }
 

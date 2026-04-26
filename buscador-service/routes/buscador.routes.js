@@ -3,6 +3,6 @@ const buscadorController = require('../controller/buscador.controller');
 
 const router = express.Router();
 
-router.get('/:reporteId', buscadorController.obtenerCoincidencias);
+router.get('/:perdidaId', buscadorController.obtenerCoincidencias);
 
 module.exports = router;

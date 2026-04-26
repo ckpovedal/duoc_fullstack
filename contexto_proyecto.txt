@@ -1,0 +1,61 @@
+Caso Semestral: "Sanos y Salvos – Plataforma Inteligente para la localización y recuperación de mascotas perdidas" 
+En los últimos años, el aumento en la tenencia de mascotas ha generado una mayor preocupación del bienestar y de la seguridad. En muchas ciudades, miles de mascotas se extravían cada año, generando angustia en sus dueños y una gran cantidad de reportes dispersos en redes sociales, refugios de animales, clínicas veterinarias y organizaciones animalistas.
+Actualmente, cuando una mascota se pierde los dueños suelen publicar avisos en redes sociales, pegar carteles, contactar refugios, sin embargo, estos métodos suelen ser desorganizados, lentos y poco efectivos. 
+Sanos y Salvos es una empresa dedicada a ofrecer servicios tecnológicos para la localización y recuperación de mascotas perdidas. La empresa trabaja con clínicas veterinarias, refugios de animales y municipalidades para mejorar la probabilidad de encontrar mascotas extraviadas.
+Para abordar estas dificultades, Sanos y Salvos busca desarrollar una solución tecnológica moderna basada en microservicios, que permita centralizar la información, automatizar la detección de coincidencias entre mascotas perdidas y encontradas, facilitar la colaboración entre ciudadanos y organizaciones.
+El desarrollo de este sistema se llevará a cabo en tres etapas, alineadas con las evaluaciones parciales del curso. Finalmente, en el Examen Final Transversal, los/as estudiantes consolidarán su solución integrando todos los módulos desarrollados en un sistema funcional. 
+Sección 1: Diseño de Arquitectura y Patrones de Microservicios (Parcial 1) 
+Contexto 
+Sanos y Salvos gestiona simultáneamente múltiples reportes, los cuales provienen de diferentes fuentes.
+-	Dueños que registran mascotas perdidas.
+-	Personas que encuentran animales en la calle.
+-	Clínicas veterinarias que reciben animales sin identificación.
+-	Refugios y municipalidades
+Actualmente, gran parte de esa información se gestiona mediante formulario web simple, correo electrónico y redes sociales, lo que provoca problemas como manejar información incompleta o desestructurada, dificultad para visualizar zonas con mayor incidencia de extravíos y problemas de coordinación entre entidades que se ofrecen para colaborar en la búsqueda y rescate.
+Debido a estas limitaciones muchas coincidencias entre mascotas perdidas y encontradas no se detectan a tiempo, reduciendo las probabilidades de encontrar a sus dueños.
+Para mejorar esta situación Sanos y Salvos busca desarrollar una plataforma tecnológica centralizada que permita registrar reportes estructurados, visualizar información geográfica y utilizar algoritmos para identificar posibles coincidencias entre mascotas perdidas y encontradas.
+La solución debe contemplar tres módulos principales: 
+●	Gestión de Mascotas: Permitir el registro estructurado de mascotas perdidas o encontradas, incluyendo características físicas, fotografías, ubicación geográfica y datos de contacto.
+●	Sistema de Geolocalización: Permite visualizar en mapa los reportes de mascotas perdidas o encontradas, identificando zonas con mayor incidencia de extravíos. 
+●	Motor de coincidencias: Analizar reportes de mascotas perdidas y encontradas utilizando algoritmos que permitan identificar posibles coincidencias en función de raza, color, tamaño, ubicación y fecha del reporte.
+
+Requerimientos Técnicos 
+Los/as estudiantes deberán diseñar una arquitectura de microservicios escalable, aplicando patrones de diseño y arquetipos arquitectónicos que permitan la modularización del sistema. Para ello, deberán: 
+●	Definir los microservicios clave, asegurando separación de responsabilidades y escalabilidad. 
+●	Diseñar una API Gateway que gestione la comunicación entre microservicios y el frontend. 
+●	Implementar patrones como Repository Pattern para la persistencia de datos, Factory Method para la creación de instancias y Circuit Breaker para manejar fallos en la comunicación entre servicios. 
+●	Asegurar que los servicios sean escalables y desacoplados, permitiendo futuras mejoras sin afectar el funcionamiento del sistema. 
+●	Documentar las decisiones arquitectónicas y justificar la selección de patrones. 
+Al finalizar esta etapa, los equipos deberán presentar un informe con la propuesta de arquitectura, un diagrama detallado de los microservicios y una justificación de los patrones seleccionados. 
+Sección 2: Desarrollo de Componentes Frontend y Backend (Parcial 2) 
+Contexto 
+Después de definir la arquitectura del sistema, Innovatech Solutions busca desarrollar una primera versión funcional que permita validar la propuesta tecnológica. La empresa requiere un sistema que cuente con una interfaz de usuario intuitiva y responsiva, permitiendo que usuarios visualicen y gestionen la capacidad (capacity de los recursos humanos). Al mismo tiempo, el backend debe ser capaz de manejar múltiples solicitudes concurrentes sin comprometer el rendimiento. 
+
+Requerimientos Técnicos 
+Los/as estudiantes deberán desarrollar la solución con los siguientes elementos clave: 
+●	Frontend: Implementar una interfaz construida con un framework moderno (React, Angular o Vue.js), asegurando que la comunicación con el backend se realice vía API REST. Los componentes frontend deberán ser empaquetados como módulos NPM reutilizables. 
+●	Backend: Construir al menos tres componentes backend utilizando arquetipos Maven personalizados: 
+o	Un Backend For Frontend (BFF) para gestionar la interacción entre el frontend y los microservicios. 
+o	Dos microservicios independientes para gestionar los proyectos, recursos humanos, conectados a bases de datos mediante JPA. 
+●	Conexión con Bases de Datos: Utilizar JPA y entidades, asegurando la persistencia de datos. También se podrán utilizar procedimientos almacenados (SPs) para optimizar operaciones. 
+●	Versionamiento del Código: Todos los componentes deberán ser versionados en Git, utilizando estrategias de branching como Git Flow o GitHub Flow para facilitar el trabajo colaborativo. 
+●	Implementación de Patrones de Diseño: Aplicar patrones adecuados para mejorar la organización y mantenibilidad del código, asegurando que los servicios sean modulares y fácilmente extensibles. 
+Como resultado de esta etapa, los/as estudiantes deberán entregar la primera versión funcional del sistema, acompañada de una presentación donde expliquen las decisiones técnicas, la implementación de los componentes y la integración entre frontend y backend. 
+Sección 3: Integración, Pruebas Unitarias y Presentación Final (Parcial 3) 
+Contexto 
+Con el sistema en funcionamiento, Sanos y Salvos quiere asegurar que la solución sea robusta y confiable antes de su implementación definitiva. Para ello, se requiere que el código desarrollado cumpla con estándares de calidad, aplicando pruebas unitarias y validando la cobertura del código antes del lanzamiento. 
+En esta última fase, la empresa evaluará cómo se integran los diferentes módulos del sistema, garantizando que la plataforma sea escalable y esté lista para su despliegue en producción. 
+
+Requerimientos Técnicos 
+En esta etapa, los/as estudiantes deberán: 
+●	Realizar Pruebas Unitarias: Implementar pruebas para cada uno de los componentes del sistema, asegurando una cobertura mínima del 60% del código. La validación de cobertura se realizará utilizando herramientas como SonarQube. 
+●	Refactorización y Mejora del Código: Revisar el código desarrollado, identificar oportunidades de optimización y aplicar mejoras siguiendo buenas prácticas de desarrollo. 
+●	Despliegue y Ejecución de Pruebas: Integrar las pruebas unitarias en un pipeline de Integración Continua, asegurando que se ejecuten automáticamente en cada actualización del código. 
+●	Documentación Final: Completar la documentación del sistema, incluyendo diagramas actualizados, descripción de la arquitectura final y detalles sobre la implementación de pruebas. 
+Presentación Final 
+Cada equipo presentará su solución ante el/la docente, abordando los siguientes puntos clave: 
+●	Explicación de la arquitectura del sistema y decisiones técnicas. 
+●	Demostración del funcionamiento del software, mostrando la integración entre frontend y backend. 
+●	Estrategia de pruebas implementada y validación de cobertura. 
+●	Reflexión sobre los desafíos enfrentados y aprendizajes adquiridos. 
+Esta presentación servirá como cierre del curso, permitiendo evaluar de manera integral la capacidad de los/as estudiantes para diseñar, desarrollar, integrar y validar una solución de software basada en microservicios, patrones de diseño y pruebas automatizadas. 

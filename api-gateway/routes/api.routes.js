@@ -4,26 +4,26 @@ const { crearProxyServicio } = require('../services/proxy.factory');
 const router = express.Router();
 
 router.use(
-  '/mascotas',
+  '/hallazgos',
   crearProxyServicio({
-    target: process.env.MASCOTAS_SERVICE_URL || 'http://localhost:3003',
-    pathRewrite: (path) => `/mascotas${path}`,
+    target: process.env.HALLAZGOS_SERVICE_URL || 'http://localhost:3003',
+    pathRewrite: (path) => `/hallazgos${path}`,
   })
 );
 
 router.use(
-  '/reportes',
+  '/perdidas',
   crearProxyServicio({
-    target: process.env.REPORTES_SERVICE_URL || 'http://localhost:3000',
-    pathRewrite: (path) => `/reportes${path}`,
+    target: process.env.PERDIDAS_SERVICE_URL || 'http://localhost:3000',
+    pathRewrite: (path) => `/perdidas${path}`,
   })
 );
 
 router.use(
-  '/coincidencias',
+  '/buscador',
   crearProxyServicio({
-    target: process.env.COINCIDENCIAS_SERVICE_URL || 'http://localhost:3002',
-    pathRewrite: (path) => `/coincidencias${path}`,
+    target: process.env.BUSCADOR_SERVICE_URL || 'http://localhost:3002',
+    pathRewrite: (path) => `/buscador${path}`,
   })
 );
 

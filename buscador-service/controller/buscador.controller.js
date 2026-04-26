@@ -1,10 +1,10 @@
-const coincidenciasService = require('../services/coincidencias.service');
+const buscadorService = require('../services/buscador.service');
 const RespuestaDTO = require('../dto/respuestaDTO');
 
 class BuscadorController {
   async obtenerCoincidencias(req, res, next) {
     try {
-      const data = await coincidenciasService.buscarCoincidencias(req.params.reporteId);
+      const data = await buscadorService.buscarCoincidencias(req.params.perdidaId);
 
       const respuesta = new RespuestaDTO().ok(
         data,

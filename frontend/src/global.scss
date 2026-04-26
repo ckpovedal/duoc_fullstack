@@ -35,3 +35,28 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+// Establece el fondo verde claro para TODAS las pantallas
+:root {
+  --ion-background-color: #E8F5E9;
+  --ion-background-color-rgb: 232, 245, 233;
+}
+
+// Para todos los contenidos
+ion-content {
+  --background: var(--ion-background-color) !important;
+  background:#E8F5E9 !important;
+}
+
+// Para páginas que usan modo oscuro u otras configuraciones
+body {
+  background-color: #E8F5E9;
+}
+
+.md body {
+  --ion-background-color: #E8F5E9;
+}
+
+.ios body {
+  --ion-background-color: #E8F5E9;
+}

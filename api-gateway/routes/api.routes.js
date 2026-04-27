@@ -4,6 +4,14 @@ const { crearProxyServicio } = require('../services/proxy.factory');
 const router = express.Router();
 
 router.use(
+  '/usuarios',
+  crearProxyServicio({
+    target: process.env.USUARIO_SERVICE_URL || 'http://localhost:3004',
+    pathRewrite: (path) => `/usuarios${path}`,
+  })
+);
+
+router.use(
   '/hallazgos',
   crearProxyServicio({
     target: process.env.HALLAZGOS_SERVICE_URL || 'http://localhost:3003',

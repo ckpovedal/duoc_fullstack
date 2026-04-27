@@ -12,9 +12,6 @@ DROP SEQUENCE IF EXISTS seq_hallazgo_id CASCADE;
 -- 3. Eliminar función si existe
 DROP FUNCTION IF EXISTS generar_h_id() CASCADE;
 
--- 4. Eliminar trigger si existe
-DROP TRIGGER IF EXISTS tr_asignar_h_id ON HALLAZGO;
-
 -- =====================================================
 -- CREACIÓN DE LA TABLA
 -- =====================================================
@@ -35,10 +32,7 @@ CREATE TABLE HALLAZGO (
     H_Comuna        VARCHAR(30),
     H_Region        VARCHAR(50),
     H_Fecha         DATE DEFAULT CURRENT_DATE,
-    H_Estado        NUMERIC(1) DEFAULT 1,
-    
-    -- Restricción de clave foránea
-    CONSTRAINT fk_hallazgo_usuario FOREIGN KEY (U_ID) REFERENCES USUARIO(U_ID) ON DELETE CASCADE
+    H_Estado        NUMERIC(1) DEFAULT 1
 );
 
 -- =====================================================
@@ -46,7 +40,7 @@ CREATE TABLE HALLAZGO (
 -- =====================================================
 COMMENT ON TABLE HALLAZGO IS 'Tabla que almacena los reportes de mascotas encontradas';
 COMMENT ON COLUMN HALLAZGO.H_ID IS 'ID único del reporte de hallazgo (autogenerado)';
-COMMENT ON COLUMN HALLAZGO.U_ID IS 'ID del usuario que reporta el hallazgo (Foreign Key)';
+COMMENT ON COLUMN HALLAZGO.U_ID IS 'ID del usuario que reporta el hallazgo';
 COMMENT ON COLUMN HALLAZGO.H_Nom_Masc IS 'Nombre de la mascota encontrada (opcional)';
 COMMENT ON COLUMN HALLAZGO.H_Tipo IS 'Tipo de animal: 1=Perro, 2=Gato, 3=Otro';
 COMMENT ON COLUMN HALLAZGO.H_Edad IS 'Edad aproximada de la mascota (texto libre, ej: 3 años, Cachorro)';
@@ -135,9 +129,6 @@ CREATE INDEX idx_hallazgo_tipo ON HALLAZGO(H_Tipo);
 -- =====================================================
 -- DATOS DE EJEMPLO (OPCIONAL)
 -- =====================================================
--- Nota: Los U_ID deben existir en la tabla USUARIO
--- Ejemplo: Suponiendo que existen USR00001, USR00002, USR00003
-
 INSERT INTO HALLAZGO (U_ID, H_Nom_Masc, H_Tipo, H_Edad, H_Genero, H_Fisica, H_Perso, H_Dire_Inter, H_Comuna, H_Region, H_Fecha, H_Estado) VALUES
     ('USR00002', 'Luna', 1, '3 años', 2, 'Pelo blanco, ojos azules', 'Tímida y juguetona', 'Av. Los Alamos con Av. Vitacura', 'Vitacura', 'Metropolitana', '2025-04-10', 1),
     ('USR00001', NULL, 1, '5 años', 1, 'Pelo negro, orejas grandes', 'Muy activo y amistoso', 'Calle Principal con Providencia', 'Providencia', 'Metropolitana', '2025-04-12', 1),
@@ -148,18 +139,6 @@ INSERT INTO HALLAZGO (U_ID, H_Nom_Masc, H_Tipo, H_Edad, H_Genero, H_Fisica, H_Pe
 -- =====================================================
 -- Ver todos los reportes de hallazgo
 SELECT * FROM HALLAZGO;
-
--- Ver reportes con nombre de usuario (JOIN)
-SELECT 
-    H.H_ID, 
-    U.U_Nombre, 
-    H.H_Nom_Masc, 
-    H.H_Fecha, 
-    H.H_Comuna, 
-    H.H_Estado
-FROM HALLAZGO H
-INNER JOIN USUARIO U ON H.U_ID = U.U_ID
-ORDER BY H.H_Fecha DESC;
 
 -- Ver la secuencia actual
 SELECT currval('seq_hallazgo_id');

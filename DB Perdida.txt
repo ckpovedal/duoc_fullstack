@@ -12,9 +12,6 @@ DROP SEQUENCE IF EXISTS seq_perdida_id CASCADE;
 -- 3. Eliminar función si existe
 DROP FUNCTION IF EXISTS generar_p_id() CASCADE;
 
--- 4. Eliminar trigger si existe
-DROP TRIGGER IF EXISTS tr_asignar_p_id ON PERDIDA;
-
 -- =====================================================
 -- CREACIÓN DE LA TABLA
 -- =====================================================
@@ -35,10 +32,7 @@ CREATE TABLE PERDIDA (
     P_Comuna        VARCHAR(30),
     P_Region        VARCHAR(50),
     P_Fecha         DATE DEFAULT CURRENT_DATE,
-    P_Estado        NUMERIC(1) DEFAULT 1,
-    
-    -- Restricción de clave foránea
-    CONSTRAINT fk_perdida_usuario FOREIGN KEY (U_ID) REFERENCES USUARIO(U_ID) ON DELETE CASCADE
+    P_Estado        NUMERIC(1) DEFAULT 1
 );
 
 -- =====================================================
@@ -46,7 +40,7 @@ CREATE TABLE PERDIDA (
 -- =====================================================
 COMMENT ON TABLE PERDIDA IS 'Tabla que almacena los reportes de mascotas perdidas';
 COMMENT ON COLUMN PERDIDA.P_ID IS 'ID único del reporte (autogenerado)';
-COMMENT ON COLUMN PERDIDA.U_ID IS 'ID del usuario que reporta (Foreign Key)';
+COMMENT ON COLUMN PERDIDA.U_ID IS 'ID del usuario que reporta';
 COMMENT ON COLUMN PERDIDA.P_Nom_Masc IS 'Nombre de la mascota perdida';
 COMMENT ON COLUMN PERDIDA.P_Tipo IS 'Tipo de animal: 1=Perro, 2=Gato, 3=Otro';
 COMMENT ON COLUMN PERDIDA.P_Edad IS 'Edad aproximada de la mascota (en años)';
@@ -135,9 +129,6 @@ CREATE INDEX idx_perdida_tipo ON PERDIDA(P_Tipo);
 -- =====================================================
 -- DATOS DE EJEMPLO (OPCIONAL)
 -- =====================================================
--- Nota: Los U_ID deben existir en la tabla USUARIO
--- Ejemplo: Suponiendo que existen USR00001, USR00002, USR00003
-
 INSERT INTO PERDIDA (U_ID, P_Nom_Masc, P_Tipo, P_Edad, P_Genero, P_Fisica, P_Perso, P_Dire_Inter, P_Comuna, P_Region, P_Fecha, P_Estado) VALUES
     ('USR00001', 'Luna', 1, 3, 2, 'Pelo blanco, ojos azules', 'Tímida y juguetona', 'Av. Los Alamos con Av. Vitacura', 'Vitacura', 'Metropolitana', '2025-04-10', 1),
     ('USR00002', 'Max', 1, 5, 1, 'Pelo negro, orejas grandes', 'Muy activo y amistoso', 'Calle Principal con Providencia', 'Providencia', 'Metropolitana', '2025-04-12', 1),
@@ -148,18 +139,6 @@ INSERT INTO PERDIDA (U_ID, P_Nom_Masc, P_Tipo, P_Edad, P_Genero, P_Fisica, P_Per
 -- =====================================================
 -- Ver todos los reportes
 SELECT * FROM PERDIDA;
-
--- Ver reportes con nombre de usuario (JOIN)
-SELECT 
-    P.P_ID, 
-    U.U_Nombre, 
-    P.P_Nom_Masc, 
-    P.P_Fecha, 
-    P.P_Comuna, 
-    P.P_Estado
-FROM PERDIDA P
-INNER JOIN USUARIO U ON P.U_ID = U.U_ID
-ORDER BY P.P_Fecha DESC;
 
 -- Ver la secuencia actual
 SELECT currval('seq_perdida_id');

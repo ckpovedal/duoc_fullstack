@@ -1,4 +1,5 @@
 const hallazgosRepository = require('../repository/hallazgos.repository');
+const usuariosClient = require('../clients/usuarios.client');
 const AppError = require('../utils/AppError');
 
 class HallazgosService {
@@ -14,7 +15,7 @@ class HallazgosService {
       throw new AppError('h_tipo es obligatorio', 400);
     }
 
-    const usuarioExiste = await hallazgosRepository.existeUsuario(usuarioId);
+    const usuarioExiste = await usuariosClient.existeUsuario(usuarioId);
 
     if (!usuarioExiste) {
       throw new AppError('El usuario indicado no existe', 404);

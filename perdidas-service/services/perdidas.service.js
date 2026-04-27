@@ -1,4 +1,5 @@
 const perdidasRepository = require('../repository/perdidas.repository');
+const usuariosClient = require('../clients/usuarios.client');
 const AppError = require('../utils/AppError');
 
 class PerdidasService {
@@ -19,7 +20,7 @@ class PerdidasService {
       throw new AppError('p_tipo es obligatorio', 400);
     }
 
-    const usuarioExiste = await perdidasRepository.existeUsuario(usuarioId);
+    const usuarioExiste = await usuariosClient.existeUsuario(usuarioId);
     if (!usuarioExiste) {
       throw new AppError('El usuario indicado no existe', 404);
     }
@@ -48,10 +49,19 @@ class PerdidasService {
       throw new AppError('Perdida no encontrada', 404);
     }
 
-    return await perdidasRepository.actualizarPerdida(id, {
+    const datosActualizados = {
       ...perdidaActual,
       ...data,
-    });
+    };
+
+    const usuarioId = datosActualizados.u_id || datosActualizados.U_ID;
+    const usuarioExiste = await usuariosClient.existeUsuario(usuarioId);
+
+    if (!usuarioExiste) {
+      throw new AppError('El usuario indicado no existe', 404);
+    }
+
+    return await perdidasRepository.actualizarPerdida(id, datosActualizados);
   }
 
   async cambiarEstado(id, data) {

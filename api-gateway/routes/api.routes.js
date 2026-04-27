@@ -7,7 +7,7 @@ router.use(
   '/usuarios',
   crearProxyServicio({
     target: process.env.USUARIO_SERVICE_URL || 'http://localhost:3004',
-    pathRewrite: (path) => `/usuarios${path}`,
+    pathRewrite: (path) => (path === '/' ? '/usuarios' : `/usuarios${path}`),
   })
 );
 

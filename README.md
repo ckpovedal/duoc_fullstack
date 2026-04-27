@@ -46,6 +46,16 @@ Los scripts principales estan en la raiz del proyecto:
 - `DB Perdida.txt`
 - `DB Hallazgo.txt`
 
+Cada microservicio con persistencia usa su propia base de datos:
+
+| Servicio | Base de datos |
+| --- | --- |
+| `usuario-service` | `usuario_db` |
+| `perdidas-service` | `perdida_db` |
+| `hallazgos-service` | `hallazgo_db` |
+
+`perdidas-service` y `hallazgos-service` guardan el `u_id`, pero validan la existencia del usuario consultando a `usuario-service`.
+
 ## Instalacion
 
 Clonar el repositorio:
@@ -93,6 +103,8 @@ con lo cual se cargan todas las dependencias automáticamente.
 El archivo `.env` debe estar en la raiz del proyecto y no debe subirse al repositorio.
 
 Usar `.env.example` como referencia para crear el archivo local.
+
+Las variables de base de datos estan separadas por microservicio, por ejemplo `USUARIO_DB_NAME`, `PERDIDAS_DB_NAME` y `HALLAZGOS_DB_NAME`.
 
 ## Ejecucion
 
@@ -146,6 +158,11 @@ ionic serve
 
 | Metodo | Ruta |
 | --- | --- |
+| GET | `/api/usuarios` |
+| POST | `/api/usuarios` |
+| GET | `/api/usuarios/:id` |
+| PUT | `/api/usuarios/:id` |
+| POST | `/api/usuarios/login` |
 | GET | `/api/hallazgos` |
 | POST | `/api/hallazgos` |
 | GET | `/api/hallazgos/:id` |
@@ -160,6 +177,11 @@ ionic serve
 
 | Servicio | Metodo | Ruta |
 | --- | --- | --- |
+| `usuario-service` | GET | `/usuarios` |
+| `usuario-service` | POST | `/usuarios` |
+| `usuario-service` | GET | `/usuarios/:id` |
+| `usuario-service` | PUT | `/usuarios/:id` |
+| `usuario-service` | POST | `/usuarios/login` |
 | `hallazgos-service` | GET | `/hallazgos` |
 | `hallazgos-service` | POST | `/hallazgos` |
 | `hallazgos-service` | GET | `/hallazgos/:id` |
@@ -181,6 +203,8 @@ ionic serve
 
 - `buscador-service` no tiene base de datos propia.
 - `buscador-service` consume `perdidas-service` y `hallazgos-service`.
+- `perdidas-service` consume `usuario-service` para validar usuarios.
+- `hallazgos-service` consume `usuario-service` para validar usuarios.
 - `api-gateway` centraliza el acceso desde el frontend.
 - Cada microservicio mantiene una responsabilidad separada.
 

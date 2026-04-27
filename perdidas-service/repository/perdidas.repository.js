@@ -1,12 +1,6 @@
 const pool = require('../config/pg_db');
 
 class PerdidasRepository {
-  async existeUsuario(usuarioId) {
-    const query = 'SELECT u_id FROM usuario WHERE u_id = $1';
-    const result = await pool.query(query, [usuarioId]);
-    return result.rows.length > 0;
-  }
-
   async crearPerdida(data) {
     const query = `
       INSERT INTO perdida (

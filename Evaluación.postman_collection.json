@@ -7,343 +7,564 @@
   },
   "item": [
     {
-      "name": "Conexión Api gateway",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3001/health",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3001",
-          "path": [
-            "health"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Conexión Servicio Reportes",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3000/health",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3000",
-          "path": [
-            "health"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Paso por Api",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3001/api/reportes",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3001",
-          "path": [
-            "api",
-            "reportes"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Conexión Servicio Coincidencias",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3002/health",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3002",
-          "path": [
-            "health"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Cliente Servicios",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3000/reportes",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3000",
-          "path": [
-            "reportes"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Conexión Servicio Mascotas",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "url": {
-          "raw": "http://localhost:3003/health",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3003",
-          "path": [
-            "health"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Crear Mascota",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"nombre\": \"Perejil\",\r\n  \"especie\": \"PERRO\",\r\n  \"raza\": \"Mestizo\",\r\n  \"sexo\": \"MACHO\",\r\n  \"tamano\": \"MEDIANO\",\r\n  \"color_principal\": \"Negro\",\r\n  \"color_secundario\": \"Blanco\",\r\n  \"esterilizado\": true,\r\n  \"marcas_distintivas\": \"Manchas negras en el pecho\"\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+      "name": "Salud",
+      "item": [
+        {
+          "name": "API Gateway",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/health",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "health"
+              ]
             }
-          }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "http://localhost:3003/mascotas",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3003",
-          "path": [
-            "mascotas"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Listar Mascotas",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3003/mascotas",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3003",
-          "path": [
-            "mascotas"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Crear reporte",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"mascota_id\": \"84ae4fec-2f25-4778-bcd5-5cbfdbefbce9\",\r\n  \"tipo\": \"PERDIDA\",\r\n  \"titulo\": \"Se perdió cerca de la plaza\",\r\n  \"descripcion\": \"Perra mestiza café con blanco\",\r\n  \"comuna\": \"Santiago\",\r\n  \"ciudad\": \"Santiago\",\r\n  \"region\": \"Metropolitana\",\r\n  \"direccion\": \"Cerca de Plaza de Armas\",\r\n  \"es_publico\": true\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+        {
+          "name": "Usuario Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{usuario_service_url}}/health",
+              "host": [
+                "{{usuario_service_url}}"
+              ],
+              "path": [
+                "health"
+              ]
             }
-          }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "http://localhost:3000/reportes",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3000",
-          "path": [
-            "reportes"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Buscar coincidencias",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3002/coincidencias/8df25f1d-af21-491b-8270-e1fbb6108d01",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3002",
-          "path": [
-            "coincidencias",
-            "8df25f1d-af21-491b-8270-e1fbb6108d01"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Api Mascotas",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3001/api/mascotas",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3001",
-          "path": [
-            "api",
-            "mascotas"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Api crear Mascota",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"nombre\": \"Cilantro\",\r\n  \"especie\": \"GATO\",\r\n  \"raza\": \"Mestizo\",\r\n  \"sexo\": \"MACHO\",\r\n  \"tamano\": \"MEDIANO\",\r\n  \"color_principal\": \"Negro\",\r\n  \"color_secundario\": \"Blanco\",\r\n  \"esterilizado\": true,\r\n  \"marcas_distintivas\": \"Manchas negras en el pecho\"\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+        {
+          "name": "Perdidas Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{perdidas_service_url}}/health",
+              "host": [
+                "{{perdidas_service_url}}"
+              ],
+              "path": [
+                "health"
+              ]
             }
-          }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "http://localhost:3001/api/mascotas",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3001",
-          "path": [
-            "api",
-            "mascotas"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Api Crear Reporte",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\r\n  \"mascota_id\": \"3a1eacdd-ab95-4d4f-a8c5-b527271962f1\",\r\n  \"tipo\": \"PERDIDA\",\r\n  \"titulo\": \"Se perdió cerca de la plaza\",\r\n  \"descripcion\": \"Perra mestiza café con blanco\",\r\n  \"comuna\": \"Santiago\",\r\n  \"ciudad\": \"Santiago\",\r\n  \"region\": \"Metropolitana\",\r\n  \"direccion\": \"Cerca de Plaza de Armas\",\r\n  \"es_publico\": true\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
+        {
+          "name": "Hallazgos Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{hallazgos_service_url}}/health",
+              "host": [
+                "{{hallazgos_service_url}}"
+              ],
+              "path": [
+                "health"
+              ]
             }
-          }
+          },
+          "response": []
         },
-        "url": {
-          "raw": "http://localhost:3001/api/reportes",
-          "protocol": "http",
-          "host": [
-            "localhost"
-          ],
-          "port": "3001",
-          "path": [
-            "api",
-            "reportes"
-          ]
+        {
+          "name": "Buscador Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{buscador_service_url}}/health",
+              "host": [
+                "{{buscador_service_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
     },
     {
-      "name": "Api Buscar coincidencias",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "http://localhost:3001/api/coincidencias/ca0a12fa-b11e-4712-a359-50d3b09d56df",
-          "protocol": "http",
-          "host": [
-            "localhost"
+      "name": "Usuarios - API Gateway",
+      "item": [
+        {
+          "name": "Crear Usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.respuesta && json.respuesta.idUsuario) {",
+                  "  pm.collectionVariables.set('usuario_id', json.respuesta.idUsuario);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
           ],
-          "port": "3001",
-          "path": [
-            "api",
-            "coincidencias",
-            "ca0a12fa-b11e-4712-a359-50d3b09d56df"
-          ]
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Prueba\",\n  \"tipo\": \"Dueño\",\n  \"direccion\": \"Av. Siempre Viva 123\",\n  \"comuna\": \"Santiago\",\n  \"region\": \"Metropolitana\",\n  \"telefono\": 912345678,\n  \"correo\": \"usuario.prueba@email.com\",\n  \"clave\": \"pass1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/usuarios",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/usuarios",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/usuarios/{{usuario_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "{{usuario_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Usuario Prueba Actualizado\",\n  \"tipo\": \"Dueño\",\n  \"direccion\": \"Av. Siempre Viva 456\",\n  \"comuna\": \"Providencia\",\n  \"region\": \"Metropolitana\",\n  \"telefono\": 987654321,\n  \"correo\": \"usuario.prueba@email.com\",\n  \"clave\": \"pass1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/usuarios/{{usuario_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "{{usuario_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"usuario.prueba@email.com\",\n  \"clave\": \"pass1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/usuarios/login",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "login"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
+      ]
+    },
+    {
+      "name": "Perdidas - API Gateway",
+      "item": [
+        {
+          "name": "Crear Perdida",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.respuesta && json.respuesta.p_id) {",
+                  "  pm.collectionVariables.set('perdida_id', json.respuesta.p_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"u_id\": \"{{usuario_id}}\",\n  \"p_nom_masc\": \"Luna\",\n  \"p_tipo\": 1,\n  \"p_edad\": 3,\n  \"p_genero\": 2,\n  \"p_fisica\": \"Pelo blanco, ojos azules\",\n  \"p_perso\": \"Timida y juguetona\",\n  \"p_inf_adic\": \"Tiene collar rojo\",\n  \"p_esterilizado\": 1,\n  \"p_vacunas\": 1,\n  \"p_dire_inter\": \"Av. Los Alamos con Av. Vitacura\",\n  \"p_comuna\": \"Vitacura\",\n  \"p_region\": \"Metropolitana\",\n  \"p_estado\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/perdidas",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "perdidas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Perdidas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/perdidas",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "perdidas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Perdida",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/perdidas/{{perdida_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "perdidas",
+                "{{perdida_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Perdida",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"u_id\": \"{{usuario_id}}\",\n  \"p_nom_masc\": \"Luna\",\n  \"p_tipo\": 1,\n  \"p_edad\": 4,\n  \"p_genero\": 2,\n  \"p_fisica\": \"Pelo blanco, ojos azules\",\n  \"p_perso\": \"Timida y juguetona\",\n  \"p_inf_adic\": \"Tiene collar rojo actualizado\",\n  \"p_esterilizado\": 1,\n  \"p_vacunas\": 1,\n  \"p_dire_inter\": \"Av. Los Alamos con Av. Vitacura\",\n  \"p_comuna\": \"Vitacura\",\n  \"p_region\": \"Metropolitana\",\n  \"p_estado\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/perdidas/{{perdida_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "perdidas",
+                "{{perdida_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cambiar Estado Perdida",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/perdidas/{{perdida_id}}/estado",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "perdidas",
+                "{{perdida_id}}",
+                "estado"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Hallazgos - API Gateway",
+      "item": [
+        {
+          "name": "Crear Hallazgo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.respuesta && json.respuesta.h_id) {",
+                  "  pm.collectionVariables.set('hallazgo_id', json.respuesta.h_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"u_id\": \"{{usuario_id}}\",\n  \"h_nom_masc\": \"Luna\",\n  \"h_tipo\": 1,\n  \"h_edad\": 3,\n  \"h_genero\": 2,\n  \"h_fisica\": \"Pelo blanco, ojos azules\",\n  \"h_perso\": \"Timida y juguetona\",\n  \"h_inf_adic\": \"Vista cerca de una plaza\",\n  \"h_esterilizado\": 1,\n  \"h_vacunas\": 1,\n  \"h_dire_inter\": \"Av. Los Alamos con Av. Vitacura\",\n  \"h_comuna\": \"Vitacura\",\n  \"h_region\": \"Metropolitana\",\n  \"h_estado\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/hallazgos",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "hallazgos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Hallazgos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/hallazgos",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "hallazgos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Hallazgo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/hallazgos/{{hallazgo_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "hallazgos",
+                "{{hallazgo_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Buscador - API Gateway",
+      "item": [
+        {
+          "name": "Buscar Coincidencias Por Perdida",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/buscador/{{perdida_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "buscador",
+                "{{perdida_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "api_gateway_url",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "usuario_service_url",
+      "value": "http://localhost:3004",
+      "type": "string"
+    },
+    {
+      "key": "perdidas_service_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "hallazgos_service_url",
+      "value": "http://localhost:3003",
+      "type": "string"
+    },
+    {
+      "key": "buscador_service_url",
+      "value": "http://localhost:3002",
+      "type": "string"
+    },
+    {
+      "key": "usuario_id",
+      "value": "USR00001",
+      "type": "string"
+    },
+    {
+      "key": "perdida_id",
+      "value": "PRD00001",
+      "type": "string"
+    },
+    {
+      "key": "hallazgo_id",
+      "value": "HAL00001",
+      "type": "string"
     }
   ]
 }

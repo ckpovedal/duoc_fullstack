@@ -171,6 +171,7 @@ ionic serve
 | GET | `/api/perdidas/:id` |
 | PUT | `/api/perdidas/:id` |
 | PATCH | `/api/perdidas/:id/estado` |
+| GET | `/api/buscador` |
 | GET | `/api/buscador/:perdidaId` |
 
 ### Microservicios
@@ -190,7 +191,24 @@ ionic serve
 | `perdidas-service` | GET | `/perdidas/:id` |
 | `perdidas-service` | PUT | `/perdidas/:id` |
 | `perdidas-service` | PATCH | `/perdidas/:id/estado` |
+| `buscador-service` | GET | `/buscador` |
 | `buscador-service` | GET | `/buscador/:perdidaId` |
+
+### Buscador por parametros
+
+El buscador permite buscar coincidencias desde una perdida registrada o desde parametros enviados por URL.
+
+Busqueda por perdida registrada:
+
+```text
+GET http://localhost:3001/api/buscador/PRD00001
+```
+
+Busqueda manual por parametros:
+
+```text
+GET http://localhost:3001/api/buscador?tipo=1&comuna=Vitacura&region=Metropolitana&genero=2&fecha=2026-04-20&nombre=Luna&fisica=pelo%20blanco%20ojos%20azules
+```
 
 ## Patrones Utilizados
 

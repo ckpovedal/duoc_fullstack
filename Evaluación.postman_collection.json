@@ -521,6 +521,54 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Buscar Coincidencias Por Parametros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/buscador?tipo=1&comuna=Vitacura&region=Metropolitana&genero=2&fecha=2026-04-20&nombre=Luna&fisica=pelo%20blanco%20ojos%20azules",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "buscador"
+              ],
+              "query": [
+                {
+                  "key": "tipo",
+                  "value": "1"
+                },
+                {
+                  "key": "comuna",
+                  "value": "Vitacura"
+                },
+                {
+                  "key": "region",
+                  "value": "Metropolitana"
+                },
+                {
+                  "key": "genero",
+                  "value": "2"
+                },
+                {
+                  "key": "fecha",
+                  "value": "2026-04-20"
+                },
+                {
+                  "key": "nombre",
+                  "value": "Luna"
+                },
+                {
+                  "key": "fisica",
+                  "value": "pelo blanco ojos azules"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     }

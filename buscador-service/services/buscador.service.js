@@ -10,6 +10,20 @@ class BuscadorService {
       throw new AppError('Perdida no encontrada', 404);
     }
 
+    return this.buscarCoincidenciasDesdePerdida(perdidaBase);
+  }
+
+  async buscarCoincidenciasPorParametros(parametros) {
+    const perdidaBase = this.construirPerdidaBase(parametros);
+
+    if (!this.tieneParametrosBusqueda(perdidaBase)) {
+      throw new AppError('Debe enviar al menos un parametro de busqueda', 400);
+    }
+
+    return this.buscarCoincidenciasDesdePerdida(perdidaBase);
+  }
+
+  async buscarCoincidenciasDesdePerdida(perdidaBase) {
     const hallazgos = await hallazgosClient.listarHallazgos();
 
     const coincidencias = hallazgos
@@ -22,6 +36,41 @@ class BuscadorService {
       total: coincidencias.length,
       coincidencias,
     };
+  }
+
+  construirPerdidaBase(parametros) {
+    return {
+      p_tipo: this.obtenerParametro(parametros, 'tipo', 'p_tipo'),
+      p_comuna: this.obtenerParametro(parametros, 'comuna', 'p_comuna'),
+      p_region: this.obtenerParametro(parametros, 'region', 'p_region'),
+      p_fecha: this.obtenerParametro(parametros, 'fecha', 'p_fecha'),
+      p_genero: this.obtenerParametro(parametros, 'genero', 'p_genero'),
+      p_fisica: this.obtenerParametro(parametros, 'fisica', 'descripcion', 'descripcionFisica', 'p_fisica'),
+      p_nom_masc: this.obtenerParametro(parametros, 'nombre', 'nombreMascota', 'p_nom_masc'),
+    };
+  }
+
+  obtenerParametro(parametros, ...nombres) {
+    const nombreEncontrado = nombres.find((nombre) => {
+      const valor = parametros[nombre];
+      return valor !== undefined && valor !== null && String(Array.isArray(valor) ? valor[0] : valor).trim() !== '';
+    });
+
+    if (!nombreEncontrado) {
+      return null;
+    }
+
+    const valor = parametros[nombreEncontrado];
+
+    if (Array.isArray(valor)) {
+      return String(valor[0]).trim();
+    }
+
+    return String(valor).trim();
+  }
+
+  tieneParametrosBusqueda(perdidaBase) {
+    return Object.values(perdidaBase).some((valor) => valor !== null && valor !== undefined && String(valor).trim() !== '');
   }
 
   construirCoincidencia(perdidaBase, hallazgoComparado) {

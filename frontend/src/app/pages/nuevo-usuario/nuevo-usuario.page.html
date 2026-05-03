@@ -28,7 +28,11 @@
         </ion-item>
 
         <ion-item>
-          <ion-input label="Comuna" labelPlacement="stacked" name="comuna" [(ngModel)]="usuario.comuna"></ion-input>
+          <ion-select label="Comuna" labelPlacement="stacked" name="comuna" [(ngModel)]="usuario.comuna">
+            <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.value">
+              {{ comuna.label }}
+            </ion-select-option>
+          </ion-select>
         </ion-item>
 
         <ion-item>

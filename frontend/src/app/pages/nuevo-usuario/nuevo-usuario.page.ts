@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonList, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { UsuarioService } from '../../services/usuario.service';
+import { COMUNAS_SANTIAGO_RM, REGION_COMUNAS_SANTIAGO_RM } from '../../data/comunas-santiago-rm';
+
 
 @Component({
   selector: 'app-nuevo-usuario',
@@ -13,12 +15,15 @@ import { UsuarioService } from '../../services/usuario.service';
   imports: [IonButton, IonContent, IonHeader, IonInput, IonItem, IonList, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class NuevoUsuarioPage implements OnInit {
+
+  comunas = COMUNAS_SANTIAGO_RM;
+
   usuario = {
     nombre: '',
     tipo: 'Dueño',
     direccion: '',
     comuna: '',
-    region: '',
+    region: REGION_COMUNAS_SANTIAGO_RM,
     telefono: '',
     correo: '',
     clave: ''

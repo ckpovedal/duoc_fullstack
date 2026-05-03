@@ -1,7 +1,37 @@
-<ion-header [translucent]="true">
-
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-<img src="assets/img/SanosySalvos.png" class="imagen-representativa" alt="Logo">
+<ion-content [fullscreen]="true" class="login-content">
+  <section class="login-panel">
+    <img src="assets/img/SanosySalvos.png" class="imagen-representativa" alt="Logo">
+
+    <h1>Iniciar sesion</h1>
+
+    <form (ngSubmit)="iniciarSesion()">
+      <ion-list>
+        <ion-item>
+          <ion-input label="Correo" labelPlacement="stacked" type="email" name="correo" [(ngModel)]="correo"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input label="Clave" labelPlacement="stacked" type="password" name="clave" [(ngModel)]="clave"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-button expand="block" type="submit" [disabled]="cargando">
+        {{ cargando ? 'Ingresando...' : 'Ingresar' }}
+      </ion-button>
+
+      <ion-button expand="block" fill="clear" type="button" (click)="irRegistro()">
+        Crear cuenta
+      </ion-button>
+    </form>
+
+    <ion-text color="danger" *ngIf="error">
+      <p>{{ error }}</p>
+    </ion-text>
+  </section>
 </ion-content>

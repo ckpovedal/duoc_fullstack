@@ -1,0 +1,33 @@
+.registro-content {
+  --background: #f4f7fb;
+}
+
+.registro-panel {
+  width: min(520px, calc(100% - 32px));
+  margin: 32px auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+
+.registro-panel h1 {
+  margin: 0 0 20px;
+  color: #172033;
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+}
+
+ion-list {
+  margin-bottom: 18px;
+}
+
+ion-button {
+  margin-top: 12px;
+}
+
+ion-text p {
+  margin: 16px 0 0;
+  text-align: center;
+}

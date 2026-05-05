@@ -7,6 +7,7 @@ import { addIcons } from 'ionicons';
 import { pawOutline } from 'ionicons/icons'; 
 
 
+
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.page.html',

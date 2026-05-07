@@ -1,3 +1,18 @@
+.imagen-salir {
+  width: 50px;  /* Ajusta el tamaño del ícono */
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.imagen-salir:hover {
+  transform: scale(1.1);
+}
+
+.imagen-salir:active {
+  transform: scale(0.95);
+}
+
 .registro-content {
   --background: #f4f7fb;
 }

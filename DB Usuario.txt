@@ -31,7 +31,7 @@ CREATE TABLE USUARIO (
     U_Fecha     DATE DEFAULT CURRENT_DATE,
     
     -- Restricciones adicionales
-    CONSTRAINT chk_usuario_tipo CHECK (U_Tipo IN ('Dueño', 'Voluntario', 'Administrador', 'Backend')),
+    CONSTRAINT chk_usuario_tipo CHECK (U_Tipo IN ('Dueño', 'Voluntario', 'Rescatista')),
     CONSTRAINT chk_usuario_fono CHECK (U_Fono >= 100000000 AND U_Fono <= 999999999),
     CONSTRAINT chk_usuario_pass_length CHECK (LENGTH(U_Pass) >= 4)
 );
@@ -42,7 +42,7 @@ CREATE TABLE USUARIO (
 COMMENT ON TABLE USUARIO IS 'Tabla que almacena los usuarios del sistema Sanos y Salvos';
 COMMENT ON COLUMN USUARIO.U_ID IS 'ID único del usuario (autogenerado)';
 COMMENT ON COLUMN USUARIO.U_Nombre IS 'Nombre completo del usuario';
-COMMENT ON COLUMN USUARIO.U_Tipo IS 'Tipo de usuario: Dueño, Voluntario, Administrador, Backend';
+COMMENT ON COLUMN USUARIO.U_Tipo IS 'Tipo de usuario: Dueño, Voluntario, Rescatista';
 COMMENT ON COLUMN USUARIO.U_Dire IS 'Dirección del usuario';
 COMMENT ON COLUMN USUARIO.U_Comuna IS 'Comuna donde reside el usuario';
 COMMENT ON COLUMN USUARIO.U_Region IS 'Región donde reside el usuario';
@@ -125,8 +125,7 @@ CREATE INDEX idx_usuario_fecha ON USUARIO(U_Fecha);
 INSERT INTO USUARIO (U_Nombre, U_Tipo, U_Dire, U_Comuna, U_Region, U_Fono, U_Correo, U_Pass) VALUES
     ('Carlos Guerrero', 'Dueño', 'Av. Los Alamos 123', 'Vitacura', 'Metropolitana', 912345678, 'carlos@email.com', 'pass1234'),
     ('Carla Poveda', 'Voluntario', 'Calle Principal 456', 'Providencia', 'Metropolitana', 987654321, 'carla@email.com', 'carla2024'),
-    ('Ana Pérez', 'Administrador', 'Av. Libertador 789', 'Las Condes', 'Metropolitana', 912345670, 'ana@email.com', 'admin123'),
-    ('Sistema Backend', 'Backend', NULL, NULL, NULL, NULL, 'backend@sanosysalvos.cl', 'backend2025');
+    ('Ana Pérez', 'Rescatista', 'Av. Libertador 789', 'Las Condes', 'Metropolitana', 912345670, 'ana@email.com', 'admin123');
 
 -- =====================================================
 -- CONSULTAS DE VERIFICACIÓN

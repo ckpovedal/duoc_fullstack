@@ -108,7 +108,7 @@ Las variables de base de datos estan separadas por microservicio, por ejemplo `U
 
 ## Ejecucion
 
-Abrir una terminal por servicio.
+Abrir una terminal por cada servicio en este orden:
 
 API Gateway:
 

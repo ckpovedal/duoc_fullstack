@@ -29,8 +29,7 @@
           <ion-select label="Tipo" labelPlacement="stacked" name="tipo" [(ngModel)]="usuario.tipo">
             <ion-select-option value="Dueño">Dueño</ion-select-option>
             <ion-select-option value="Voluntario">Voluntario</ion-select-option>
-            <ion-select-option value="Administrador">Administrador</ion-select-option>
-            <ion-select-option value="Backend">Backend</ion-select-option>
+            <ion-select-option value="Rescatista">Rescatista</ion-select-option>
           </ion-select>
         </ion-item>
 
@@ -59,11 +58,33 @@
         </ion-item>
 
         <ion-item>
-          <ion-input label="Clave" labelPlacement="stacked" type="password" name="clave" [(ngModel)]="usuario.clave"></ion-input>
+          <ion-input label="Clave" labelPlacement="stacked" type="password" name="clave" [(ngModel)]="usuario.clave" (ionInput)="validarClaves()"></ion-input>
+        </ion-item>
+
+        <ion-item *ngIf="usuario.clave && usuario.clave.length < 6" lines="none">
+          <ion-text color="warning">
+          <small>🔒 La contraseña debe tener al menos 6 caracteres</small>
+          </ion-text>
+        </ion-item>
+
+        <ion-item>
+          <ion-input label="Verificación Clave" labelPlacement="stacked" type="password" name="verificacionClave" [(ngModel)]="verificacionClave" #verificacionInput (ionInput)="validarClaves()"></ion-input>
         </ion-item>
       </ion-list>
 
-      <ion-button expand="block" type="submit" [disabled]="cargando">
+      <ion-item *ngIf="clavesNoCoinciden" lines="none">
+        <ion-text color="danger">
+          <small>⚠️ Las contraseñas no coinciden</small>
+        </ion-text>
+      </ion-item>
+
+      <ion-item *ngIf="claveValida && usuario.clave" lines="none">
+        <ion-text color="success">
+          <small>✓ Contraseñas válidas</small>
+        </ion-text>
+      </ion-item>
+
+      <ion-button expand="block" type="submit" [disabled]="cargando || clavesNoCoinciden || (usuario.clave && usuario.clave.length < 6)">
         {{ cargando ? 'Creando...' : 'Crear usuario' }}
       </ion-button>
 

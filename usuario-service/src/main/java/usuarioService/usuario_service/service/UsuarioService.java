@@ -14,7 +14,7 @@ import usuarioService.usuario_service.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
-    private static final Set<String> TIPOS_VALIDOS = Set.of("Dueño", "Voluntario", "Administrador", "Backend");
+    private static final Set<String> TIPOS_VALIDOS = Set.of("Dueño", "Voluntario", "Rescatista");
 
     private final UsuarioRepository usuarioRepository;
 
@@ -108,7 +108,7 @@ public class UsuarioService {
         }
 
         if (!TIPOS_VALIDOS.contains(usuario.getTipo())) {
-            throw new ApiException("tipo debe ser Dueno, Voluntario, Administrador o Backend", HttpStatus.BAD_REQUEST);
+            throw new ApiException("tipo debe ser Dueño, Voluntario o Rescatista", HttpStatus.BAD_REQUEST);
         }
 
         if (estaVacio(usuario.getCorreo())) {

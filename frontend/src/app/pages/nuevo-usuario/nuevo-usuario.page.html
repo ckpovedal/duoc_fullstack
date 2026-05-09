@@ -61,9 +61,9 @@
           <ion-input label="Clave" labelPlacement="stacked" type="password" name="clave" [(ngModel)]="usuario.clave" (ionInput)="validarClaves()"></ion-input>
         </ion-item>
 
-        <ion-item *ngIf="usuario.clave && usuario.clave.length < 6" lines="none">
+        <ion-item *ngIf="usuario.clave && usuario.clave.length < 4" lines="none">
           <ion-text color="warning">
-          <small>🔒 La contraseña debe tener al menos 6 caracteres</small>
+          <small>🔒 La contraseña debe tener al menos 4 caracteres</small>
           </ion-text>
         </ion-item>
 
@@ -84,7 +84,7 @@
         </ion-text>
       </ion-item>
 
-      <ion-button expand="block" type="submit" [disabled]="cargando || clavesNoCoinciden || (usuario.clave && usuario.clave.length < 6)">
+      <ion-button expand="block" type="submit" [disabled]="cargando || clavesNoCoinciden || (usuario.clave && usuario.clave.length < 4)">
         {{ cargando ? 'Creando...' : 'Crear usuario' }}
       </ion-button>
 

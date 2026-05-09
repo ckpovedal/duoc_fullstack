@@ -82,8 +82,8 @@ export class NuevoUsuarioPage implements OnInit {
     }
 
     // Opcional: Validar fortaleza de la contraseña
-    if (this.usuario.clave.length < 6) {
-      this.error = 'La contraseña debe tener al menos 6 caracteres';
+    if (this.usuario.clave.length < 4) {
+      this.error = 'La contraseña debe tener al menos 4 caracteres';
       return;
     }
 

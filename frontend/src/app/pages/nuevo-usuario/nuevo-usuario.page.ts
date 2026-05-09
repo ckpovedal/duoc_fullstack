@@ -7,6 +7,7 @@ import { UsuarioService } from '../../services/usuario.service';
 import { COMUNAS_SANTIAGO_RM, REGION_COMUNAS_SANTIAGO_RM } from '../../data/comunas-santiago-rm';
 import { addIcons } from 'ionicons';
 import { logOutOutline } from 'ionicons/icons';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-nuevo-usuario',
@@ -43,7 +44,8 @@ export class NuevoUsuarioPage implements OnInit {
 
   constructor(
     private usuarioService: UsuarioService,
-    private router: Router
+    private router: Router,
+    private toastController: ToastController
   ) {
     addIcons({ logOutOutline})
    }
@@ -66,24 +68,46 @@ export class NuevoUsuarioPage implements OnInit {
     }
   }
 
+  // Método auxiliar para mostrar mensajes con el prefijo "Sanos y Salvos dice"
+  async mostrarMensaje(tipo: 'error' | 'exito', texto: string) {
+    const prefijo = '🐾 Sanos y Salvos dice:';
+    const mensajeCompleto = `${prefijo} ${texto}`;
+
+    const toast = await this.toastController.create({
+      message: mensajeCompleto,
+      duration: 3000,
+      position: 'bottom',
+      color: tipo === 'error' ? 'danger' : 'success',
+      buttons: [
+        {
+        text: 'Cerrar',
+        role: 'cancel'
+        }
+      ]
+    })
+
+  await toast.present();
+  }
+  
+
   crearUsuario() {
     this.error = '';
     this.mensaje = '';
 
     if (!this.usuario.nombre.trim() || !this.usuario.tipo.trim() || !this.usuario.correo.trim() || !this.usuario.clave.trim()) {
-      this.error = 'Nombre, tipo, correo y clave son obligatorios';
+      this.mostrarMensaje('error', 'Nombre, tipo, correo y clave son obligatorios');
       return;
     }
 
     // 🔐 VALIDACIÓN DE CONTRASEÑAS COINCIDENTES
     if (this.usuario.clave !== this.verificacionClave) {
-      this.error = '⚠️ Las contraseñas no coinciden';
+      this.mostrarMensaje('error', '⚠️ Las contraseñas no coinciden');
       return;
     }
 
     // Opcional: Validar fortaleza de la contraseña
     if (this.usuario.clave.length < 8) {
-      this.error = 'La contraseña debe tener al menos 8 caracteres';
+      this.mostrarMensaje('error', 'La contraseña debe tener al menos 8 caracteres');
       return;
     }
 
@@ -102,12 +126,15 @@ export class NuevoUsuarioPage implements OnInit {
 
     this.usuarioService.crearUsuario(data).subscribe({
       next: (respuesta) => {
-        this.mensaje = respuesta.mensaje || 'Usuario creado correctamente';
-        alert(this.mensaje);
-        this.router.navigate(['/login']);
+        const mensajeExito = respuesta.mensaje || '✅ Usuario creado correctamente';
+        this.mostrarMensaje('exito', mensajeExito);
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000);
       },
       error: (error) => {
-        this.error = error?.error?.mensaje || 'No se pudo crear el usuario';
+        const mensajeError = error?.error?.mensaje || '❌ No se pudo crear el usuario';
+        this.mostrarMensaje('error', mensajeError);
         this.cargando = false;
       },
       complete: () => {

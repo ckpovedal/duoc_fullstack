@@ -13,10 +13,10 @@ import { UsuarioService } from '../../services/usuario.service';
   imports: [IonButton, IonContent, IonHeader, IonInput, IonItem, IonList, IonText, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class LoginPage implements OnInit {
-  correo = '';
-  clave = '';
+  correo: string = '';
+  clave: string = '';
   cargando = false;
-  error = '';
+  error: string = '';
 
   constructor(
     private usuarioService: UsuarioService,

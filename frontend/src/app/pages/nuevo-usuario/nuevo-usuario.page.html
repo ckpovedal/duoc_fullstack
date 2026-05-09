@@ -1,97 +1,105 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Nuevo Usuario</ion-title>
-      <ion-buttons slot="end">
-        <img
-          src="assets/icon/Salir.png"
-          class="imagen-salir"
-          alt="Salir"
-          title="SALIR"
-          (click)="salir()">
-      </ion-buttons>
+    <ion-buttons slot="end">
+      <img
+        src="assets/icon/Salir.png"
+        class="imagen-salir"
+        alt="Salir"
+        title="SALIR"
+        (click)="salir()">
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="registro-content">
+<ion-content [fullscreen]="true" class="contenido-pagina">
+  <main class="contenedor-pagina contenedor-formulario contenedor-con-padding">
+    <section class="panel-pagina registro-panel">
+      <img src="assets/img/SanosySalvos.png" class="logo-pagina" alt="Logo">
 
-  <img src="assets/img/SanosySalvos.png" class="imagen-representativa" alt="Logo">
+      <h1>Crear cuenta</h1>
 
-  <section class="registro-panel">
-    <h1>Crear cuenta</h1>
+      <form (ngSubmit)="crearUsuario()">
+        <ion-list>
+          <ion-item>
+            <ion-input label="Nombre" labelPlacement="stacked" name="nombre" [(ngModel)]="usuario.nombre"></ion-input>
+          </ion-item>
 
-    <form (ngSubmit)="crearUsuario()">
-      <ion-list>
-        <ion-item>
-          <ion-input label="Nombre" labelPlacement="stacked" name="nombre" [(ngModel)]="usuario.nombre"></ion-input>
-        </ion-item>
+          <ion-item>
+            <ion-select label="Tipo" labelPlacement="stacked" name="tipo" [(ngModel)]="usuario.tipo">
+              <ion-select-option value="Dueño">Dueño</ion-select-option>
+              <ion-select-option value="Voluntario">Voluntario</ion-select-option>
+              <ion-select-option value="Rescatista">Rescatista</ion-select-option>
+            </ion-select>
+          </ion-item>
 
-        <ion-item>
-          <ion-select label="Tipo" labelPlacement="stacked" name="tipo" [(ngModel)]="usuario.tipo">
-            <ion-select-option value="Dueño">Dueño</ion-select-option>
-            <ion-select-option value="Voluntario">Voluntario</ion-select-option>
-            <ion-select-option value="Rescatista">Rescatista</ion-select-option>
-          </ion-select>
-        </ion-item>
+          <ion-item>
+            <ion-input label="Direccion" labelPlacement="stacked" name="direccion" [(ngModel)]="usuario.direccion"></ion-input>
+          </ion-item>
 
-        <ion-item>
-          <ion-input label="Direccion" labelPlacement="stacked" name="direccion" [(ngModel)]="usuario.direccion"></ion-input>
-        </ion-item>
+          <ion-item>
+            <ion-select label="Comuna" labelPlacement="stacked" name="comuna" [(ngModel)]="usuario.comuna">
+              <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.value">
+                {{ comuna.label }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
 
-        <ion-item>
-          <ion-select label="Comuna" labelPlacement="stacked" name="comuna" [(ngModel)]="usuario.comuna">
-            <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.value">
-              {{ comuna.label }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
+          <ion-item>
+            <ion-input label="Region" labelPlacement="stacked" name="region" [(ngModel)]="usuario.region"></ion-input>
+          </ion-item>
 
-        <ion-item>
-          <ion-input label="Region" labelPlacement="stacked" name="region" [(ngModel)]="usuario.region"></ion-input>
-        </ion-item>
+          <ion-item>
+            <ion-input label="Telefono" labelPlacement="stacked" type="tel" name="telefono" [(ngModel)]="usuario.telefono"></ion-input>
+          </ion-item>
 
-        <ion-item>
-          <ion-input label="Telefono" labelPlacement="stacked" type="tel" name="telefono" [(ngModel)]="usuario.telefono"></ion-input>
-        </ion-item>
+          <ion-item>
+            <ion-input label="Correo" labelPlacement="stacked" type="email" name="correo" [(ngModel)]="usuario.correo"></ion-input>
+          </ion-item>
 
-        <ion-item>
-          <ion-input label="Correo" labelPlacement="stacked" type="email" name="correo" [(ngModel)]="usuario.correo"></ion-input>
-        </ion-item>
+          <ion-item>
+            <ion-input label="Clave" labelPlacement="stacked" type="password" name="clave" [(ngModel)]="usuario.clave" (ionInput)="validarClaves()"></ion-input>
+          </ion-item>
 
-        <ion-item>
-          <ion-input label="Clave" labelPlacement="stacked" type="password" name="clave" [(ngModel)]="usuario.clave" (ionInput)="validarClaves()"></ion-input>
-        </ion-item>
+          <ion-item *ngIf="usuario.clave && usuario.clave.length < 8" lines="none">
+            <ion-text color="warning">
+              <small>🔒 La contraseña debe tener al menos 8 caracteres</small>
+            </ion-text>
+          </ion-item>
 
-        <ion-item *ngIf="usuario.clave && usuario.clave.length < 8" lines="none">
-          <ion-text color="warning">
-          <small>🔒 La contraseña debe tener al menos 8 caracteres</small>
+          <ion-item>
+            <ion-input label="Verificación Clave" labelPlacement="stacked" type="password" name="verificacionClave" [(ngModel)]="verificacionClave" #verificacionInput (ionInput)="validarClaves()"></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <ion-item *ngIf="clavesNoCoinciden" lines="none">
+          <ion-text color="danger">
+            <small>⚠️ Las contraseñas no coinciden</small>
           </ion-text>
         </ion-item>
 
-        <ion-item>
-          <ion-input label="Verificación Clave" labelPlacement="stacked" type="password" name="verificacionClave" [(ngModel)]="verificacionClave" #verificacionInput (ionInput)="validarClaves()"></ion-input>
+        <ion-item *ngIf="claveValida && usuario.clave" lines="none">
+          <ion-text color="success">
+            <small>✓ Contraseñas válidas</small>
+          </ion-text>
         </ion-item>
-      </ion-list>
 
-      <ion-item *ngIf="clavesNoCoinciden" lines="none">
-        <ion-text color="danger">
-          <small>⚠️ Las contraseñas no coinciden</small>
-        </ion-text>
-      </ion-item>
+        <ion-button expand="block" type="submit" [disabled]="cargando || clavesNoCoinciden || (usuario.clave && usuario.clave.length < 8)">
+          {{ cargando ? 'Creando...' : 'Crear usuario' }}
+        </ion-button>
 
-      <ion-item *ngIf="claveValida && usuario.clave" lines="none">
-        <ion-text color="success">
-          <small>✓ Contraseñas válidas</small>
-        </ion-text>
-      </ion-item>
+        <ion-button expand="block" fill="clear" type="button" (click)="volverLogin()">
+          Volver al login
+        </ion-button>
+      </form>
 
-      <ion-button expand="block" type="submit" [disabled]="cargando || clavesNoCoinciden || (usuario.clave && usuario.clave.length < 8)">
-        {{ cargando ? 'Creando...' : 'Crear usuario' }}
-      </ion-button>
+      <ion-text color="success" *ngIf="mensaje">
+        <p>{{ mensaje }}</p>
+      </ion-text>
 
-      <ion-button expand="block" fill="clear" type="button" (click)="volverLogin()">
-        Volver al login
-      </ion-button>
-    </form>
-
-  </section>
+      <ion-text color="danger" *ngIf="error">
+        <p>{{ error }}</p>
+      </ion-text>
+    </section>
+  </main>
 </ion-content>

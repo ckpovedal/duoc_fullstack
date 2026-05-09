@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
     <ion-title>Principal</ion-title>
     <ion-buttons slot="end">
@@ -12,8 +12,12 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-
-  <img src="assets/img/SanosySalvos.png" class="imagen-representativa" alt="Logo">
-
+<ion-content [fullscreen]="true" class="contenido-pagina">
+  <main class="contenedor-pagina contenedor-con-padding contenedor-principal">
+    <section class="panel-pagina panel-principal">
+      <img src="assets/img/SanosySalvos.png" class="logo-pagina" alt="Logo">
+      <h1>Bienvenido</h1>
+      <p>Selecciona una sección para continuar.</p>
+    </section>
+  </main>
 </ion-content>

@@ -1,5 +1,5 @@
 .imagen-salir {
-  width: 50px;  /* Ajusta el tamaño del ícono */
+  width: 42px;
   height: auto;
   cursor: pointer;
   transition: transform 0.2s;
@@ -13,22 +13,31 @@
   transform: scale(0.95);
 }
 
-.imagen-representativa {
-  position: absolute;
-  top: 80px;
-  right: 20px;
-  width: 80px;  /* Tamaño pequeño */
-  height: auto;
-  z-index: 2;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  animation: fadeInRight 0.8s ease-out;
-  transition: transform 0.3s ease;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(5px);
-  padding: 5px;
+.contenedor-principal {
+  background: var(--color-superficie-suave);
 }
 
-.imagen-representativa:hover {
-  transform: scale(1.05);
+.panel-principal {
+  padding: 24px;
+  text-align: center;
+}
+
+.panel-principal h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.panel-principal p {
+  margin: 0;
+  color: var(--color-texto-suave);
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  .contenedor-principal {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border-radius: var(--radio-panel);
+  }
 }

@@ -1,26 +1,9 @@
-.login-content {
-  --background: #f4f7fb;
-}
-
 .login-panel {
-  width: min(420px, calc(100% - 32px));
-  margin: 48px auto 0;
   padding: 24px;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-}
-
-.imagen-representativa {
-  display: block;
-  width: 96px;
-  height: auto;
-  margin: 0 auto 16px;
 }
 
 .login-panel h1 {
   margin: 0 0 20px;
-  color: #172033;
   font-size: 26px;
   font-weight: 700;
   text-align: center;
@@ -37,4 +20,12 @@ ion-button {
 ion-text p {
   margin: 16px 0 0;
   text-align: center;
+}
+
+@media (min-width: 768px) {
+  .contenedor-pagina {
+    display: flex;
+    align-items: flex-start;
+    padding-top: 48px;
+  }
 }

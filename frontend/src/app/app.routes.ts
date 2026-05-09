@@ -28,7 +28,12 @@ export const routes: Routes = [
   },
   {
     path: 'perdidas',
-    loadComponent: () => import('./pages/perdidas/perdidas.page').then( m => m.PerdidasPage)
+    redirectTo: 'reporte-mascota',
+    pathMatch: 'full'
+  },
+  {
+    path: 'reporte-mascota',
+    loadComponent: () => import('./pages/reporte-mascota/reporte-mascota.page').then( m => m.ReporteMascotaPage)
   },
   {
     path: 'nuevo-usuario',

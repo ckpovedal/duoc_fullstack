@@ -1,20 +1,12 @@
-<ion-header [translucent]="true">
-
-</ion-header>
-
 <ion-content [fullscreen]="true" class="video-container">
-  
-  <!-- Video de fondo -->
   <video #backgroundVideo autoplay muted loop playsinline id="background-video">
     <source src="assets/video/VideoInicio.mp4" type="video/mp4">
   </video>
 
-  <!-- Capa oscura superpuesta (opcional, mejora visibilidad) -->
   <div class="overlay"></div>
 
   <img src="assets/img/SanosySalvos.png" class="imagen-representativa" alt="Logo">
 
-  <!-- Botón de inicio -->
   <div class="button-container">
     <ion-button expand="block" (click)="irALogin()" class="btn-inicio">
       <ion-icon name="paw-outline" slot="start"></ion-icon>

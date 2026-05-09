@@ -31,10 +31,7 @@ export class NuevoUsuarioPage implements OnInit {
     clave: ''
   };
 
-  // Nueva propiedad para la verificación de clave
   verificacionClave = '';
-  
-  // Propiedades para validación
   clavesNoCoinciden = false;
   claveValida = false;
 
@@ -54,10 +51,9 @@ export class NuevoUsuarioPage implements OnInit {
   }
 
   salir() {
-    this.router.navigate(['/inicio']); // O a la ruta que necesites
+    this.router.navigate(['/inicio']);
   }
 
-  // Método para validar que las claves coincidan
   validarClaves() {
     if (this.usuario.clave && this.verificacionClave) {
       this.clavesNoCoinciden = this.usuario.clave !== this.verificacionClave;
@@ -99,13 +95,11 @@ export class NuevoUsuarioPage implements OnInit {
       return;
     }
 
-    // 🔐 VALIDACIÓN DE CONTRASEÑAS COINCIDENTES
     if (this.usuario.clave !== this.verificacionClave) {
       this.mostrarMensaje('error', '⚠️ Las contraseñas no coinciden');
       return;
     }
 
-    // Opcional: Validar fortaleza de la contraseña
     if (this.usuario.clave.length < 8) {
       this.mostrarMensaje('error', 'La contraseña debe tener al menos 8 caracteres');
       return;

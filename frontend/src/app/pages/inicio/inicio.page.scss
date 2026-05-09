@@ -14,7 +14,7 @@
   transform: translate(-50%, -50%);
   object-fit: cover;
   z-index: -2;
-  background: #000;
+  background: #000000;
 }
 
 .overlay {
@@ -23,7 +23,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Oscurece el video para mejor visibilidad */
+  background: rgba(0, 0, 0, 0.5);
   z-index: -1;
 }
 
@@ -31,14 +31,14 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 80px;  /* Tamaño pequeño */
+  width: 80px;
   height: auto;
   z-index: 2;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   animation: fadeInRight 0.8s ease-out;
   transition: transform 0.3s ease;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(5px);
   padding: 5px;
 }
@@ -58,8 +58,8 @@
 }
 
 .btn-inicio {
-  --background: #4CAF50;
-  --background-hover: #45a049;
+  --background: var(--color-acento-fuerte);
+  --background-hover: var(--color-acento);
   --border-radius: 50px;
   --padding-top: 20px;
   --padding-bottom: 20px;
@@ -68,20 +68,8 @@
   text-transform: uppercase;
   width: 80%;
   max-width: 280px;
-  --box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   animation: fadeInUp 1s ease-out;
-}
-
-/* Animaciones */
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @keyframes fadeInUp {
@@ -95,13 +83,7 @@
   }
 }
 
-/* Ajustes responsivos */
 @media (max-width: 768px) {
-  .logo-superpuesto {
-    width: 70%;
-    max-width: 220px;
-  }
-  
   .btn-inicio {
     font-size: 1rem;
     --padding-top: 15px;
@@ -109,7 +91,6 @@
   }
 }
 
-// Estilos para el footer
 .footer {
   position: absolute;
   bottom: 20px;
@@ -121,12 +102,11 @@
   padding: 10px;
   
   .copyright {
-    color: white;
+    color: var(--color-superficie);
     font-size: 14px;
     margin: 0;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     font-weight: 500;
-    letter-spacing: 0.5px;
     font-family: Georgia, serif;
   }
 }

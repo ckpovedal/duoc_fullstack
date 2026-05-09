@@ -1,62 +1,98 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-/* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+@import "@ionic/angular/css/palettes/dark.system.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
-
-// Establece el fondo verde claro para TODAS las pantallas
 :root {
-  --ion-background-color: #E8F5E9;
-  --ion-background-color-rgb: 232, 245, 233;
+  --color-fondo: #eaf7ed;
+  --color-superficie: #ffffff;
+  --color-superficie-suave: #f8fbf9;
+  --color-borde: #e2e8e3;
+  --color-texto: #27352d;
+  --color-texto-suave: #66706a;
+  --color-acento: #ff7f89;
+  --color-acento-fuerte: #ff6f7b;
+  --color-acento-suave: #fff1f3;
+  --sombra-panel: 0 8px 24px rgba(15, 23, 42, 0.12);
+  --radio-panel: 8px;
+  --ancho-formulario: 520px;
+  --ancho-app: 720px;
+  --ion-background-color: var(--color-fondo);
+  --ion-text-color: var(--color-texto);
+  --ion-color-primary: var(--color-acento-fuerte);
+  --ion-color-primary-rgb: 255, 111, 123;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #e0626c;
+  --ion-color-primary-tint: #ff7d88;
 }
 
-// Para todos los contenidos
-ion-content {
-  --background: var(--ion-background-color) !important;
-  background:#E8F5E9 !important;
-}
-
-// Para páginas que usan modo oscuro u otras configuraciones
 body {
-  background-color: #E8F5E9;
+  background: var(--color-fondo);
+  color: var(--color-texto);
 }
 
-.md body {
-  --ion-background-color: #E8F5E9;
+ion-content.contenido-pagina {
+  --background: var(--color-fondo);
 }
 
-.ios body {
-  --ion-background-color: #E8F5E9;
+ion-app.con-menu-movil ion-content.contenido-pagina::part(scroll) {
+  padding-bottom: 82px;
+}
+
+ion-toolbar {
+  --background: var(--color-superficie);
+  --color: var(--color-texto);
+  --border-color: var(--color-borde);
+}
+
+.contenedor-pagina {
+  width: 100%;
+  min-height: 100%;
+  margin: 0 auto;
+  background: var(--color-superficie);
+}
+
+.contenedor-con-padding {
+  padding: 16px;
+}
+
+.panel-pagina {
+  width: 100%;
+  background: var(--color-superficie);
+}
+
+.logo-pagina {
+  display: block;
+  width: 96px;
+  height: auto;
+  margin: 0 auto 16px;
+}
+
+@media (min-width: 768px) {
+  .contenedor-pagina {
+    max-width: var(--ancho-app);
+  }
+
+  .contenedor-formulario {
+    max-width: var(--ancho-formulario);
+    min-height: auto;
+    background: transparent;
+  }
+
+  .contenedor-con-padding {
+    padding: 24px;
+  }
+
+  .panel-pagina {
+    border-radius: var(--radio-panel);
+    box-shadow: var(--sombra-panel);
+  }
 }

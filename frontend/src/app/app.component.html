@@ -1,3 +1,27 @@
-<ion-app>
+<ion-app [class.con-menu-movil]="mostrarMenuMovil()">
   <ion-router-outlet></ion-router-outlet>
+
+  <nav class="menu-movil" *ngIf="mostrarMenuMovil()" aria-label="Navegación principal">
+    <a class="item-menu" routerLink="/principal" routerLinkActive="activo" [routerLinkActiveOptions]="{ exact: true }">
+      <ion-icon name="home-outline"></ion-icon>
+      <span>Inicio</span>
+    </a>
+
+    <a class="item-menu" routerLink="/buscador" routerLinkActive="activo">
+      <ion-icon name="search-outline"></ion-icon>
+      <span>Buscar</span>
+    </a>
+
+    <a class="item-menu item-agregar" routerLink="/reporte-mascota" routerLinkActive="activo">
+      <span class="icono-agregar">
+        <ion-icon name="add-circle"></ion-icon>
+      </span>
+      <span>Agregar</span>
+    </a>
+
+    <a class="item-menu" routerLink="/hallazgos" routerLinkActive="activo">
+      <ion-icon name="paw-outline"></ion-icon>
+      <span>Hallazgos</span>
+    </a>
+  </nav>
 </ion-app>

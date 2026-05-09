@@ -1,0 +1,81 @@
+<ion-header class="encabezado">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" class="cancelar">Cancelar</ion-button>
+    </ion-buttons>
+
+    <ion-title>Agregar mascota</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" class="guardar">Guardar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="contenido-pagina">
+  <main class="contenedor-pagina contenedor-formulario formulario">
+    <section class="fotos">
+      <button class="boton-foto" type="button" aria-label="Agregar fotos">
+        <ion-icon name="camera-outline"></ion-icon>
+      </button>
+
+      <p>Agregar fotos</p>
+    </section>
+
+    <section class="seccion">
+      <h2>¿Qué le pasó a tu amigo?</h2>
+
+      <div class="opciones">
+        <button class="estado" [class.activo]="tipoReporte === 'perdida'" type="button" (click)="seleccionarTipoReporte('perdida')">Perdido</button>
+        <button class="estado" [class.activo]="tipoReporte === 'hallazgo'" type="button" (click)="seleccionarTipoReporte('hallazgo')">Encontrado</button>
+        <button class="estado" [class.activo]="tipoReporte === 'adopcion'" type="button" (click)="seleccionarTipoReporte('adopcion')">Adopción</button>
+      </div>
+    </section>
+
+    <section class="seccion">
+      <h2>Elige un tipo</h2>
+
+      <div class="tipos">
+        <button class="tipo" [class.activo]="tipoMascota === 'perro'" type="button" (click)="seleccionarTipoMascota('perro')">
+          <ion-icon name="paw-outline"></ion-icon>
+          <span>Perro</span>
+        </button>
+
+        <button class="tipo" [class.activo]="tipoMascota === 'gato'" type="button" (click)="seleccionarTipoMascota('gato')">
+          <ion-icon name="paw-outline"></ion-icon>
+          <span>Gato</span>
+        </button>
+
+        <button class="tipo" [class.activo]="tipoMascota === 'otro'" type="button" (click)="seleccionarTipoMascota('otro')">
+          <ion-icon name="paw-outline"></ion-icon>
+          <span>Otro</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="seccion">
+      <h2>Información</h2>
+
+      <label class="campo">
+        <span>Nombre mascota</span>
+        <input type="text" name="nombreMascota">
+      </label>
+
+      <label class="campo">
+        <span>Ciudad *</span>
+        <input type="text" name="ciudad">
+      </label>
+
+      <label class="campo">
+        <span>Raza</span>
+        <input type="text" name="raza">
+      </label>
+
+      <label class="campo">
+        <span>Descripción</span>
+        <input type="text" name="descripcion">
+      </label>
+    </section>
+
+  </main>
+</ion-content>

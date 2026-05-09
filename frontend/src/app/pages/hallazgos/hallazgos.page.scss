@@ -1,19 +1,132 @@
-.imagen-representativa {
-  position: absolute;
-  top: 80px;
-  right: 20px;
-  width: 80px;  /* Tamaño pequeño */
-  height: auto;
-  z-index: 2;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  animation: fadeInRight 0.8s ease-out;
-  transition: transform 0.3s ease;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(5px);
-  padding: 5px;
+.encabezado-hallazgos {
+  background: var(--color-fondo);
 }
 
-.imagen-representativa:hover {
-  transform: scale(1.05);
+.encabezado-hallazgos ion-toolbar {
+  max-width: var(--ancho-app);
+  margin: 0 auto;
+  --min-height: 56px;
+}
+
+.encabezado-hallazgos ion-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.contenedor-listado {
+  background: var(--color-superficie-suave);
+}
+
+.presentacion-listado {
+  margin-bottom: 16px;
+}
+
+.presentacion-listado h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.presentacion-listado p {
+  margin: 0;
+  color: var(--color-texto-suave);
+  font-size: 14px;
+}
+
+.mensaje-estado,
+.estado-listado {
+  margin: 24px 0;
+  color: var(--color-texto-suave);
+  text-align: center;
+}
+
+.estado-listado {
+  padding: 28px 18px;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  background: var(--color-superficie);
+}
+
+.estado-listado ion-icon {
+  color: var(--color-acento);
+  font-size: 34px;
+}
+
+.estado-listado p {
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+
+.estado-listado button {
+  margin-top: 14px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--color-acento);
+  color: var(--color-superficie);
+  font-weight: 700;
+  padding: 10px 16px;
+}
+
+.lista-hallazgos {
+  display: grid;
+  gap: 12px;
+}
+
+.tarjeta-hallazgo {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  background: var(--color-superficie);
+}
+
+.foto-hallazgo {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  background: var(--color-acento-suave);
+  color: var(--color-acento);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.foto-hallazgo ion-icon {
+  font-size: 34px;
+}
+
+.datos-hallazgo h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.datos-hallazgo p {
+  margin: 0;
+  color: var(--color-texto-suave);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.datos-hallazgo .ubicacion-hallazgo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 6px;
+}
+
+.ubicacion-hallazgo ion-icon {
+  color: var(--color-acento);
+  font-size: 15px;
+}
+
+@media (min-width: 768px) {
+  .contenedor-listado {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border-radius: var(--radio-panel);
+    box-shadow: var(--sombra-panel);
+  }
 }

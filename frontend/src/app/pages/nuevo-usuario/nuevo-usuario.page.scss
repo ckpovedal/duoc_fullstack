@@ -1,5 +1,5 @@
 .imagen-salir {
-  width: 50px;  /* Ajusta el tamaño del ícono */
+  width: 42px;
   height: auto;
   cursor: pointer;
   transition: transform 0.2s;
@@ -13,22 +13,12 @@
   transform: scale(0.95);
 }
 
-.registro-content {
-  --background: #f4f7fb;
-}
-
 .registro-panel {
-  width: min(520px, calc(100% - 32px));
-  margin: 32px auto;
   padding: 24px;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
 }
 
 .registro-panel h1 {
   margin: 0 0 20px;
-  color: #172033;
   font-size: 26px;
   font-weight: 700;
   text-align: center;
@@ -47,22 +37,9 @@ ion-text p {
   text-align: center;
 }
 
-.imagen-representativa {
-  position: absolute;
-  top: 80px;
-  right: 20px;
-  width: 80px;  /* Tamaño pequeño */
-  height: auto;
-  z-index: 2;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  animation: fadeInRight 0.8s ease-out;
-  transition: transform 0.3s ease;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(5px);
-  padding: 5px;
-}
-
-.imagen-representativa:hover {
-  transform: scale(1.05);
+@media (min-width: 768px) {
+  .contenedor-pagina {
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
 }

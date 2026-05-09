@@ -1,11 +1,45 @@
-<ion-header [translucent]="true">
+<ion-header class="encabezado-hallazgos">
   <ion-toolbar>
     <ion-title>Hallazgos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content class="contenido-pagina">
+  <main class="contenedor-pagina contenedor-con-padding contenedor-listado">
+    <section class="presentacion-listado">
+      <h1>Mascotas encontradas</h1>
+      <p>Reportes publicados por la comunidad</p>
+    </section>
 
-  <img src="assets/img/SanosySalvos.png" class="imagen-representativa" alt="Logo">
+    <p class="mensaje-estado" *ngIf="cargando">Cargando hallazgos...</p>
 
+    <section class="estado-listado" *ngIf="!cargando && error">
+      <p>{{ error }}</p>
+      <button type="button" (click)="cargarHallazgos()">Reintentar</button>
+    </section>
+
+    <section class="estado-listado" *ngIf="!cargando && !error && hallazgos.length === 0">
+      <ion-icon name="paw-outline"></ion-icon>
+      <p>Todavía no hay hallazgos registrados.</p>
+    </section>
+
+    <section class="lista-hallazgos" *ngIf="!cargando && !error && hallazgos.length > 0">
+      <article class="tarjeta-hallazgo" *ngFor="let hallazgo of hallazgos">
+        <div class="foto-hallazgo">
+          <ion-icon name="paw-outline"></ion-icon>
+        </div>
+
+        <div class="datos-hallazgo">
+          <h2>{{ hallazgo.nombreMascota || hallazgo.nombre || 'Mascota encontrada' }}</h2>
+
+          <p class="ubicacion-hallazgo">
+            <ion-icon name="location-outline"></ion-icon>
+            <span>{{ hallazgo.comuna || hallazgo.ciudad || 'Ubicación sin registrar' }}</span>
+          </p>
+
+          <p>{{ hallazgo.descripcion || 'Sin descripción disponible.' }}</p>
+        </div>
+      </article>
+    </section>
+  </main>
 </ion-content>

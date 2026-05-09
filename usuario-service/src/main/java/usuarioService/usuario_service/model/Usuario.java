@@ -34,7 +34,7 @@ public class Usuario {
     @Column(name = "u_correo", nullable = false, unique = true, length = 50)
     private String correo;
 
-    @Column(name = "u_pass", nullable = false, length = 15)
+    @Column(name = "u_pass", nullable = false, length = 255)
     private String clave;
 
     @Column(name = "u_fecha")

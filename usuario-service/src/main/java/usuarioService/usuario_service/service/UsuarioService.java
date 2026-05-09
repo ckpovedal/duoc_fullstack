@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import usuarioService.usuario_service.dto.LoginRequest;
 import usuarioService.usuario_service.dto.UsuarioDto;
@@ -17,9 +18,11 @@ public class UsuarioService {
     private static final Set<String> TIPOS_VALIDOS = Set.of("Dueño", "Voluntario", "Rescatista");
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UsuarioDto> listarUsuarios() {
@@ -45,6 +48,7 @@ public class UsuarioService {
         usuario.setFecha(LocalDate.now());
         aplicarDatos(usuario, solicitud);
         validarUsuario(usuario);
+        usuario.setClave(passwordEncoder.encode(usuario.getClave()));
 
         return UsuarioDto.desdeEntidad(usuarioRepository.save(usuario));
     }
@@ -62,6 +66,8 @@ public class UsuarioService {
             throw new ApiException("El correo ya esta registrado", HttpStatus.BAD_REQUEST);
         }
 
+        usuario.setClave(passwordEncoder.encode(usuario.getClave()));
+
         return UsuarioDto.desdeEntidad(usuarioRepository.save(usuario));
     }
 
@@ -70,8 +76,12 @@ public class UsuarioService {
             throw new ApiException("Correo y clave son obligatorios", HttpStatus.BAD_REQUEST);
         }
 
-        Usuario usuario = usuarioRepository.findByCorreoAndClave(solicitud.correo(), solicitud.clave())
+        Usuario usuario = usuarioRepository.findByCorreo(solicitud.correo())
             .orElseThrow(() -> new ApiException("Correo o clave incorrectos", HttpStatus.UNAUTHORIZED));
+
+        if (!passwordEncoder.matches(solicitud.clave(), usuario.getClave())) {
+          throw new ApiException("Correo o clave incorrectos", HttpStatus.UNAUTHORIZED);
+        }
 
         return UsuarioDto.desdeEntidad(usuario);
     }
@@ -119,8 +129,8 @@ public class UsuarioService {
             throw new ApiException("clave es obligatoria", HttpStatus.BAD_REQUEST);
         }
 
-        if (usuario.getClave().length() < 4 || usuario.getClave().length() > 15) {
-            throw new ApiException("clave debe tener entre 4 y 15 caracteres", HttpStatus.BAD_REQUEST);
+        if (usuario.getClave().length() < 8 || usuario.getClave().length() > 15) {
+            throw new ApiException("clave debe tener entre 8 y 15 caracteres", HttpStatus.BAD_REQUEST);
         }
 
         if (usuario.getTelefono() != null && (usuario.getTelefono() < 100000000 || usuario.getTelefono() > 999999999)) {

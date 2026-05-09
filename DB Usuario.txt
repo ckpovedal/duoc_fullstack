@@ -1,6 +1,8 @@
 -- =====================================================
 -- SCRIPT COMPLETO: TABLA USUARIO CON AUTOGENERACIÓN DE ID
 -- Proyecto: Sanos y Salvos
+-- Actualización de seguridad: U_Pass se amplió a VARCHAR(255) para guardar hash BCrypt
+-- La contraseña real se valida en el backend y no se almacena en la base de datos
 -- =====================================================
 
 -- 1. Eliminar tabla si existe (para reiniciar el proceso)
@@ -27,13 +29,13 @@ CREATE TABLE USUARIO (
     U_Region    VARCHAR(50),
     U_Fono      NUMERIC(9),
     U_Correo    VARCHAR(50) NOT NULL UNIQUE,
-    U_Pass      VARCHAR(15) NOT NULL,
+    U_Pass      VARCHAR(255) NOT NULL,
     U_Fecha     DATE DEFAULT CURRENT_DATE,
     
     -- Restricciones adicionales
     CONSTRAINT chk_usuario_tipo CHECK (U_Tipo IN ('Dueño', 'Voluntario', 'Rescatista')),
     CONSTRAINT chk_usuario_fono CHECK (U_Fono >= 100000000 AND U_Fono <= 999999999),
-    CONSTRAINT chk_usuario_pass_length CHECK (LENGTH(U_Pass) >= 4)
+    CONSTRAINT chk_usuario_pass_length CHECK (LENGTH(U_Pass) >= 60)
 );
 
 -- =====================================================
@@ -48,7 +50,7 @@ COMMENT ON COLUMN USUARIO.U_Comuna IS 'Comuna donde reside el usuario';
 COMMENT ON COLUMN USUARIO.U_Region IS 'Región donde reside el usuario';
 COMMENT ON COLUMN USUARIO.U_Fono IS 'Teléfono de contacto del usuario (9 dígitos)';
 COMMENT ON COLUMN USUARIO.U_Correo IS 'Correo electrónico del usuario (único)';
-COMMENT ON COLUMN USUARIO.U_Pass IS 'Contraseña del usuario (mínimo 4 caracteres)';
+COMMENT ON COLUMN USUARIO.U_Pass IS 'Hash BCrypt de la contraseña del usuario. La contraseña real no se almacena';
 COMMENT ON COLUMN USUARIO.U_Fecha IS 'Fecha de ingreso al sistema';
 
 -- =====================================================
@@ -121,11 +123,8 @@ CREATE INDEX idx_usuario_fecha ON USUARIO(U_Fecha);
 -- =====================================================
 -- DATOS DE EJEMPLO (OPCIONAL)
 -- =====================================================
--- Insertar usuarios de prueba (sin especificar U_ID)
-INSERT INTO USUARIO (U_Nombre, U_Tipo, U_Dire, U_Comuna, U_Region, U_Fono, U_Correo, U_Pass) VALUES
-    ('Carlos Guerrero', 'Dueño', 'Av. Los Alamos 123', 'Vitacura', 'Metropolitana', 912345678, 'carlos@email.com', 'pass1234'),
-    ('Carla Poveda', 'Voluntario', 'Calle Principal 456', 'Providencia', 'Metropolitana', 987654321, 'carla@email.com', 'carla2024'),
-    ('Ana Pérez', 'Rescatista', 'Av. Libertador 789', 'Las Condes', 'Metropolitana', 912345670, 'ana@email.com', 'admin123');
+-- Los usuarios de prueba deben crearse desde el backend para que U_Pass se guarde con BCrypt.
+-- No insertar contraseñas en texto plano directamente en esta tabla.
 
 -- =====================================================
 -- CONSULTAS DE VERIFICACIÓN
@@ -133,8 +132,15 @@ INSERT INTO USUARIO (U_Nombre, U_Tipo, U_Dire, U_Comuna, U_Region, U_Fono, U_Cor
 -- Ver todos los usuarios
 SELECT U_ID, U_Nombre, U_Tipo, U_Correo, U_Fecha FROM USUARIO;
 
--- Verificar inicio de sesión (ejemplo)
--- SELECT * FROM USUARIO WHERE U_Correo = 'carlos@email.com' AND U_Pass = 'pass1234';
+-- Verificar usuario por correo
+-- SELECT U_ID, U_Nombre, U_Tipo, U_Correo, U_Fecha FROM USUARIO WHERE U_Correo = 'carlos@email.com';
+-- La comparación de contraseña se realiza en el backend con PasswordEncoder.matches().
+
+-- Verificar que U_Pass acepte hash BCrypt
+SELECT column_name, data_type, character_maximum_length
+FROM information_schema.columns
+WHERE table_name = 'usuario'
+AND column_name = 'u_pass';
 
 -- Ver la secuencia actual
 SELECT currval('seq_usuario_id');

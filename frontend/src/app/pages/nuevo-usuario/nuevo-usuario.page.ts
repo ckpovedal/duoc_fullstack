@@ -82,8 +82,8 @@ export class NuevoUsuarioPage implements OnInit {
     }
 
     // Opcional: Validar fortaleza de la contraseña
-    if (this.usuario.clave.length < 4) {
-      this.error = 'La contraseña debe tener al menos 4 caracteres';
+    if (this.usuario.clave.length < 8) {
+      this.error = 'La contraseña debe tener al menos 8 caracteres';
       return;
     }
 
@@ -103,6 +103,7 @@ export class NuevoUsuarioPage implements OnInit {
     this.usuarioService.crearUsuario(data).subscribe({
       next: (respuesta) => {
         this.mensaje = respuesta.mensaje || 'Usuario creado correctamente';
+        alert(this.mensaje);
         this.router.navigate(['/login']);
       },
       error: (error) => {

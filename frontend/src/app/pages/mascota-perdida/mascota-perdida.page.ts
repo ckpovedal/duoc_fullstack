@@ -74,7 +74,7 @@ export class MascotaPerdidaPage implements OnInit {
   }
 
   volver() {
-    this.router.navigate(['/reporte-mascota']);
+    this.router.navigate(['/buscador']);
   }
 
   cargarPerdida(id: string) {

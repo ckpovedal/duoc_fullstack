@@ -67,8 +67,22 @@ class HallazgosService {
       throw new AppError('Hallazgo no encontrado', 404);
     }
 
+    const usuarioId = hallazgo.u_id || hallazgo.U_ID;
+
+    let usuario = null;
+
+    if (usuarioId) {
+      usuario = await usuariosClient.obtenerUsuarioPorId(usuarioId);
+    }
+
     return {
       ...hallazgo,
+      usuario_nombre:
+        usuario?.nombre ||
+        usuario?.u_nombre ||
+        usuario?.Nombre ||
+        'Usuario no informado',
+      usuario_id: usuarioId,
       tipoReporte: 'HALLADO'
     };
   }

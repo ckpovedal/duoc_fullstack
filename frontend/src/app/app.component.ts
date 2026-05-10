@@ -61,7 +61,8 @@ export class AppComponent {
       '/buscador',
       '/reporte-mascota',
       '/hallazgos',
-      '/mascota-perdida'
+      '/mascota-perdida',
+      '/mascota-hallada'
     ];
 
     return rutasConMenu.some((ruta) =>

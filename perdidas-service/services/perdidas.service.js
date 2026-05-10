@@ -71,8 +71,22 @@ class PerdidasService {
       throw new AppError('Perdida no encontrada', 404);
     }
 
+    const usuarioId = perdida.u_id || perdida.U_ID;
+
+    let usuario = null;
+
+    if (usuarioId) {
+      usuario = await usuariosClient.obtenerUsuarioPorId(usuarioId);
+    }
+
     return { 
       ...perdida,
+      usuario_nombre:
+        usuario?.nombre ||
+        usuario?.u_nombre ||
+        usuario?.Nombre ||
+        'Usuario no informado',
+      usuario_id: usuarioId,
       tipoReporte: 'PERDIDO'
     };
   }

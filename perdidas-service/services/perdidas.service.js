@@ -35,7 +35,12 @@ class PerdidasService {
     this.registrarReporteReciente(huella);
 
     try {
-      return await perdidasRepository.crearPerdida(data);
+      const perdidaCreada = await perdidasRepository.crearPerdida(data);
+
+      return {
+        ...perdidaCreada,
+        tipoReporte: 'PERDIDO'
+      }
     } catch (error) {
       this.reportesRecientes.delete(huella);
       throw error;
@@ -43,7 +48,12 @@ class PerdidasService {
   }
 
   async listarPerdidas(filtros) {
-    return await perdidasRepository.listarPerdidas(filtros);
+    const perdidas = await perdidasRepository.listarPerdidas(filtros);
+
+    return perdidas.map((perdida) => ({
+      ...perdida,
+      tipoReporte: 'PERDIDO'
+    }))
   }
 
   async obtenerPerdidaPorId(id) {
@@ -53,7 +63,10 @@ class PerdidasService {
       throw new AppError('Perdida no encontrada', 404);
     }
 
-    return perdida;
+    return { 
+      ...perdida,
+      tipoReporte: 'PERDIDO'
+    };
   }
 
   async actualizarPerdida(id, data) {
@@ -75,7 +88,12 @@ class PerdidasService {
       throw new AppError('El usuario indicado no existe', 404);
     }
 
-    return await perdidasRepository.actualizarPerdida(id, datosActualizados);
+    const perdidaActualizada = await perdidasRepository.actualizarPerdida(id, datosActualizados);
+
+    return {
+      ...perdidaActualizada,
+      tipoReporte: 'PERDIDO'
+    };
   }
 
   async cambiarEstado(id, data) {
@@ -89,8 +107,13 @@ class PerdidasService {
     if (!perdida) {
       throw new AppError('Perdida no encontrada', 404);
     }
+    
+    const resultado = await perdidasRepository.cambiarEstadoPerdida(id, estado);
 
-    return await perdidasRepository.cambiarEstadoPerdida(id, estado);
+    return {
+      ...resultado,
+      tipoReporte: 'PERDIDO'
+    };
   }
 
   registrarReporteReciente(huella) {

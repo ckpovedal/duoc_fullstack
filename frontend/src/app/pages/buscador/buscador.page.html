@@ -4,12 +4,79 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="contenido-pagina">
+<ion-content class="contenido-pagina">
   <main class="contenedor-pagina contenedor-con-padding contenedor-buscador">
-    <section class="panel-pagina panel-buscador">
-      <img src="assets/img/SanosySalvos.png" class="logo-pagina" alt="Logo">
-      <h1>Buscador</h1>
-      <p>Acá irá la búsqueda de mascotas y reportes.</p>
+    <section class="presentacion-buscador">
+      <h1>Buscar coincidencias</h1>
+      <p>Ingresa nombre, comuna, color, tamaño o características de la mascota.</p>
+    </section>
+
+    <section class="panel-busqueda">
+      <label class="campo-busqueda">
+        <span>Datos de búsqueda</span>
+
+        <div class="entrada-busqueda">
+          <input
+            type="text"
+            name="busqueda"
+            placeholder="Ej: perro negro Maipú"
+            [(ngModel)]="terminoBusqueda"
+            (keyup.enter)="buscarCoincidencias()">
+
+          <button type="button" [disabled]="cargando" (click)="buscarCoincidencias()">
+            {{ cargando ? 'Buscando...' : 'Buscar' }}
+          </button>
+        </div>
+      </label>
+    </section>
+
+    <p class="mensaje-estado" *ngIf="cargando">Buscando coincidencias...</p>
+
+    <section class="estado-listado" *ngIf="!cargando && error">
+      <p>{{ error }}</p>
+    </section>
+
+    <section class="estado-listado" *ngIf="!cargando && busquedaRealizada && !error && coincidencias.length === 0">
+      <ion-icon name="search-outline"></ion-icon>
+      <p>No encontramos coincidencias con esos datos.</p>
+    </section>
+
+    <section class="lista-coincidencias" *ngIf="!cargando && coincidencias.length > 0">
+      <article class="tarjeta-coincidencia" *ngFor="let coincidencia of coincidencias">
+        <div class="foto-coincidencia">
+          <img *ngIf="coincidencia.imagen; else iconoMascota" [src]="coincidencia.imagen" alt="Foto de mascota hallada">
+
+          <ng-template #iconoMascota>
+            <ion-icon name="paw-outline"></ion-icon>
+          </ng-template>
+        </div>
+
+        <div class="datos-coincidencia">
+          <div class="cabecera-tarjeta">
+            <h2>{{ coincidencia.nombre }}</h2>
+          </div>
+
+          <div class="pills-tarjeta">
+            <span class="tipo" [ngClass]="coincidencia.tipoReporteClase">{{ coincidencia.tipoReporte }}</span>
+            <span class="estado" [ngClass]="coincidencia.estadoClase">{{ coincidencia.estado }}</span>
+          </div>
+
+          <p class="ubicacion">
+            <ion-icon name="location-outline"></ion-icon>
+            <span>{{ coincidencia.ubicacion }}</span>
+          </p>
+
+          <p class="descripcion">{{ coincidencia.descripcion }}</p>
+
+          <div class="pie-tarjeta">
+            <span class="nivel" [ngClass]="coincidencia.nivelClase">{{ coincidencia.nivel }}</span>
+
+            <button type="button" [disabled]="!coincidencia.id" (click)="verDetalle(coincidencia)">
+              Ver más detalles
+            </button>
+          </div>
+        </div>
+      </article>
     </section>
   </main>
 </ion-content>

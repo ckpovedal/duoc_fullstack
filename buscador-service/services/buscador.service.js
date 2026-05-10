@@ -14,22 +14,40 @@ class BuscadorService {
   }
 
   async buscarCoincidenciasPorParametros(parametros) {
+    const textoBusqueda = this.obtenerParametro(parametros, 'texto', 'busqueda', 'q');
     const perdidaBase = this.construirPerdidaBase(parametros);
 
-    if (!this.tieneParametrosBusqueda(perdidaBase)) {
+    if (!this.tieneParametrosBusqueda(perdidaBase) && !textoBusqueda) {
       throw new AppError('Debe enviar al menos un parametro de busqueda', 400);
     }
 
-    return this.buscarCoincidenciasDesdePerdida(perdidaBase);
+    return this.buscarCoincidenciasDesdePerdida(perdidaBase, textoBusqueda);
   }
 
-  async buscarCoincidenciasDesdePerdida(perdidaBase) {
-    const hallazgos = await hallazgosClient.listarHallazgos();
+  async buscarCoincidenciasDesdePerdida(perdidaBase, textoBusqueda = null) {
+    const [hallazgos, perdidas] = await Promise.all([
+      hallazgosClient.listarHallazgos(),
+      perdidasClient.listarPerdidas(),
+    ]);
 
-    const coincidencias = hallazgos
-      .map((hallazgo) => this.construirCoincidencia(perdidaBase, hallazgo))
+    const coincidenciasHallazgos = hallazgos
+      .map((hallazgo) => this.construirCoincidencia(perdidaBase, hallazgo, textoBusqueda, 'HALLADO', hallazgo));
+
+    const coincidenciasPerdidas = perdidas
+      .filter((perdida) => !perdidaBase.p_id || String(perdida.p_id) !== String(perdidaBase.p_id))
+      .map((perdida) => this.construirCoincidencia(perdidaBase, this.adaptarPerdida(perdida), textoBusqueda, 'PERDIDO', perdida));
+
+    const coincidencias = [...coincidenciasHallazgos, ...coincidenciasPerdidas]
       .filter((item) => item.puntaje > 0)
-      .sort((a, b) => b.puntaje - a.puntaje);
+      .sort((a, b) => b.puntaje - a.puntaje)
+      .map((item) => ({
+        reporte: item.reporte,
+        hallazgo: item.hallazgo,
+        perdida: item.perdida,
+        tipoReporte: item.tipoReporte,
+        nivel: item.nivel,
+        criterios: item.criterios,
+      }));
 
     return {
       perdidaBase,
@@ -73,9 +91,17 @@ class BuscadorService {
     return Object.values(perdidaBase).some((valor) => valor !== null && valor !== undefined && String(valor).trim() !== '');
   }
 
-  construirCoincidencia(perdidaBase, hallazgoComparado) {
+  construirCoincidencia(perdidaBase, hallazgoComparado, textoBusqueda = null, tipoReporte = 'HALLADO', reporteOriginal = null) {
     const criterios = [];
     let puntaje = 0;
+    const reporte = reporteOriginal || hallazgoComparado;
+
+    const puntajeTexto = this.calcularPuntajeTexto(textoBusqueda, hallazgoComparado);
+
+    if (puntajeTexto > 0) {
+      puntaje += puntajeTexto;
+      criterios.push('coincide con busqueda');
+    }
 
     if (this.valoresIguales(perdidaBase.p_tipo, hallazgoComparado.h_tipo)) {
       puntaje += 30;
@@ -113,10 +139,28 @@ class BuscadorService {
     }
 
     return {
-      hallazgo: hallazgoComparado,
+      reporte,
+      hallazgo: tipoReporte === 'HALLADO' ? reporte : null,
+      perdida: tipoReporte === 'PERDIDO' ? reporte : null,
+      tipoReporte,
       puntaje,
       nivel: this.obtenerNivel(puntaje),
       criterios,
+    };
+  }
+
+  adaptarPerdida(perdida) {
+    return {
+      h_nom_masc: perdida.p_nom_masc,
+      h_tipo: perdida.p_tipo,
+      h_genero: perdida.p_genero,
+      h_fisica: perdida.p_fisica,
+      h_perso: perdida.p_perso,
+      h_inf_adic: perdida.p_inf_adic,
+      h_dire_inter: perdida.p_dire_inter,
+      h_comuna: perdida.p_comuna,
+      h_region: perdida.p_region,
+      h_fecha: perdida.p_fecha,
     };
   }
 
@@ -141,10 +185,65 @@ class BuscadorService {
   }
 
   obtenerPalabrasClave(texto) {
+    return this.normalizarTexto(texto)
+      .split(/[^a-z0-9]+/)
+      .filter((palabra) => palabra.length >= 4);
+  }
+
+  calcularPuntajeTexto(textoBusqueda, hallazgoComparado) {
+    if (!textoBusqueda) {
+      return 0;
+    }
+
+    const palabrasBusqueda = this.obtenerPalabrasClave(textoBusqueda);
+
+    if (palabrasBusqueda.length === 0) {
+      return 0;
+    }
+
+    const textoHallazgo = [
+      hallazgoComparado.h_nom_masc,
+      this.obtenerTipoTexto(hallazgoComparado.h_tipo),
+      this.obtenerGeneroTexto(hallazgoComparado.h_genero),
+      hallazgoComparado.h_fisica,
+      hallazgoComparado.h_perso,
+      hallazgoComparado.h_inf_adic,
+      hallazgoComparado.h_dire_inter,
+      hallazgoComparado.h_comuna,
+      hallazgoComparado.h_region
+    ].filter(Boolean).join(' ');
+
+    const textoNormalizado = this.normalizarTexto(textoHallazgo);
+    const coincidencias = palabrasBusqueda.filter((palabra) => textoNormalizado.includes(palabra));
+
+    return Math.min(coincidencias.length * 15, 45);
+  }
+
+  normalizarTexto(texto) {
     return String(texto)
       .toLowerCase()
-      .split(/\W+/)
-      .filter((palabra) => palabra.length >= 4);
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  obtenerTipoTexto(tipo) {
+    const tipos = {
+      1: 'perro',
+      2: 'gato',
+      3: 'otro',
+    };
+
+    return tipos[tipo] || '';
+  }
+
+  obtenerGeneroTexto(genero) {
+    const generos = {
+      1: 'macho',
+      2: 'hembra',
+      3: 'no especifica',
+    };
+
+    return generos[genero] || '';
   }
 
   fechasCercanas(fecha1, fecha2) {

@@ -1,0 +1,81 @@
+<ion-header class="encabezado-detalle">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" type="button" (click)="volver()">Volver</ion-button>
+    </ion-buttons>
+
+    <ion-title>Mascota hallada</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="contenido-pagina">
+  <main class="contenedor-pagina contenedor-con-padding contenedor-detalle">
+    <p class="mensaje-estado" *ngIf="cargando">Cargando reporte...</p>
+
+    <section class="estado-listado" *ngIf="!cargando && error">
+      <p>{{ error }}</p>
+    </section>
+
+    <section class="detalle-mascota" *ngIf="!cargando && !error && mascota as mascota">
+      <div class="foto-detalle">
+        <img *ngIf="mascota.imagen; else iconoMascota" [src]="mascota.imagen" alt="Foto de mascota hallada">
+
+        <ng-template #iconoMascota>
+          <ion-icon name="paw-outline"></ion-icon>
+        </ng-template>
+      </div>
+
+      <section class="resumen-detalle">
+        <span class="estado" [ngClass]="mascota.estadoClase">{{ mascota.estado }}</span>
+        <h1>{{ mascota.nombre }}</h1>
+
+        <p>
+          <ion-icon name="paw-outline"></ion-icon>
+          <span>{{ mascota.tipo }} · {{ mascota.genero }} · {{ mascota.edad }}</span>
+        </p>
+
+        <p>
+          <ion-icon name="location-outline"></ion-icon>
+          <span>{{ mascota.comuna }}, {{ mascota.region }}</span>
+        </p>
+
+        <p>
+          <ion-icon name="calendar-outline"></ion-icon>
+          <span>{{ mascota.fecha }}</span>
+        </p>
+      </section>
+
+      <section class="datos-detalle">
+        <article>
+          <span>Dirección o intersección</span>
+          <strong>{{ mascota.direccion }}</strong>
+        </article>
+
+        <article>
+          <span>Características físicas</span>
+          <strong>{{ mascota.fisica }}</strong>
+        </article>
+
+        <article>
+          <span>Personalidad</span>
+          <strong>{{ mascota.personalidad }}</strong>
+        </article>
+
+        <article>
+          <span>Información adicional</span>
+          <strong>{{ mascota.informacionAdicional }}</strong>
+        </article>
+
+        <article>
+          <span>Esterilizado</span>
+          <strong>{{ mascota.esterilizado }}</strong>
+        </article>
+
+        <article>
+          <span>Vacunas al día</span>
+          <strong>{{ mascota.vacunas }}</strong>
+        </article>
+      </section>
+    </section>
+  </main>
+</ion-content>

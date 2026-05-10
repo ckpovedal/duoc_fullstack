@@ -31,7 +31,12 @@ class HallazgosService {
     this.registrarReporteReciente(huella);
 
     try {
-      return await hallazgosRepository.crearHallazgo(data);
+      const hallazgoCreado = await hallazgosRepository.crearHallazgo(data);
+      
+      return {
+        ...hallazgoCreado,
+        tipoReporte: 'HALLADO'
+      }
     } catch (error) {
       this.reportesRecientes.delete(huella);
       throw error;
@@ -39,7 +44,12 @@ class HallazgosService {
   }
 
   async listarHallazgos(filtros) {
-    return await hallazgosRepository.listarHallazgos(filtros);
+    const hallazgos = await hallazgosRepository.listarHallazgos(filtros);
+
+    return hallazgos.map((hallazgo) => ({
+      ...hallazgo,
+      tipoReporte: 'HALLADO'
+    }))
   }
 
   async obtenerHallazgoPorId(id) {
@@ -49,7 +59,10 @@ class HallazgosService {
       throw new AppError('Hallazgo no encontrado', 404);
     }
 
-    return hallazgo;
+    return {
+      ...hallazgo,
+      tipoReporte: 'HALLADO'
+    };
   }
 
   registrarReporteReciente(huella) {

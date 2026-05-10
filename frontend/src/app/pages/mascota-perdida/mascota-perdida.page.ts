@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, locationOutline, pawOutline } from 'ionicons/icons';
+import { calendarOutline, chevronBackOutline, homeOutline, locationOutline, pawOutline, personAddOutline, personOutline } from 'ionicons/icons';
 import { PerdidaService } from '../../services/perdida.service';
 import {
   formatearFechaReporte,
@@ -35,6 +35,7 @@ interface MascotaPerdidaVista {
   imagen: string;
   estado: string;
   estadoClase: string;
+  publicadoPor: string;
 }
 
 @Component({
@@ -54,7 +55,7 @@ export class MascotaPerdidaPage implements OnInit {
     private router: Router,
     private perdidaService: PerdidaService
   ) {
-    addIcons({ calendarOutline, locationOutline, pawOutline });
+    addIcons({ calendarOutline, chevronBackOutline, homeOutline, locationOutline, pawOutline, personOutline });
   }
 
   ngOnInit() {
@@ -68,8 +69,12 @@ export class MascotaPerdidaPage implements OnInit {
     this.cargarPerdida(id);
   }
 
-  volver() {
+  irInicio() {
     this.router.navigate(['/principal']);
+  }
+
+  volver() {
+    this.router.navigate(['/reporte-mascota']);
   }
 
   cargarPerdida(id: string) {
@@ -86,9 +91,12 @@ export class MascotaPerdidaPage implements OnInit {
       .subscribe({
         next: (respuesta) => {
           const data = respuesta?.respuesta || respuesta?.data || respuesta;
+
+          console.log('Detalle pérdida completo:', data);
+          console.log('Campos disponibles:', Object.keys(data));
+
           this.mascota = this.normalizarPerdida(data);
-        },
-        error: (error) => {
+        }, error: (error) => {
           this.error = this.obtenerMensajeError(error);
           this.mascota = null;
         }
@@ -114,7 +122,16 @@ export class MascotaPerdidaPage implements OnInit {
       fecha: formatearFechaReporte(perdida.p_fecha ?? perdida.P_Fecha),
       imagen: obtenerImagenMascota(perdida.p_imagen ?? perdida.P_Imagen),
       estado: obtenerEstadoPerdida(estado),
-      estadoClase: obtenerClaseEstado(estado)
+      estadoClase: obtenerClaseEstado(estado),
+      publicadoPor: obtenerTextoReporte(
+        perdida.usuario_nombre ??
+        perdida.Usuario_Nombre ??
+        perdida.nombre_usuario ??
+        perdida.Nombre_Usuario ??
+        perdida.p_usuario ??
+        perdida.P_Usuario,
+        'Usuario no informado'
+      )
     };
   }
 

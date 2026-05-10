@@ -60,7 +60,8 @@ export class AppComponent {
       '/principal',
       '/buscador',
       '/reporte-mascota',
-      '/hallazgos'
+      '/hallazgos',
+      '/mascota-perdida'
     ];
 
     return rutasConMenu.some((ruta) =>

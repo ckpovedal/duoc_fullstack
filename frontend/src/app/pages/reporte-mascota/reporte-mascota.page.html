@@ -70,7 +70,20 @@
 
       <label class="campo">
         <span>Edad aproximada</span>
-        <input type="number" name="edad" min="0" max="99" [(ngModel)]="formulario.edad">
+        <input
+          type="number"
+          name="edad"
+          [attr.min]="formulario.unidadEdad === 'meses' ? 0 : 1"
+          [attr.max]="formulario.unidadEdad === 'meses' ? 11 : 99"
+          [(ngModel)]="formulario.edad">
+      </label>
+
+      <label class="campo">
+        <span>Unidad edad</span>
+        <select name="unidadEdad" [(ngModel)]="formulario.unidadEdad">
+          <option value="meses">Meses</option>
+          <option value="anios">Años</option>
+        </select>
       </label>
 
       <label class="campo">

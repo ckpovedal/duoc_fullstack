@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { ToastController } from '@ionic/angular';
 import { of } from 'rxjs';
 import { ReporteMascotaPage } from './reporte-mascota.page';
 import { HallazgoService } from '../../services/hallazgo.service';
@@ -28,6 +29,14 @@ describe('ReporteMascotaPage', () => {
           provide: Router,
           useValue: {
             navigate: () => Promise.resolve(true)
+          }
+        },
+        {
+          provide: ToastController,
+          useValue: {
+            create: () => Promise.resolve({
+              present: () => Promise.resolve()
+            })
           }
         }
       ]

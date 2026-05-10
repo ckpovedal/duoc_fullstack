@@ -20,7 +20,7 @@ CREATE TABLE HALLAZGO (
     U_ID            VARCHAR(40) NOT NULL,
     H_Nom_Masc      VARCHAR(30),
     H_Tipo          NUMERIC(1) NOT NULL,
-    H_Edad          VARCHAR(7),
+    H_Edad          NUMERIC(4),
     H_Genero        NUMERIC(1),
     H_Fisica        VARCHAR(100),
     H_Perso         VARCHAR(100),
@@ -43,7 +43,7 @@ COMMENT ON COLUMN HALLAZGO.H_ID IS 'ID único del reporte de hallazgo (autogener
 COMMENT ON COLUMN HALLAZGO.U_ID IS 'ID del usuario que reporta el hallazgo';
 COMMENT ON COLUMN HALLAZGO.H_Nom_Masc IS 'Nombre de la mascota encontrada (opcional)';
 COMMENT ON COLUMN HALLAZGO.H_Tipo IS 'Tipo de animal: 1=Perro, 2=Gato, 3=Otro';
-COMMENT ON COLUMN HALLAZGO.H_Edad IS 'Edad aproximada de la mascota (texto libre, ej: 3 años, Cachorro)';
+COMMENT ON COLUMN HALLAZGO.H_Edad IS 'Edad aproximada de la mascota expresada en meses';
 COMMENT ON COLUMN HALLAZGO.H_Genero IS 'Género: 1=Macho, 2=Hembra, 3=No especifica';
 COMMENT ON COLUMN HALLAZGO.H_Fisica IS 'Descripción física de la mascota';
 COMMENT ON COLUMN HALLAZGO.H_Perso IS 'Descripción de la personalidad de la mascota';
@@ -130,9 +130,9 @@ CREATE INDEX idx_hallazgo_tipo ON HALLAZGO(H_Tipo);
 -- DATOS DE EJEMPLO (OPCIONAL)
 -- =====================================================
 INSERT INTO HALLAZGO (U_ID, H_Nom_Masc, H_Tipo, H_Edad, H_Genero, H_Fisica, H_Perso, H_Dire_Inter, H_Comuna, H_Region, H_Fecha, H_Estado) VALUES
-    ('USR00002', 'Luna', 1, '3 años', 2, 'Pelo blanco, ojos azules', 'Tímida y juguetona', 'Av. Los Alamos con Av. Vitacura', 'Vitacura', 'Metropolitana', '2025-04-10', 1),
-    ('USR00001', NULL, 1, '5 años', 1, 'Pelo negro, orejas grandes', 'Muy activo y amistoso', 'Calle Principal con Providencia', 'Providencia', 'Metropolitana', '2025-04-12', 1),
-    ('USR00003', 'Simba', 2, '2 años', 1, 'Pelaje anaranjado', 'Independiente y curioso', 'Av. Libertador con Las Condes', 'Las Condes', 'Metropolitana', '2025-04-14', 1);
+    ('USR00002', 'Luna', 1, 36, 2, 'Pelo blanco, ojos azules', 'Tímida y juguetona', 'Av. Los Alamos con Av. Vitacura', 'Vitacura', 'Metropolitana', '2025-04-10', 1),
+    ('USR00001', NULL, 1, 60, 1, 'Pelo negro, orejas grandes', 'Muy activo y amistoso', 'Calle Principal con Providencia', 'Providencia', 'Metropolitana', '2025-04-12', 1),
+    ('USR00003', 'Simba', 2, 24, 1, 'Pelaje anaranjado', 'Independiente y curioso', 'Av. Libertador con Las Condes', 'Las Condes', 'Metropolitana', '2025-04-14', 1);
 
 -- =====================================================
 -- CONSULTAS DE VERIFICACIÓN

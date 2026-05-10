@@ -152,6 +152,10 @@ cd frontend
 ionic serve
 ```
 
+--- 02 ---
+y la otra es ejecutando en la raíz (duoc_fullstack) en PowerShell: .\ejecutar-servicios.ps1,
+con lo cual se cargan todos los servicios en ventanas emergentes minimizadas automáticamente.
+
 ## Endpoints
 
 ### API Gateway

@@ -26,6 +26,17 @@ export class LoginPage implements OnInit {
   ngOnInit() {
   }
 
+  ionViewWillEnter() {
+    this.limpiarFormulario();
+  }
+
+  limpiarFormulario() {
+    this.correo = '';
+    this.clave = '';
+    this.error = '';
+    this.cargando = false;
+  }
+
   iniciarSesion() {
     this.error = '';
 

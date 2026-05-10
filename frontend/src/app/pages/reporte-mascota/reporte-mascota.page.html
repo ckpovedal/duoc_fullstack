@@ -1,13 +1,15 @@
 <ion-header class="encabezado">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button fill="clear" class="cancelar">Cancelar</ion-button>
+      <ion-button fill="clear" class="cancelar" type="button" (click)="cancelar()">Cancelar</ion-button>
     </ion-buttons>
 
     <ion-title>Agregar mascota</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button fill="clear" class="guardar">Guardar</ion-button>
+      <ion-button fill="clear" class="guardar" type="button" [disabled]="cargando" (click)="guardarReporte()">
+        {{ cargando ? 'Guardando...' : 'Guardar' }}
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -15,12 +17,18 @@
 <ion-content class="contenido-pagina">
   <main class="contenedor-pagina contenedor-formulario formulario">
     <section class="fotos">
-      <button class="boton-foto" type="button" aria-label="Agregar fotos">
+      <input #inputFoto class="input-foto" type="file" accept="image/*" (change)="seleccionarFoto($event)">
+
+      <button class="boton-foto" type="button" aria-label="Agregar fotos" (click)="inputFoto.click()">
+        <img *ngIf="imagenVistaPrevia" [src]="imagenVistaPrevia" alt="Foto de la mascota">
         <ion-icon name="camera-outline"></ion-icon>
       </button>
 
-      <p>Agregar fotos</p>
+      <p>{{ imagenVistaPrevia ? 'Cambiar foto' : 'Agregar fotos' }}</p>
     </section>
+
+    <p class="mensaje exito" *ngIf="mensaje">{{ mensaje }}</p>
+    <p class="mensaje error" *ngIf="error">{{ error }}</p>
 
     <section class="seccion">
       <h2>¿Qué le pasó a tu amigo?</h2>
@@ -28,7 +36,6 @@
       <div class="opciones">
         <button class="estado" [class.activo]="tipoReporte === 'perdida'" type="button" (click)="seleccionarTipoReporte('perdida')">Perdido</button>
         <button class="estado" [class.activo]="tipoReporte === 'hallazgo'" type="button" (click)="seleccionarTipoReporte('hallazgo')">Encontrado</button>
-        <button class="estado" [class.activo]="tipoReporte === 'adopcion'" type="button" (click)="seleccionarTipoReporte('adopcion')">Adopción</button>
       </div>
     </section>
 
@@ -58,23 +65,84 @@
 
       <label class="campo">
         <span>Nombre mascota</span>
-        <input type="text" name="nombreMascota">
+        <input type="text" name="nombreMascota" [(ngModel)]="formulario.nombreMascota">
       </label>
 
       <label class="campo">
-        <span>Ciudad *</span>
-        <input type="text" name="ciudad">
+        <span>Edad aproximada</span>
+        <input type="number" name="edad" min="0" max="99" [(ngModel)]="formulario.edad">
       </label>
 
       <label class="campo">
-        <span>Raza</span>
-        <input type="text" name="raza">
+        <span>Género</span>
+        <select name="genero" [(ngModel)]="formulario.genero">
+          <option value="1">Macho</option>
+          <option value="2">Hembra</option>
+          <option value="3">No especifica</option>
+        </select>
       </label>
 
       <label class="campo">
-        <span>Descripción</span>
-        <input type="text" name="descripcion">
+        <span>Características físicas</span>
+        <input type="text" name="fisica" [(ngModel)]="formulario.fisica">
       </label>
+
+      <label class="campo">
+        <span>Personalidad</span>
+        <input type="text" name="personalidad" [(ngModel)]="formulario.personalidad">
+      </label>
+
+      <label class="campo">
+        <span>Información adicional</span>
+        <input type="text" name="informacionAdicional" [(ngModel)]="formulario.informacionAdicional">
+      </label>
+
+      <label class="campo">
+        <span>Esterilizado</span>
+        <select name="esterilizado" [(ngModel)]="formulario.esterilizado">
+          <option value="1">Sí</option>
+          <option value="2">No</option>
+          <option value="3">No se sabe</option>
+        </select>
+      </label>
+
+      <label class="campo">
+        <span>Vacunas al día</span>
+        <select name="vacunas" [(ngModel)]="formulario.vacunas">
+          <option value="1">Sí</option>
+          <option value="2">No</option>
+          <option value="3">No se sabe</option>
+        </select>
+      </label>
+
+      <label class="campo">
+        <span>Dirección o intersección</span>
+        <input type="text" name="direccion" [(ngModel)]="formulario.direccion">
+      </label>
+
+      <label class="campo">
+        <span>Comuna *</span>
+        <select name="comuna" [(ngModel)]="formulario.comuna">
+          <option value="">Selecciona una comuna</option>
+          <option *ngFor="let comuna of comunas" [value]="comuna.value">{{ comuna.label }}</option>
+        </select>
+      </label>
+
+      <label class="campo">
+        <span>Región</span>
+        <input type="text" name="region" [(ngModel)]="formulario.region">
+      </label>
+
+      <label class="campo">
+        <span>Fecha</span>
+        <input type="date" name="fecha" [(ngModel)]="formulario.fecha">
+      </label>
+    </section>
+
+    <section class="acciones-formulario">
+      <button class="boton-guardar-formulario" type="button" [disabled]="cargando" (click)="guardarReporte()">
+        {{ cargando ? 'Guardando...' : 'Guardar reporte' }}
+      </button>
     </section>
 
   </main>

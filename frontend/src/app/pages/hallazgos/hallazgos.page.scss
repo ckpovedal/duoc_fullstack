@@ -91,10 +91,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .foto-hallazgo ion-icon {
   font-size: 34px;
+}
+
+.foto-hallazgo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .datos-hallazgo h2 {

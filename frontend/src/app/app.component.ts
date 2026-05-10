@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 
-import { Router, RouterLink, RouterLinkActive} from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive} from '@angular/router';
 import { IonApp, IonIcon, IonRouterOutlet} from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
@@ -31,13 +31,21 @@ export class AppComponent {
     this.titleService.setTitle('Sanos y Salvos');
     addIcons({ addCircle, homeOutline, pawOutline, searchOutline});
     this.validarSesion();
+
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.validarSesion();
+      }
+    });
   }
 
   validarSesion() {
-    this.estaLogueado = !!localStorage.getItem('token');
+    this.estaLogueado = !!localStorage.getItem('usuario_id') || !!localStorage.getItem('usuario') || !!localStorage.getItem('token');
   }
 
   logout() {
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('usuario_id');
     localStorage.removeItem('token');
     this.estaLogueado = false;
     this.router.navigate(['/inicio']);

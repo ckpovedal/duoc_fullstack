@@ -9,7 +9,7 @@
     <div class="navbar-acciones">
       <button *ngIf="!estaLogueado" routerLink="/inicio"> Ingresar </button>
 
-      <button *ngIf="!estaLogueado" routerLink="/registro"> Registro </button>
+      <button *ngIf="!estaLogueado" routerLink="/nuevo-usuario"> Registro </button>
 
       <button *ngIf="estaLogueado" (click)="logout()"> Logout </button>
     </div>

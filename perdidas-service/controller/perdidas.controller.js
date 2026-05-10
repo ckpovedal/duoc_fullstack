@@ -18,7 +18,7 @@ class PerdidasController {
   async crearPerdida(req, res, next) {
     try {
       const data = await perdidasService.crearPerdida(req.body);
-      return this.enviarRespuesta(res, data, 'Perdida creada correctamente', 201);
+      return this.enviarRespuesta(res, data, 'Reporte de perdida de mascota creada correctamente', 201);
     } catch (error) {
       next(error);
     }
@@ -27,7 +27,7 @@ class PerdidasController {
   async listarPerdidas(req, res, next) {
     try {
       const data = await perdidasService.listarPerdidas(req.query);
-      return this.enviarRespuesta(res, data, 'Perdidas obtenidas correctamente');
+      return this.enviarRespuesta(res, data, 'Reporte de Perdidas de mascota obtenidas correctamente');
     } catch (error) {
       next(error);
     }
@@ -36,7 +36,7 @@ class PerdidasController {
   async obtenerPerdidaPorId(req, res, next) {
     try {
       const data = await perdidasService.obtenerPerdidaPorId(req.params.id);
-      return this.enviarRespuesta(res, data, 'Perdida obtenida correctamente');
+      return this.enviarRespuesta(res, data, 'Reporte de Perdida de mascota obtenida correctamente');
     } catch (error) {
       next(error);
     }
@@ -45,7 +45,7 @@ class PerdidasController {
   async actualizarPerdida(req, res, next) {
     try {
       const data = await perdidasService.actualizarPerdida(req.params.id, req.body);
-      return this.enviarRespuesta(res, data, 'Perdida actualizada correctamente');
+      return this.enviarRespuesta(res, data, 'Reporte de Perdida de mascota actualizada correctamente');
     } catch (error) {
       next(error);
     }

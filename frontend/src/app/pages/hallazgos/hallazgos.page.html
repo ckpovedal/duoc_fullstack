@@ -26,18 +26,21 @@
     <section class="lista-hallazgos" *ngIf="!cargando && !error && hallazgos.length > 0">
       <article class="tarjeta-hallazgo" *ngFor="let hallazgo of hallazgos">
         <div class="foto-hallazgo">
-          <ion-icon name="paw-outline"></ion-icon>
+          <img *ngIf="hallazgo.imagen; else iconoHallazgo" [src]="hallazgo.imagen" alt="Foto de la mascota encontrada">
+          <ng-template #iconoHallazgo>
+            <ion-icon name="paw-outline"></ion-icon>
+          </ng-template>
         </div>
 
         <div class="datos-hallazgo">
-          <h2>{{ hallazgo.nombreMascota || hallazgo.nombre || 'Mascota encontrada' }}</h2>
+          <h2>{{ hallazgo.nombre }}</h2>
 
           <p class="ubicacion-hallazgo">
             <ion-icon name="location-outline"></ion-icon>
-            <span>{{ hallazgo.comuna || hallazgo.ciudad || 'Ubicación sin registrar' }}</span>
+            <span>{{ hallazgo.ubicacion }}</span>
           </p>
 
-          <p>{{ hallazgo.descripcion || 'Sin descripción disponible.' }}</p>
+          <p>{{ hallazgo.descripcion }}</p>
         </div>
       </article>
     </section>

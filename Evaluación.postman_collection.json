@@ -283,7 +283,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"u_id\": \"{{usuario_id}}\",\n  \"p_nom_masc\": \"Luna\",\n  \"p_tipo\": 1,\n  \"p_edad\": 3,\n  \"p_genero\": 2,\n  \"p_fisica\": \"Pelo blanco, ojos azules\",\n  \"p_perso\": \"Timida y juguetona\",\n  \"p_inf_adic\": \"Tiene collar rojo\",\n  \"p_esterilizado\": 1,\n  \"p_vacunas\": 1,\n  \"p_dire_inter\": \"Av. Los Alamos con Av. Vitacura\",\n  \"p_comuna\": \"Vitacura\",\n  \"p_region\": \"Metropolitana\",\n  \"p_estado\": 1\n}",
+              "raw": "{\n  \"u_id\": \"{{usuario_id}}\",\n  \"p_nom_masc\": \"Luna\",\n  \"p_tipo\": 1,\n  \"p_edad\": 36,\n  \"p_genero\": 2,\n  \"p_fisica\": \"Pelo blanco, ojos azules\",\n  \"p_perso\": \"Timida y juguetona\",\n  \"p_inf_adic\": \"Tiene collar rojo\",\n  \"p_esterilizado\": 1,\n  \"p_vacunas\": 1,\n  \"p_dire_inter\": \"Av. Los Alamos con Av. Vitacura\",\n  \"p_comuna\": \"Vitacura\",\n  \"p_region\": \"Metropolitana\",\n  \"p_estado\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -353,7 +353,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"u_id\": \"{{usuario_id}}\",\n  \"p_nom_masc\": \"Luna\",\n  \"p_tipo\": 1,\n  \"p_edad\": 4,\n  \"p_genero\": 2,\n  \"p_fisica\": \"Pelo blanco, ojos azules\",\n  \"p_perso\": \"Timida y juguetona\",\n  \"p_inf_adic\": \"Tiene collar rojo actualizado\",\n  \"p_esterilizado\": 1,\n  \"p_vacunas\": 1,\n  \"p_dire_inter\": \"Av. Los Alamos con Av. Vitacura\",\n  \"p_comuna\": \"Vitacura\",\n  \"p_region\": \"Metropolitana\",\n  \"p_estado\": 1\n}",
+              "raw": "{\n  \"u_id\": \"{{usuario_id}}\",\n  \"p_nom_masc\": \"Luna\",\n  \"p_tipo\": 1,\n  \"p_edad\": 48,\n  \"p_genero\": 2,\n  \"p_fisica\": \"Pelo blanco, ojos azules\",\n  \"p_perso\": \"Timida y juguetona\",\n  \"p_inf_adic\": \"Tiene collar rojo actualizado\",\n  \"p_esterilizado\": 1,\n  \"p_vacunas\": 1,\n  \"p_dire_inter\": \"Av. Los Alamos con Av. Vitacura\",\n  \"p_comuna\": \"Vitacura\",\n  \"p_region\": \"Metropolitana\",\n  \"p_estado\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -441,7 +441,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"u_id\": \"{{usuario_id}}\",\n  \"h_nom_masc\": \"Luna\",\n  \"h_tipo\": 1,\n  \"h_edad\": 3,\n  \"h_genero\": 2,\n  \"h_fisica\": \"Pelo blanco, ojos azules\",\n  \"h_perso\": \"Timida y juguetona\",\n  \"h_inf_adic\": \"Vista cerca de una plaza\",\n  \"h_esterilizado\": 1,\n  \"h_vacunas\": 1,\n  \"h_dire_inter\": \"Av. Los Alamos con Av. Vitacura\",\n  \"h_comuna\": \"Vitacura\",\n  \"h_region\": \"Metropolitana\",\n  \"h_estado\": 1\n}",
+              "raw": "{\n  \"u_id\": \"{{usuario_id}}\",\n  \"h_nom_masc\": \"Luna\",\n  \"h_tipo\": 1,\n  \"h_edad\": 36,\n  \"h_genero\": 2,\n  \"h_fisica\": \"Pelo blanco, ojos azules\",\n  \"h_perso\": \"Timida y juguetona\",\n  \"h_inf_adic\": \"Vista cerca de una plaza\",\n  \"h_esterilizado\": 1,\n  \"h_vacunas\": 1,\n  \"h_dire_inter\": \"Av. Los Alamos con Av. Vitacura\",\n  \"h_comuna\": \"Vitacura\",\n  \"h_region\": \"Metropolitana\",\n  \"h_estado\": 1\n}",
               "options": {
                 "raw": {
                   "language": "json"

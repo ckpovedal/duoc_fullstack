@@ -2,7 +2,13 @@ const perdidasRepository = require('../repository/perdidas.repository');
 const usuariosClient = require('../clients/usuarios.client');
 const AppError = require('../utils/AppError');
 
+const VENTANA_DUPLICADO_MS = 5 * 60 * 1000;
+
 class PerdidasService {
+  constructor() {
+    this.reportesRecientes = new Map();
+  }
+
   async crearPerdida(data) {
     const usuarioId = data.u_id || data.U_ID;
     const nombreMascota = data.p_nom_masc || data.P_Nom_Masc;
@@ -25,7 +31,15 @@ class PerdidasService {
       throw new AppError('El usuario indicado no existe', 404);
     }
 
-    return await perdidasRepository.crearPerdida(data);
+    const huella = this.construirHuellaPerdida(data);
+    this.registrarReporteReciente(huella);
+
+    try {
+      return await perdidasRepository.crearPerdida(data);
+    } catch (error) {
+      this.reportesRecientes.delete(huella);
+      throw error;
+    }
   }
 
   async listarPerdidas(filtros) {
@@ -77,6 +91,54 @@ class PerdidasService {
     }
 
     return await perdidasRepository.cambiarEstadoPerdida(id, estado);
+  }
+
+  registrarReporteReciente(huella) {
+    const ahora = Date.now();
+    this.limpiarReportesRecientes(ahora);
+
+    const fechaRegistro = this.reportesRecientes.get(huella);
+
+    if (fechaRegistro && ahora - fechaRegistro < VENTANA_DUPLICADO_MS) {
+      throw new AppError('Ya enviaste un reporte de perdida muy similar hace poco. Intenta nuevamente en unos minutos', 409);
+    }
+
+    this.reportesRecientes.set(huella, ahora);
+  }
+
+  limpiarReportesRecientes(ahora) {
+    for (const [huella, fechaRegistro] of this.reportesRecientes.entries()) {
+      if (ahora - fechaRegistro >= VENTANA_DUPLICADO_MS) {
+        this.reportesRecientes.delete(huella);
+      }
+    }
+  }
+
+  construirHuellaPerdida(data) {
+    return JSON.stringify([
+      this.normalizarValor(data.u_id || data.U_ID),
+      this.normalizarValor(data.p_nom_masc || data.P_Nom_Masc),
+      this.normalizarValor(data.p_tipo ?? data.P_Tipo),
+      this.normalizarValor(data.p_edad ?? data.P_Edad),
+      this.normalizarValor(data.p_genero ?? data.P_Genero),
+      this.normalizarValor(data.p_fisica || data.P_Fisica),
+      this.normalizarValor(data.p_perso || data.P_Perso),
+      this.normalizarValor(data.p_inf_adic || data.P_Inf_Adic),
+      this.normalizarValor(data.p_esterilizado ?? data.P_Esterilizado),
+      this.normalizarValor(data.p_vacunas ?? data.P_Vacunas),
+      this.normalizarValor(data.p_dire_inter || data.P_Dire_Inter),
+      this.normalizarValor(data.p_comuna || data.P_Comuna),
+      this.normalizarValor(data.p_region || data.P_Region),
+      this.normalizarValor(data.p_fecha || data.P_Fecha)
+    ]);
+  }
+
+  normalizarValor(valor) {
+    if (valor === undefined || valor === null) {
+      return '';
+    }
+
+    return String(valor).trim().toLowerCase().replace(/\s+/g, ' ');
   }
 }
 

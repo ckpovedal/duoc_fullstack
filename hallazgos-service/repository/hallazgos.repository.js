@@ -32,7 +32,7 @@ class HallazgosRepository {
       data.u_id || data.U_ID,
       data.h_nom_masc || data.H_Nom_Masc || null,
       data.h_tipo ?? data.H_Tipo,
-      data.h_edad || data.H_Edad || null,
+      data.h_edad ?? data.H_Edad ?? null,
       data.h_genero ?? data.H_Genero ?? null,
       data.h_fisica || data.H_Fisica || null,
       data.h_perso || data.H_Perso || null,

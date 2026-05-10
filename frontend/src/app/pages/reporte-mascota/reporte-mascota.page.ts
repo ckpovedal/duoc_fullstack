@@ -152,6 +152,10 @@ export class ReporteMascotaPage implements OnInit {
       return;
     }
 
+    console.log('=== DATOS DEL REPORTE ===');
+    console.log('Usuario ID obtenido:', usuarioId);
+    console.log('Tipo de usuario ID:', typeof usuarioId);
+
     if (this.tipoReporte === 'perdida' && !this.formulario.nombreMascota.trim()) {
       this.error = 'El nombre de la mascota es obligatorio para reportar una perdida';
       this.mostrarMensaje('error', this.error);
@@ -173,6 +177,12 @@ export class ReporteMascotaPage implements OnInit {
     }
 
     this.cargando = true;
+
+    const payload = this.tipoReporte === 'hallazgo' 
+      ? this.crearPayloadHallazgo(usuarioId) 
+      : this.crearPayloadPerdida(usuarioId);
+  
+    console.log('Payload a enviar:', JSON.stringify(payload, null, 2));
 
     const servicio = this.tipoReporte === 'hallazgo'
       ? this.hallazgoService.crearHallazgo(this.crearPayloadHallazgo(usuarioId))
@@ -196,6 +206,9 @@ export class ReporteMascotaPage implements OnInit {
           }, 1200);
         },
         error: (error) => {
+          console.error('Error completo:', error);
+          console.error('Error status:', error.status);
+          console.error('Error body:', error.error);
           this.error = this.obtenerMensajeError(error);
           this.mostrarMensaje('error', this.error);
         }

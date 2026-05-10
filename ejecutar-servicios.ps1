@@ -1,4 +1,7 @@
 # Iniciar API Gateway
+$logsPath = Join-Path $PSScriptRoot "logs"
+New-Item -ItemType Directory -Force -Path $logsPath | Out-Null
+
 Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\api-gateway'; npm run dev"
 
 Start-Sleep -Seconds 2
@@ -27,3 +30,4 @@ Start-Sleep -Seconds 2
 Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\frontend'; ionic serve"
 
 Write-Host "Todos los servicios han sido iniciados!" -ForegroundColor Green
+Write-Host "Logs disponibles en: $logsPath" -ForegroundColor Cyan

@@ -1,4 +1,5 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const { logger, limpiarRuta } = require('../middleware/logger');
 
 function crearProxyServicio({ target, pathRewrite }) {
   return createProxyMiddleware({
@@ -7,6 +8,10 @@ function crearProxyServicio({ target, pathRewrite }) {
     pathRewrite,
     on: {
       proxyReq(proxyReq, req) {
+        if (req.id) {
+          proxyReq.setHeader('X-Request-Id', req.id);
+        }
+
         if (!req.body || !Object.keys(req.body).length) {
           return;
         }
@@ -18,6 +23,16 @@ function crearProxyServicio({ target, pathRewrite }) {
         proxyReq.write(bodyData);
       },
       error(error, req, res) {
+        logger.error({
+          error: {
+            nombre: error.name,
+            mensaje: error.message
+          },
+          target,
+          metodo: req.method,
+          ruta: limpiarRuta(req.originalUrl)
+        }, 'No fue posible conectar con el servicio');
+
         if (res.headersSent) {
           return;
         }

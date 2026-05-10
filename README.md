@@ -106,6 +106,8 @@ Usar `.env.example` como referencia para crear el archivo local.
 
 Las variables de base de datos estan separadas por microservicio, por ejemplo `USUARIO_DB_NAME`, `PERDIDAS_DB_NAME` y `HALLAZGOS_DB_NAME`.
 
+La variable `LOG_LEVEL` controla el detalle de logs. Por defecto debe quedar en `info`. Para depurar servicios localmente se puede usar `debug`.
+
 ## Ejecucion
 
 Abrir una terminal por cada servicio en este orden:
@@ -154,7 +156,40 @@ ionic serve
 
 --- 02 ---
 y la otra es ejecutando en la raíz (duoc_fullstack) en PowerShell: .\ejecutar-servicios.ps1,
-con lo cual se cargan todos los servicios en ventanas emergentes minimizadas automáticamente.
+con lo cual se cargan todos los servicios en ventanas emergentes minimizadas automaticamente.
+
+Los logs locales quedan disponibles en la carpeta `logs/`.
+
+## Logs
+
+El proyecto tiene una forma oficial de revisar logs para evitar `console.log` temporales con datos sensibles.
+
+Servicios Node.js:
+
+- `api-gateway`, `perdidas-service`, `hallazgos-service` y `buscador-service` usan `pino` y `pino-http`.
+- Se registran metodo, ruta, estado HTTP, duracion y errores.
+- Los logs se escriben en consola y en archivos dentro de `logs/`.
+- Con `LOG_LEVEL=debug` aparecen logs resumidos de negocio, sin payloads completos.
+
+`usuario-service`:
+
+- Usa el logging nativo de Spring Boot.
+- Los logs de aplicacion quedan en `logs/usuario-service.log`.
+- Los access logs HTTP quedan como `logs/usuario-service-access*.log`.
+
+Frontend Ionic:
+
+- Usa `LoggerService` para logs controlados.
+- Usa un interceptor HTTP para registrar llamadas al backend sin imprimir bodies.
+- Usa un handler global para errores de Angular.
+
+Reglas del equipo:
+
+- No usar `console.log` para depurar.
+- No registrar payloads completos.
+- No registrar imagenes en base64 o hexadecimal.
+- No registrar contrasenas, tokens, headers de autorizacion, direcciones completas ni datos personales completos.
+- Para ver el detalle exacto de una request del frontend, usar la pestana Network del navegador.
 
 ## Endpoints
 

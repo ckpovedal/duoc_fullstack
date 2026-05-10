@@ -34,6 +34,13 @@
             "prefix": "app",
             "style": "camelCase"
           }
+        ],
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "CallExpression[callee.object.name='console'][callee.property.name='log']",
+            "message": "Usar LoggerService en lugar de console.log"
+          }
         ]
       }
     },

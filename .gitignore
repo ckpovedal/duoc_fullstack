@@ -1,5 +1,6 @@
 ## envrioments
 .env
+logs/
 Información Railway.txt
 .vscode/*
 !.vscode/settings.json

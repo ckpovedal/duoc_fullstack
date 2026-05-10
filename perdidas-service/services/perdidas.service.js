@@ -1,6 +1,7 @@
 const perdidasRepository = require('../repository/perdidas.repository');
 const usuariosClient = require('../clients/usuarios.client');
 const AppError = require('../utils/AppError');
+const { logger } = require('../middleware/logger');
 
 const VENTANA_DUPLICADO_MS = 5 * 60 * 1000;
 
@@ -30,6 +31,13 @@ class PerdidasService {
     if (!usuarioExiste) {
       throw new AppError('El usuario indicado no existe', 404);
     }
+
+    logger.debug({
+      usuario: this.ocultarUsuarioId(usuarioId),
+      tipo,
+      tieneImagen: Boolean(data.p_imagen || data.P_Imagen),
+      tieneComuna: Boolean(data.p_comuna || data.P_Comuna)
+    }, 'Creando reporte de perdida');
 
     const huella = this.construirHuellaPerdida(data);
     this.registrarReporteReciente(huella);
@@ -162,6 +170,16 @@ class PerdidasService {
     }
 
     return String(valor).trim().toLowerCase().replace(/\s+/g, ' ');
+  }
+
+  ocultarUsuarioId(usuarioId) {
+    const valor = String(usuarioId || '');
+
+    if (valor.length <= 5) {
+      return valor ? '[OCULTO]' : '';
+    }
+
+    return `${valor.slice(0, 3)}***${valor.slice(-2)}`;
   }
 }
 

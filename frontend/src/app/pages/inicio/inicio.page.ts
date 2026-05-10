@@ -1,10 +1,11 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { pawOutline } from 'ionicons/icons';
+import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'app-inicio',
@@ -15,9 +16,12 @@ import { pawOutline } from 'ionicons/icons';
 })
 export class InicioPage {
 
+  private router = inject(Router);
+  private logger = inject(LoggerService);
+
   @ViewChild('backgroundVideo') videoElement!: ElementRef<HTMLVideoElement>;
 
-  constructor(private router: Router) {
+  constructor() {
     addIcons({ pawOutline });
   }
 
@@ -35,8 +39,11 @@ export class InicioPage {
 
       video.muted = true;
 
-      video.play().catch(err => {
-        console.warn('La reproducción automática fue bloqueada. Intentando de nuevo...', err);
+      video.play().catch((err: unknown) => {
+        this.logger.warn('inicio', {
+          mensaje: 'La reproduccion automatica fue bloqueada',
+          error: err
+        });
         setTimeout(() => video.play(), 500);
       });
     }

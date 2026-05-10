@@ -1,9 +1,12 @@
 const perdidasClient = require('../clients/perdidas.clients');
 const hallazgosClient = require('../clients/hallazgos.clients');
 const AppError = require('../utils/AppError');
+const { logger } = require('../middleware/logger');
 
 class BuscadorService {
   async buscarCoincidencias(perdidaId) {
+    logger.debug({ perdidaId }, 'Buscando coincidencias por perdida');
+
     const perdidaBase = await perdidasClient.obtenerPerdidaPorId(perdidaId);
 
     if (!perdidaBase) {
@@ -20,6 +23,11 @@ class BuscadorService {
     if (!this.tieneParametrosBusqueda(perdidaBase) && !textoBusqueda) {
       throw new AppError('Debe enviar al menos un parametro de busqueda', 400);
     }
+
+    logger.debug({
+      tieneTexto: Boolean(textoBusqueda),
+      filtros: Object.keys(parametros || {})
+    }, 'Buscando coincidencias por parametros');
 
     return this.buscarCoincidenciasDesdePerdida(perdidaBase, textoBusqueda);
   }

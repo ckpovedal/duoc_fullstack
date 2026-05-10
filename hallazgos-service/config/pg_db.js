@@ -4,6 +4,7 @@ require('dotenv').config({
 });
 
 const { Pool } = require('pg');
+const { logger } = require('../middleware/logger');
 
 const pool = new Pool({
   host: process.env.HALLAZGOS_DB_HOST,
@@ -17,7 +18,13 @@ const pool = new Pool({
 });
 
 pool.on('error', (err) => {
-  console.error('Error inesperado en el pool', err);
+  logger.fatal({
+    error: {
+      nombre: err.name,
+      mensaje: err.message,
+      stack: (process.env.LOG_LEVEL || '').toLowerCase() === 'debug' ? err.stack : undefined
+    }
+  }, 'Error inesperado en el pool');
   process.exit(-1);
 });
 

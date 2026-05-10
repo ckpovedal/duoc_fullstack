@@ -1,25 +1,62 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { IonApp, IonIcon, IonRouterOutlet } from '@ionic/angular/standalone';
+
+import { Router, RouterLink, RouterLinkActive} from '@angular/router';
+import { IonApp, IonIcon, IonRouterOutlet} from '@ionic/angular/standalone';
+
 import { addIcons } from 'ionicons';
-import { addCircle, homeOutline, pawOutline, searchOutline } from 'ionicons/icons';
+import { addCircle, homeOutline, pawOutline, searchOutline} from 'ionicons/icons';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
-  imports: [IonApp, IonIcon, IonRouterOutlet, CommonModule, RouterLink, RouterLinkActive],
+  standalone: true,
+  imports: [
+    IonApp,
+    IonIcon,
+    IonRouterOutlet,
+    CommonModule,
+    RouterLink,
+    RouterLinkActive
+  ],
 })
+
 export class AppComponent {
-  constructor(private titleService: Title, private router: Router) {
+
+  estaLogueado = false;
+
+  constructor( private titleService: Title, private router: Router) {
     this.titleService.setTitle('Sanos y Salvos');
-    addIcons({ addCircle, homeOutline, pawOutline, searchOutline });
+    addIcons({ addCircle, homeOutline, pawOutline, searchOutline});
+    this.validarSesion();
   }
 
-  mostrarMenuMovil() {
-    const rutasConMenu = ['/principal', '/buscador', '/reporte-mascota', '/hallazgos'];
-    return rutasConMenu.some((ruta) => this.router.url.startsWith(ruta));
+  validarSesion() {
+    this.estaLogueado = !!localStorage.getItem('token');
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.estaLogueado = false;
+    this.router.navigate(['/inicio']);
+  }
+
+  mostrarNavbar(): boolean {
+    return true;
+  }
+
+  mostrarMenuMovil(): boolean {
+    const rutasConMenu = [
+      '/principal',
+      '/buscador',
+      '/reporte-mascota',
+      '/hallazgos'
+    ];
+
+    return rutasConMenu.some((ruta) =>
+      this.router.url.startsWith(ruta)
+    );
   }
 }

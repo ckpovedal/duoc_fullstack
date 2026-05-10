@@ -1,4 +1,20 @@
 <ion-app [class.con-menu-movil]="mostrarMenuMovil()">
+
+  <header class="navbar-global" *ngIf="mostrarNavbar()">
+    <div class="navbar-logo" routerLink="/principal">
+      <img src="assets/img/SanosySalvos.png" alt="Logo">
+      <span>Sanos y Salvos</span>
+    </div>
+
+    <div class="navbar-acciones">
+      <button *ngIf="!estaLogueado" routerLink="/inicio"> Ingresar </button>
+
+      <button *ngIf="!estaLogueado" routerLink="/registro"> Registro </button>
+
+      <button *ngIf="estaLogueado" (click)="logout()"> Logout </button>
+    </div>
+  </header>
+
   <ion-router-outlet></ion-router-outlet>
 
   <nav class="menu-movil" *ngIf="mostrarMenuMovil()" aria-label="Navegación principal">
@@ -16,11 +32,13 @@
       <span class="icono-agregar">
         <ion-icon name="add-circle"></ion-icon>
       </span>
+
       <span>Agregar</span>
     </a>
 
     <a class="item-menu" routerLink="/hallazgos" routerLinkActive="activo">
       <ion-icon name="paw-outline"></ion-icon>
+
       <span>Hallazgos</span>
     </a>
   </nav>

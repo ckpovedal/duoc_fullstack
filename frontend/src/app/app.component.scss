@@ -1,3 +1,56 @@
+.navbar-global {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 64px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--color-texto);
+}
+
+.navbar-logo img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.navbar-logo span {
+  font-size: 18px;
+}
+
+.navbar-acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-acciones button {
+  border: none;
+  background: transparent;
+  color: var(--color-acento-fuerte);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.navbar-acciones button:hover {
+  opacity: 0.8;
+}
+
 .menu-movil {
   position: fixed;
   left: 0;
@@ -49,12 +102,21 @@
   font-size: 28px;
 }
 
+.con-menu-movil ion-router-outlet {
+  padding-bottom: 68px;
+}
+
 @media (min-width: 768px) {
+
   .menu-movil {
     left: 50%;
     right: auto;
     width: min(var(--ancho-app), 100%);
     transform: translateX(-50%);
     border-radius: var(--radio-panel) var(--radio-panel) 0 0;
+  }
+
+  .navbar-global {
+    padding: 0 32px;
   }
 }

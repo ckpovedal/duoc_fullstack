@@ -1,10 +1,7 @@
-import { Component, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, ViewChild, ElementRef, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { pawOutline } from 'ionicons/icons';
+import { IonContent } from '@ionic/angular/standalone';
 import { LoggerService } from '../../services/logger.service';
 
 @Component({
@@ -12,25 +9,30 @@ import { LoggerService } from '../../services/logger.service';
   templateUrl: './inicio.page.html',
   styleUrls: ['./inicio.page.scss'],
   standalone: true,
-  imports: [IonButton, IonContent, IonIcon, CommonModule, FormsModule]
+  imports: [IonContent, CommonModule]
 })
-export class InicioPage {
+export class InicioPage implements OnDestroy {
 
   private router = inject(Router);
   private logger = inject(LoggerService);
+  private redireccionTimer?: ReturnType<typeof setTimeout>;
 
   @ViewChild('backgroundVideo') videoElement!: ElementRef<HTMLVideoElement>;
 
-  constructor() {
-    addIcons({ pawOutline });
-  }
-
   ionViewDidEnter() {
     this.reproducirVideo();
+    this.redireccionTimer = setTimeout(() => {
+      this.router.navigateByUrl('/principal', { replaceUrl: true });
+    }, 3000);
   }
 
   ionViewWillLeave() {
     this.pausarVideo();
+    this.limpiarRedireccion();
+  }
+
+  ngOnDestroy() {
+    this.limpiarRedireccion();
   }
 
   private reproducirVideo() {
@@ -55,7 +57,10 @@ export class InicioPage {
     }
   }
 
-  irALogin() {
-    this.router.navigate(['/login']);
+  private limpiarRedireccion() {
+    if (this.redireccionTimer) {
+      clearTimeout(this.redireccionTimer);
+      this.redireccionTimer = undefined;
+    }
   }
 }

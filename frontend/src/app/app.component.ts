@@ -52,7 +52,7 @@ export class AppComponent {
   }
 
   mostrarNavbar(): boolean {
-    return true;
+    return this.router.url !== '/' && !this.router.url.startsWith('/inicio');
   }
 
   mostrarMenuMovil(): boolean {

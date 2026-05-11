@@ -6,6 +6,7 @@ class HallazgosController {
     this.crearHallazgo = this.crearHallazgo.bind(this);
     this.listarHallazgos = this.listarHallazgos.bind(this);
     this.obtenerHallazgoPorId = this.obtenerHallazgoPorId.bind(this);
+    this.actualizarHallazgo = this.actualizarHallazgo.bind(this);
   }
 
   enviarRespuesta(res, data, mensaje, codigo = 200) {
@@ -15,7 +16,7 @@ class HallazgosController {
 
   async crearHallazgo(req, res, next) {
     try {
-      const data = await hallazgosService.crearHallazgo(req.body);
+      const data = await hallazgosService.crearHallazgo(req.body, req.headers['x-usuario-id']);
       return this.enviarRespuesta(res, data, 'Hallazgo creado correctamente', 201);
     } catch (error) {
       next(error);
@@ -35,6 +36,15 @@ class HallazgosController {
     try {
       const data = await hallazgosService.obtenerHallazgoPorId(req.params.id);
       return this.enviarRespuesta(res, data, 'Hallazgo obtenido correctamente');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async actualizarHallazgo(req, res, next) {
+    try {
+      const data = await hallazgosService.actualizarHallazgo(req.params.id, req.body, req.headers['x-usuario-id']);
+      return this.enviarRespuesta(res, data, 'Hallazgo actualizado correctamente');
     } catch (error) {
       next(error);
     }

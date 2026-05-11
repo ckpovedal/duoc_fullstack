@@ -78,10 +78,21 @@ export class BuscadorPage implements OnInit {
       )
       .subscribe({
         next: (respuesta) => {
-          const data = respuesta?.respuesta || respuesta?.data || respuesta;
-          const coincidencias = data?.coincidencias || [];
-          this.coincidencias = coincidencias.map((item: any) => this.normalizarCoincidencia(item));
+
+          const coincidencias =
+            respuesta?.data?.coincidencias ||
+            respuesta?.data?.items ||
+            respuesta?.respuesta?.coincidencias ||
+            respuesta?.respuesta?.items ||
+            respuesta?.coincidencias ||
+            respuesta?.items ||
+            [];
+
+          this.coincidencias = Array.isArray(coincidencias)
+            ? coincidencias.map((item: any) => this.normalizarCoincidencia(item))
+            : [];
         },
+
         error: (error) => {
           this.error = this.obtenerMensajeError(error);
           this.coincidencias = [];
@@ -103,7 +114,7 @@ export class BuscadorPage implements OnInit {
 
   private normalizarCoincidencia(item: any): CoincidenciaVista {
     const tipoReporte = String(item.tipoReporte ?? (item.perdida ? 'PERDIDO' : 'HALLADO')).toUpperCase();
-    const reporte = item.reporte || item.hallazgo || item.perdida || {};
+    const reporte = item.reporte || item.hallazgo || item.perdida || item || {};
     const esPerdido = tipoReporte === 'PERDIDO';
     const id = esPerdido
       ? reporte.p_id ?? reporte.P_ID

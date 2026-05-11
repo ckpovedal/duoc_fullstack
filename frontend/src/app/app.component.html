@@ -11,6 +11,8 @@
 
       <button *ngIf="!estaLogueado" routerLink="/nuevo-usuario"> Registro </button>
 
+      <button *ngIf="estaLogueado" routerLink="/mi-perfil"> Mi perfil </button>
+
       <button *ngIf="estaLogueado" (click)="logout()"> Logout </button>
     </div>
   </header>
@@ -28,7 +30,7 @@
       <span>Buscar</span>
     </a>
 
-    <a class="item-menu item-agregar" routerLink="/reporte-mascota" routerLinkActive="activo">
+    <a class="item-menu item-agregar" *ngIf="estaLogueado" routerLink="/reporte-mascota" routerLinkActive="activo">
       <span class="icono-agregar">
         <ion-icon name="add-circle"></ion-icon>
       </span>
@@ -36,10 +38,16 @@
       <span>Agregar</span>
     </a>
 
-    <a class="item-menu" routerLink="/hallazgos" routerLinkActive="activo">
+    <a class="item-menu" routerLink="/mascotas-halladas" routerLinkActive="activo">
       <ion-icon name="paw-outline"></ion-icon>
 
-      <span>Hallazgos</span>
+      <span>Halladas</span>
+    </a>
+
+    <a class="item-menu" *ngIf="estaLogueado" routerLink="/mi-perfil" routerLinkActive="activo">
+      <ion-icon name="person-circle-outline"></ion-icon>
+
+      <span>Perfil</span>
     </a>
   </nav>
 </ion-app>

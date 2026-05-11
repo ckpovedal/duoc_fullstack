@@ -10,13 +10,13 @@ class PerdidasService {
     this.reportesRecientes = new Map();
   }
 
-  async crearPerdida(data) {
-    const usuarioId = data.u_id || data.U_ID;
+  async crearPerdida(data, usuarioAutenticadoId) {
+    const usuarioId = usuarioAutenticadoId;
     const nombreMascota = data.p_nom_masc || data.P_Nom_Masc;
     const tipo = data.p_tipo ?? data.P_Tipo;
 
     if (!usuarioId) {
-      throw new AppError('u_id es obligatorio', 400);
+      throw new AppError('Debes iniciar sesion', 401);
     }
 
     if (!nombreMascota) {
@@ -32,6 +32,11 @@ class PerdidasService {
       throw new AppError('El usuario indicado no existe', 404);
     }
 
+    const datosReporte = {
+      ...data,
+      u_id: usuarioId,
+    };
+
     logger.debug({
       usuario: this.ocultarUsuarioId(usuarioId),
       tipo,
@@ -39,11 +44,11 @@ class PerdidasService {
       tieneComuna: Boolean(data.p_comuna || data.P_Comuna)
     }, 'Creando reporte de perdida');
 
-    const huella = this.construirHuellaPerdida(data);
+    const huella = this.construirHuellaPerdida(datosReporte);
     this.registrarReporteReciente(huella);
 
     try {
-      const perdidaCreada = await perdidasRepository.crearPerdida(data);
+      const perdidaCreada = await perdidasRepository.crearPerdida(datosReporte);
 
       return {
         ...perdidaCreada,
@@ -91,16 +96,25 @@ class PerdidasService {
     };
   }
 
-  async actualizarPerdida(id, data) {
+  async actualizarPerdida(id, data, usuarioAutenticadoId) {
+    if (!usuarioAutenticadoId) {
+      throw new AppError('Debes iniciar sesion', 401);
+    }
+
     const perdidaActual = await perdidasRepository.obtenerPerdidaPorId(id);
 
     if (!perdidaActual) {
       throw new AppError('Perdida no encontrada', 404);
     }
 
+    if (String(perdidaActual.u_id || perdidaActual.U_ID) !== String(usuarioAutenticadoId)) {
+      throw new AppError('No puedes editar un reporte de otro usuario', 403);
+    }
+
     const datosActualizados = {
       ...perdidaActual,
       ...data,
+      u_id: usuarioAutenticadoId,
     };
 
     const usuarioId = datosActualizados.u_id || datosActualizados.U_ID;
@@ -118,7 +132,11 @@ class PerdidasService {
     };
   }
 
-  async cambiarEstado(id, data) {
+  async cambiarEstado(id, data, usuarioAutenticadoId) {
+    if (!usuarioAutenticadoId) {
+      throw new AppError('Debes iniciar sesion', 401);
+    }
+
     const estado = data.p_estado ?? data.P_Estado ?? data.estado ?? data.nuevoEstado;
 
     if (estado === undefined || estado === null) {
@@ -128,6 +146,10 @@ class PerdidasService {
     const perdida = await perdidasRepository.obtenerPerdidaPorId(id);
     if (!perdida) {
       throw new AppError('Perdida no encontrada', 404);
+    }
+
+    if (String(perdida.u_id || perdida.U_ID) !== String(usuarioAutenticadoId)) {
+      throw new AppError('No puedes cambiar el estado de un reporte de otro usuario', 403);
     }
     
     const resultado = await perdidasRepository.cambiarEstadoPerdida(id, estado);

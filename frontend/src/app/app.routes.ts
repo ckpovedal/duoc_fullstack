@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -27,9 +28,14 @@ export const routes: Routes = [
       import('./pages/buscador/buscador.page').then(m => m.BuscadorPage)
   },
   {
-    path: 'hallazgos',
+    path: 'mascotas-halladas',
     loadComponent: () =>
       import('./pages/hallazgos/hallazgos.page').then(m => m.HallazgosPage)
+  },
+  {
+    path: 'hallazgos',
+    redirectTo: 'mascotas-halladas',
+    pathMatch: 'full'
   },
   {
     path: 'mascota-perdida/:id',
@@ -50,6 +56,7 @@ export const routes: Routes = [
   },
   {
     path: 'reporte-mascota',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/reporte-mascota/reporte-mascota.page')
         .then(m => m.ReporteMascotaPage)
@@ -59,5 +66,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/nuevo-usuario/nuevo-usuario.page')
         .then(m => m.NuevoUsuarioPage)
+  },
+  {
+    path: 'mi-perfil',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/mi-perfil/mi-perfil.page')
+        .then(m => m.MiPerfilPage)
   },
 ];

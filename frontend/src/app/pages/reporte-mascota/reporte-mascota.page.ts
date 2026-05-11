@@ -187,7 +187,7 @@ export class ReporteMascotaPage implements OnInit {
       )
       .subscribe({
         next: (respuesta) => {
-          const rutaDestino = this.tipoReporte === 'hallazgo' ? '/hallazgos' : '/principal';
+          const rutaDestino = this.tipoReporte === 'hallazgo' ? '/mascotas-halladas' : '/principal';
           this.mensaje = respuesta?.mensaje || 'Reporte guardado correctamente';
           this.mostrarMensaje('exito', this.mensaje);
           this.limpiarFormulario();

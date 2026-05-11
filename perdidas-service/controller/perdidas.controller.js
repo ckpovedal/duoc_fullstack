@@ -17,7 +17,7 @@ class PerdidasController {
 
   async crearPerdida(req, res, next) {
     try {
-      const data = await perdidasService.crearPerdida(req.body);
+      const data = await perdidasService.crearPerdida(req.body, req.headers['x-usuario-id']);
       return this.enviarRespuesta(res, data, 'Reporte de perdida de mascota creada correctamente', 201);
     } catch (error) {
       next(error);
@@ -44,7 +44,7 @@ class PerdidasController {
 
   async actualizarPerdida(req, res, next) {
     try {
-      const data = await perdidasService.actualizarPerdida(req.params.id, req.body);
+      const data = await perdidasService.actualizarPerdida(req.params.id, req.body, req.headers['x-usuario-id']);
       return this.enviarRespuesta(res, data, 'Reporte de Perdida de mascota actualizada correctamente');
     } catch (error) {
       next(error);
@@ -53,7 +53,7 @@ class PerdidasController {
 
   async cambiarEstado(req, res, next) {
     try {
-      const data = await perdidasService.cambiarEstado(req.params.id, req.body);
+      const data = await perdidasService.cambiarEstado(req.params.id, req.body, req.headers['x-usuario-id']);
       return this.enviarRespuesta(res, data, 'Estado actualizado correctamente');
     } catch (error) {
       next(error);

@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, locationOutline, pawOutline } from 'ionicons/icons';
+import { calendarOutline, chevronBackOutline, locationOutline, pawOutline, personOutline } from 'ionicons/icons';
 import { HallazgoService } from '../../services/hallazgo.service';
 import {
   formatearFechaReporte,
@@ -35,6 +35,7 @@ interface MascotaHalladaVista {
   imagen: string;
   estado: string;
   estadoClase: string;
+  publicadoPor: string;
 }
 
 @Component({
@@ -54,7 +55,7 @@ export class MascotaHalladaPage implements OnInit {
     private router: Router,
     private hallazgoService: HallazgoService
   ) {
-    addIcons({ calendarOutline, locationOutline, pawOutline });
+    addIcons({ calendarOutline, chevronBackOutline, locationOutline, pawOutline, personOutline });
   }
 
   ngOnInit() {
@@ -70,6 +71,10 @@ export class MascotaHalladaPage implements OnInit {
 
   volver() {
     this.router.navigate(['/buscador']);
+  }
+
+  irInicio() {
+    this.router.navigate(['/principal']);
   }
 
   cargarHallazgo(id: string) {
@@ -114,7 +119,16 @@ export class MascotaHalladaPage implements OnInit {
       fecha: formatearFechaReporte(hallazgo.h_fecha ?? hallazgo.H_Fecha),
       imagen: obtenerImagenMascota(hallazgo.h_imagen ?? hallazgo.H_Imagen),
       estado: obtenerEstadoHallazgo(estado),
-      estadoClase: obtenerClaseEstado(estado)
+      estadoClase: obtenerClaseEstado(estado),
+      publicadoPor: obtenerTextoReporte(
+        hallazgo.usuario_nombre ??
+        hallazgo.u_nombre ??
+        hallazgo.nombre ??
+        hallazgo.Nombre ??
+        hallazgo.usuario_id ??
+        hallazgo.u_id,
+        'Usuario no informado'
+      )
     };
   }
 

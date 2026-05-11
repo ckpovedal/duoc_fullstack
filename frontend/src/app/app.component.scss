@@ -58,7 +58,7 @@
   bottom: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   height: 68px;
   background: var(--color-superficie);
   border-top: 1px solid var(--color-borde);

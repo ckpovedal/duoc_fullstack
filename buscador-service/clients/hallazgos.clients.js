@@ -12,7 +12,13 @@ class HallazgosClient {
       }
 
       const body = await this.obtenerBody(response);
-      return body.respuesta || body.data || [];
+      const hallazgos = body.respuesta || body.data || body;
+
+      if (Array.isArray(hallazgos)) {
+        return hallazgos;
+      }
+
+      return hallazgos.items || [];
     } catch (error) {
       if (error instanceof AppError) {
         throw error;

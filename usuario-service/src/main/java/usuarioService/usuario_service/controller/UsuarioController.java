@@ -11,18 +11,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import usuarioService.usuario_service.dto.LoginRequest;
+import usuarioService.usuario_service.dto.LoginResponse;
 import usuarioService.usuario_service.dto.RespuestaDto;
 import usuarioService.usuario_service.dto.UsuarioDto;
 import usuarioService.usuario_service.dto.UsuarioRequest;
+import usuarioService.usuario_service.service.JwtService;
 import usuarioService.usuario_service.service.UsuarioService;
 
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioController {
     private final UsuarioService usuarioService;
+    private final JwtService jwtService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, JwtService jwtService) {
         this.usuarioService = usuarioService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping
@@ -54,8 +58,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<RespuestaDto<UsuarioDto>> iniciarSesion(@RequestBody LoginRequest solicitud) {
+    public ResponseEntity<RespuestaDto<LoginResponse>> iniciarSesion(@RequestBody LoginRequest solicitud) {
         UsuarioDto usuario = usuarioService.iniciarSesion(solicitud);
-        return ResponseEntity.ok(RespuestaDto.ok(usuario, "Inicio de sesion correcto", 200));
+        LoginResponse login = new LoginResponse(usuario, jwtService.generarToken(usuario));
+        return ResponseEntity.ok(RespuestaDto.ok(login, "Inicio de sesion correcto", 200));
     }
 }

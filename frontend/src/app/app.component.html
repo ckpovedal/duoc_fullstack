@@ -30,7 +30,7 @@
       <span>Buscar</span>
     </a>
 
-    <a class="item-menu item-agregar" routerLink="/reporte-mascota" routerLinkActive="activo">
+    <a class="item-menu item-agregar" *ngIf="estaLogueado" routerLink="/reporte-mascota" routerLinkActive="activo">
       <span class="icono-agregar">
         <ion-icon name="add-circle"></ion-icon>
       </span>

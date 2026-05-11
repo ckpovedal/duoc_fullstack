@@ -54,11 +54,18 @@ export class LoginPage implements OnInit {
 
     this.usuarioService.login(data).subscribe({
       next: (respuesta) => {
-        const usuario = respuesta.respuesta;
+        const login = respuesta.respuesta;
+        const usuario = login?.usuario || login;
+        const token = login?.token || '';
+
         localStorage.setItem('usuario', JSON.stringify(usuario));
 
         if (usuario?.idUsuario) {
           localStorage.setItem('usuario_id', usuario.idUsuario);
+        }
+
+        if (token) {
+          localStorage.setItem('token', token);
         }
 
         this.router.navigate(['/principal']);

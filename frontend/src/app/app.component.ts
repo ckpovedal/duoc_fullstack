@@ -40,7 +40,7 @@ export class AppComponent {
   }
 
   validarSesion() {
-    this.estaLogueado = !!localStorage.getItem('usuario_id') || !!localStorage.getItem('usuario') || !!localStorage.getItem('token');
+    this.estaLogueado = !!localStorage.getItem('token');
   }
 
   logout() {

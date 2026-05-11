@@ -10,12 +10,12 @@ class HallazgosService {
     this.reportesRecientes = new Map();
   }
 
-  async crearHallazgo(data) {
-    const usuarioId = data.u_id || data.U_ID;
+  async crearHallazgo(data, usuarioAutenticadoId) {
+    const usuarioId = usuarioAutenticadoId;
     const tipo = data.h_tipo ?? data.H_Tipo;
 
     if (!usuarioId) {
-      throw new AppError('u_id es obligatorio', 400);
+      throw new AppError('Debes iniciar sesion', 401);
     }
 
     if (tipo === undefined || tipo === null) {
@@ -28,6 +28,11 @@ class HallazgosService {
       throw new AppError('El usuario indicado no existe', 404);
     }
 
+    const datosReporte = {
+      ...data,
+      u_id: usuarioId,
+    };
+
     logger.debug({
       usuario: this.ocultarUsuarioId(usuarioId),
       tipo,
@@ -35,11 +40,11 @@ class HallazgosService {
       tieneComuna: Boolean(data.h_comuna || data.H_Comuna)
     }, 'Creando reporte de hallazgo');
 
-    const huella = this.construirHuellaHallazgo(data);
+    const huella = this.construirHuellaHallazgo(datosReporte);
     this.registrarReporteReciente(huella);
 
     try {
-      const hallazgoCreado = await hallazgosRepository.crearHallazgo(data);
+      const hallazgoCreado = await hallazgosRepository.crearHallazgo(datosReporte);
       
       return {
         ...hallazgoCreado,
@@ -90,16 +95,25 @@ class HallazgosService {
     };
   }
 
-  async actualizarHallazgo(id, data) {
+  async actualizarHallazgo(id, data, usuarioAutenticadoId) {
+    if (!usuarioAutenticadoId) {
+      throw new AppError('Debes iniciar sesion', 401);
+    }
+
     const hallazgoActual = await hallazgosRepository.obtenerHallazgoPorId(id);
 
     if (!hallazgoActual) {
       throw new AppError('Hallazgo no encontrado', 404);
     }
 
+    if (String(hallazgoActual.u_id || hallazgoActual.U_ID) !== String(usuarioAutenticadoId)) {
+      throw new AppError('No puedes editar un reporte de otro usuario', 403);
+    }
+
     const datosActualizados = {
       ...hallazgoActual,
       ...data,
+      u_id: usuarioAutenticadoId,
     };
 
     const usuarioId = datosActualizados.u_id || datosActualizados.U_ID;

@@ -12,6 +12,14 @@ function crearProxyServicio({ target, pathRewrite }) {
           proxyReq.setHeader('X-Request-Id', req.id);
         }
 
+        if (req.usuario?.id) {
+          proxyReq.setHeader('X-Usuario-Id', req.usuario.id);
+        }
+
+        if (req.usuario?.tipo) {
+          proxyReq.setHeader('X-Usuario-Tipo', req.usuario.tipo);
+        }
+
         if (!req.body || !Object.keys(req.body).length) {
           return;
         }

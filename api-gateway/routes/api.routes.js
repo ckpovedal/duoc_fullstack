@@ -1,10 +1,12 @@
 const express = require('express');
+const { protegerEscrituraReportes, protegerUsuarios } = require('../middleware/auth.middleware');
 const { crearProxyServicio } = require('../services/proxy.factory');
 
 const router = express.Router();
 
 router.use(
   '/usuarios',
+  protegerUsuarios,
   crearProxyServicio({
     target: process.env.USUARIO_SERVICE_URL || 'http://localhost:3004',
     pathRewrite: (path) => (path === '/' ? '/usuarios' : `/usuarios${path}`),
@@ -13,6 +15,7 @@ router.use(
 
 router.use(
   '/hallazgos',
+  protegerEscrituraReportes,
   crearProxyServicio({
     target: process.env.HALLAZGOS_SERVICE_URL || 'http://localhost:3003',
     pathRewrite: (path) => `/hallazgos${path}`,
@@ -21,6 +24,7 @@ router.use(
 
 router.use(
   '/perdidas',
+  protegerEscrituraReportes,
   crearProxyServicio({
     target: process.env.PERDIDAS_SERVICE_URL || 'http://localhost:3000',
     pathRewrite: (path) => `/perdidas${path}`,

@@ -7,6 +7,7 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalo
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { GlobalErrorHandler } from './app/handlers/global-error.handler';
+import { authInterceptor } from './app/interceptors/auth.interceptor';
 import { httpLoggerInterceptor } from './app/interceptors/http-logger.interceptor';
 
 bootstrapApplication(AppComponent, {
@@ -15,6 +16,6 @@ bootstrapApplication(AppComponent, {
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(withInterceptors([httpLoggerInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, httpLoggerInterceptor])),
   ],
 });

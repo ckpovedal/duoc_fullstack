@@ -16,7 +16,7 @@ class HallazgosController {
 
   async crearHallazgo(req, res, next) {
     try {
-      const data = await hallazgosService.crearHallazgo(req.body);
+      const data = await hallazgosService.crearHallazgo(req.body, req.headers['x-usuario-id']);
       return this.enviarRespuesta(res, data, 'Hallazgo creado correctamente', 201);
     } catch (error) {
       next(error);
@@ -43,7 +43,7 @@ class HallazgosController {
 
   async actualizarHallazgo(req, res, next) {
     try {
-      const data = await hallazgosService.actualizarHallazgo(req.params.id, req.body);
+      const data = await hallazgosService.actualizarHallazgo(req.params.id, req.body, req.headers['x-usuario-id']);
       return this.enviarRespuesta(res, data, 'Hallazgo actualizado correctamente');
     } catch (error) {
       next(error);

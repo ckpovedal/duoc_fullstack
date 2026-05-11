@@ -60,6 +60,7 @@ export class AppComponent {
       '/principal',
       '/buscador',
       '/reporte-mascota',
+      '/mascotas-halladas',
       '/hallazgos',
       '/mascota-perdida',
       '/mascota-hallada'

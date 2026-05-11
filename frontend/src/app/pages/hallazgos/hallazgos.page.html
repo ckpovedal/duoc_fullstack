@@ -11,7 +11,44 @@
       <p>Reportes publicados por la comunidad</p>
     </section>
 
-    <p class="mensaje-estado" *ngIf="cargando">Cargando hallazgos...</p>
+    <section class="panel-filtros">
+      <label>
+        <span>Buscar</span>
+        <input type="text" name="texto" placeholder="Nombre, comuna o características" [(ngModel)]="filtros.texto" (keyup.enter)="aplicarFiltros()">
+      </label>
+
+      <label>
+        <span>Tipo</span>
+        <select name="tipo" [(ngModel)]="filtros.tipo">
+          <option value="">Todos</option>
+          <option value="1">Perro</option>
+          <option value="2">Gato</option>
+          <option value="3">Otro</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Estado</span>
+        <select name="estado" [(ngModel)]="filtros.estado">
+          <option value="">Todos</option>
+          <option value="1">Activo</option>
+          <option value="2">Reunificado</option>
+          <option value="3">Inactivo</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Comuna</span>
+        <input type="text" name="comuna" placeholder="Ej: Maipú" [(ngModel)]="filtros.comuna" (keyup.enter)="aplicarFiltros()">
+      </label>
+
+      <div class="acciones-filtros">
+        <button type="button" [disabled]="cargando" (click)="aplicarFiltros()">Filtrar</button>
+        <button type="button" [disabled]="cargando" class="boton-secundario" (click)="limpiarFiltros()">Limpiar</button>
+      </div>
+    </section>
+
+    <p class="mensaje-estado" *ngIf="cargando && hallazgos.length === 0">Cargando hallazgos...</p>
 
     <section class="estado-listado" *ngIf="!cargando && error">
       <p>{{ error }}</p>
@@ -23,26 +60,54 @@
       <p>Todavía no hay hallazgos registrados.</p>
     </section>
 
-    <section class="lista-hallazgos" *ngIf="!cargando && !error && hallazgos.length > 0">
+    <section class="lista-hallazgos" *ngIf="!error && hallazgos.length > 0">
       <article class="tarjeta-hallazgo" *ngFor="let hallazgo of hallazgos">
         <div class="foto-hallazgo">
           <img *ngIf="hallazgo.imagen; else iconoHallazgo" [src]="hallazgo.imagen" alt="Foto de la mascota encontrada">
+
           <ng-template #iconoHallazgo>
             <ion-icon name="paw-outline"></ion-icon>
           </ng-template>
         </div>
 
         <div class="datos-hallazgo">
-          <h2>{{ hallazgo.nombre }}</h2>
+          <div class="cabecera-hallazgo">
+            <h2>{{ hallazgo.nombre }}</h2>
+            <span class="estado" [ngClass]="hallazgo.estadoClase">{{ hallazgo.estado }}</span>
+          </div>
 
-          <p class="ubicacion-hallazgo">
+          <p class="meta-hallazgo">
+            <ion-icon name="paw-outline"></ion-icon>
+            <span>{{ hallazgo.tipo }}</span>
+          </p>
+
+          <p class="meta-hallazgo">
             <ion-icon name="location-outline"></ion-icon>
             <span>{{ hallazgo.ubicacion }}</span>
           </p>
 
-          <p>{{ hallazgo.descripcion }}</p>
+          <p class="meta-hallazgo">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span>{{ hallazgo.fecha }}</span>
+          </p>
+
+          <p class="descripcion">{{ hallazgo.descripcion }}</p>
+
+          <button type="button" [disabled]="!hallazgo.id" (click)="verDetalle(hallazgo)">
+            Ver más detalles
+          </button>
         </div>
       </article>
     </section>
+
+    <div class="paginacion-desktop" *ngIf="!error && hallazgos.length > 0">
+      <button type="button" [disabled]="pagina <= 1 || cargando" (click)="paginaAnterior()">Anterior</button>
+      <span>Página {{ pagina }} de {{ totalPaginas }}</span>
+      <button type="button" [disabled]="pagina >= totalPaginas || cargando" (click)="paginaSiguiente()">Siguiente</button>
+    </div>
+
+    <button class="cargar-mas-mobile" type="button" *ngIf="!error && hallazgos.length > 0 && tieneMas" [disabled]="cargando" (click)="cargarMas()">
+      {{ cargando ? 'Cargando...' : 'Cargar más' }}
+    </button>
   </main>
 </ion-content>

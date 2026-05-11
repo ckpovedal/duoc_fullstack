@@ -27,9 +27,14 @@ export const routes: Routes = [
       import('./pages/buscador/buscador.page').then(m => m.BuscadorPage)
   },
   {
-    path: 'hallazgos',
+    path: 'mascotas-halladas',
     loadComponent: () =>
       import('./pages/hallazgos/hallazgos.page').then(m => m.HallazgosPage)
+  },
+  {
+    path: 'hallazgos',
+    redirectTo: 'mascotas-halladas',
+    pathMatch: 'full'
   },
   {
     path: 'mascota-perdida/:id',

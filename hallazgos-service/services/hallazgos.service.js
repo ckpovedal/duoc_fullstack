@@ -52,12 +52,15 @@ class HallazgosService {
   }
 
   async listarHallazgos(filtros) {
-    const hallazgos = await hallazgosRepository.listarHallazgos(filtros);
+    const resultado = await hallazgosRepository.listarHallazgos(filtros);
 
-    return hallazgos.map((hallazgo) => ({
-      ...hallazgo,
-      tipoReporte: 'HALLADO'
-    }))
+    return {
+      ...resultado,
+      items: resultado.items.map((hallazgo) => ({
+        ...hallazgo,
+        tipoReporte: 'HALLADO'
+      }))
+    };
   }
 
   async obtenerHallazgoPorId(id) {

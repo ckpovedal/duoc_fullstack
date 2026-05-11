@@ -52,7 +52,7 @@ class HallazgosRepository {
   }
 
   async listarHallazgos(filtros = {}) {
-    let query = 'SELECT * FROM hallazgo WHERE 1=1';
+    let where = 'WHERE 1=1';
     const values = [];
     let idx = 1;
 
@@ -60,31 +60,70 @@ class HallazgosRepository {
     const estado = filtros.h_estado || filtros.estado;
     const comuna = filtros.h_comuna || filtros.comuna;
     const region = filtros.h_region || filtros.region;
+    const texto = filtros.texto;
+    const pagina = Math.max(Number(filtros.pagina) || 1, 1);
+    const limite = Math.min(Math.max(Number(filtros.limite) || 10, 1), 30);
+    const offset = (pagina - 1) * limite;
 
     if (tipo) {
-      query += ` AND h_tipo = $${idx++}`;
+      where += ` AND h_tipo = $${idx++}`;
       values.push(tipo);
     }
 
     if (estado) {
-      query += ` AND h_estado = $${idx++}`;
+      where += ` AND h_estado = $${idx++}`;
       values.push(estado);
     }
 
     if (comuna) {
-      query += ` AND h_comuna ILIKE $${idx++}`;
+      where += ` AND h_comuna ILIKE $${idx++}`;
       values.push(`%${comuna}%`);
     }
 
     if (region) {
-      query += ` AND h_region ILIKE $${idx++}`;
+      where += ` AND h_region ILIKE $${idx++}`;
       values.push(`%${region}%`);
     }
 
-    query += ' ORDER BY h_fecha DESC';
+    if (texto) {
+      where += ` AND (
+        h_nom_masc ILIKE $${idx}
+        OR h_fisica ILIKE $${idx}
+        OR h_inf_adic ILIKE $${idx}
+        OR h_comuna ILIKE $${idx}
+        OR h_region ILIKE $${idx}
+      )`;
+      values.push(`%${texto}%`);
+      idx++;
+    }
 
-    const result = await pool.query(query, values);
-    return result.rows;
+    const totalResult = await pool.query(
+      `SELECT COUNT(*)::int AS total FROM hallazgo ${where}`,
+      values
+    );
+
+    const query = `
+      SELECT *
+      FROM hallazgo
+      ${where}
+      ORDER BY h_fecha DESC, h_id DESC
+      LIMIT $${idx++}
+      OFFSET $${idx}
+    `;
+
+    const result = await pool.query(query, [...values, limite, offset]);
+    const total = totalResult.rows[0]?.total || 0;
+
+    return {
+      items: result.rows,
+      paginacion: {
+        pagina,
+        limite,
+        total,
+        totalPaginas: Math.ceil(total / limite),
+        tieneMas: pagina * limite < total
+      }
+    };
   }
 
   async obtenerHallazgoPorId(id) {

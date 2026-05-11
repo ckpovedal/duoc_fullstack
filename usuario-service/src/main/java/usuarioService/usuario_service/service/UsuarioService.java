@@ -46,9 +46,10 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setIdUsuario(usuarioRepository.generarIdUsuario());
         usuario.setFecha(LocalDate.now());
-        aplicarDatos(usuario, solicitud);
+        aplicarDatosPerfil(usuario, solicitud);
         validarUsuario(usuario);
-        usuario.setClave(passwordEncoder.encode(usuario.getClave()));
+        validarClave(solicitud.clave());
+        usuario.setClave(passwordEncoder.encode(solicitud.clave()));
 
         return UsuarioDto.desdeEntidad(usuarioRepository.save(usuario));
     }
@@ -59,14 +60,17 @@ public class UsuarioService {
         Usuario usuario = buscarUsuario(idUsuario);
         String correoAnterior = usuario.getCorreo();
 
-        aplicarDatos(usuario, solicitud);
+        aplicarDatosPerfil(usuario, solicitud);
         validarUsuario(usuario);
 
         if (!correoAnterior.equals(usuario.getCorreo()) && usuarioRepository.existsByCorreo(usuario.getCorreo())) {
             throw new ApiException("El correo ya esta registrado", HttpStatus.BAD_REQUEST);
         }
 
-        usuario.setClave(passwordEncoder.encode(usuario.getClave()));
+        if (!estaVacio(solicitud.clave())) {
+            validarClave(solicitud.clave());
+            usuario.setClave(passwordEncoder.encode(solicitud.clave()));
+        }
 
         return UsuarioDto.desdeEntidad(usuarioRepository.save(usuario));
     }
@@ -91,7 +95,7 @@ public class UsuarioService {
             .orElseThrow(() -> new ApiException("Usuario no encontrado", HttpStatus.NOT_FOUND));
     }
 
-    private void aplicarDatos(Usuario usuario, UsuarioRequest solicitud) {
+    private void aplicarDatosPerfil(Usuario usuario, UsuarioRequest solicitud) {
         usuario.setNombre(solicitud.nombre());
         usuario.setTipo(solicitud.tipo());
         usuario.setDireccion(solicitud.direccion());
@@ -99,7 +103,6 @@ public class UsuarioService {
         usuario.setRegion(solicitud.region());
         usuario.setTelefono(solicitud.telefono());
         usuario.setCorreo(solicitud.correo());
-        usuario.setClave(solicitud.clave());
     }
 
     private void validarSolicitud(UsuarioRequest solicitud) {
@@ -125,14 +128,20 @@ public class UsuarioService {
             throw new ApiException("correo es obligatorio", HttpStatus.BAD_REQUEST);
         }
 
-        if (estaVacio(usuario.getClave())) {
+        validarTelefono(usuario);
+    }
+
+    private void validarClave(String clave) {
+        if (estaVacio(clave)) {
             throw new ApiException("clave es obligatoria", HttpStatus.BAD_REQUEST);
         }
 
-        if (usuario.getClave().length() < 8 || usuario.getClave().length() > 15) {
+        if (clave.length() < 8 || clave.length() > 15) {
             throw new ApiException("clave debe tener entre 8 y 15 caracteres", HttpStatus.BAD_REQUEST);
         }
+    }
 
+    private void validarTelefono(Usuario usuario) {
         if (usuario.getTelefono() != null && (usuario.getTelefono() < 100000000 || usuario.getTelefono() > 999999999)) {
             throw new ApiException("telefono debe tener 9 digitos", HttpStatus.BAD_REQUEST);
         }

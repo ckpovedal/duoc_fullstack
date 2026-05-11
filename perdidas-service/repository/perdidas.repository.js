@@ -60,6 +60,7 @@ class PerdidasRepository {
     const estado = filtros.p_estado || filtros.estado;
     const comuna = filtros.p_comuna || filtros.comuna;
     const region = filtros.p_region || filtros.region;
+    const usuarioId = filtros.u_id || filtros.usuario_id || filtros.usuarioId;
 
     if (tipo) {
       query += ` AND p_tipo = $${idx++}`;
@@ -79,6 +80,11 @@ class PerdidasRepository {
     if (region) {
       query += ` AND p_region ILIKE $${idx++}`;
       values.push(`%${region}%`);
+    }
+
+    if (usuarioId) {
+      query += ` AND u_id = $${idx++}`;
+      values.push(usuarioId);
     }
 
     query += ' ORDER BY p_fecha DESC';

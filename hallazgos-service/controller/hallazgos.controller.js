@@ -6,6 +6,7 @@ class HallazgosController {
     this.crearHallazgo = this.crearHallazgo.bind(this);
     this.listarHallazgos = this.listarHallazgos.bind(this);
     this.obtenerHallazgoPorId = this.obtenerHallazgoPorId.bind(this);
+    this.actualizarHallazgo = this.actualizarHallazgo.bind(this);
   }
 
   enviarRespuesta(res, data, mensaje, codigo = 200) {
@@ -35,6 +36,15 @@ class HallazgosController {
     try {
       const data = await hallazgosService.obtenerHallazgoPorId(req.params.id);
       return this.enviarRespuesta(res, data, 'Hallazgo obtenido correctamente');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async actualizarHallazgo(req, res, next) {
+    try {
+      const data = await hallazgosService.actualizarHallazgo(req.params.id, req.body);
+      return this.enviarRespuesta(res, data, 'Hallazgo actualizado correctamente');
     } catch (error) {
       next(error);
     }

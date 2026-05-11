@@ -11,6 +11,8 @@
 
       <button *ngIf="!estaLogueado" routerLink="/nuevo-usuario"> Registro </button>
 
+      <button *ngIf="estaLogueado" routerLink="/mi-perfil"> Mi perfil </button>
+
       <button *ngIf="estaLogueado" (click)="logout()"> Logout </button>
     </div>
   </header>
@@ -40,6 +42,12 @@
       <ion-icon name="paw-outline"></ion-icon>
 
       <span>Halladas</span>
+    </a>
+
+    <a class="item-menu" *ngIf="estaLogueado" routerLink="/mi-perfil" routerLinkActive="activo">
+      <ion-icon name="person-circle-outline"></ion-icon>
+
+      <span>Perfil</span>
     </a>
   </nav>
 </ion-app>

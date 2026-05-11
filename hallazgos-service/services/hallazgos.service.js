@@ -90,6 +90,33 @@ class HallazgosService {
     };
   }
 
+  async actualizarHallazgo(id, data) {
+    const hallazgoActual = await hallazgosRepository.obtenerHallazgoPorId(id);
+
+    if (!hallazgoActual) {
+      throw new AppError('Hallazgo no encontrado', 404);
+    }
+
+    const datosActualizados = {
+      ...hallazgoActual,
+      ...data,
+    };
+
+    const usuarioId = datosActualizados.u_id || datosActualizados.U_ID;
+    const usuarioExiste = await usuariosClient.existeUsuario(usuarioId);
+
+    if (!usuarioExiste) {
+      throw new AppError('El usuario indicado no existe', 404);
+    }
+
+    const hallazgoActualizado = await hallazgosRepository.actualizarHallazgo(id, datosActualizados);
+
+    return {
+      ...hallazgoActualizado,
+      tipoReporte: 'HALLADO'
+    };
+  }
+
   registrarReporteReciente(huella) {
     const ahora = Date.now();
     this.limpiarReportesRecientes(ahora);

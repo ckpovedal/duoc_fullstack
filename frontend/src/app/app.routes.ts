@@ -65,4 +65,10 @@ export const routes: Routes = [
       import('./pages/nuevo-usuario/nuevo-usuario.page')
         .then(m => m.NuevoUsuarioPage)
   },
+  {
+    path: 'mi-perfil',
+    loadComponent: () =>
+      import('./pages/mi-perfil/mi-perfil.page')
+        .then(m => m.MiPerfilPage)
+  },
 ];

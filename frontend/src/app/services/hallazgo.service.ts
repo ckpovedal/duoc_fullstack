@@ -24,6 +24,10 @@ export class HallazgoService {
     return this.http.get(`${this.apiUrl}/${idHallazgo}`);
   }
 
+  actualizarHallazgo(idHallazgo: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${idHallazgo}`, data);
+  }
+
   private crearParametros(filtros: any): HttpParams {
     let params = new HttpParams();
 

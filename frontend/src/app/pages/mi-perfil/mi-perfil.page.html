@@ -1,0 +1,271 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" type="button" (click)="cancelar()">Volver</ion-button>
+    </ion-buttons>
+
+    <ion-title>Mi perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="contenido-pagina">
+  <main class="contenedor-pagina contenedor-formulario contenedor-con-padding">
+    <section class="panel-pagina perfil-panel">
+      <img src="assets/img/SanosySalvos.png" class="logo-pagina" alt="Logo">
+
+      <h1>Mi perfil</h1>
+
+      <p class="fecha-registro" *ngIf="fechaRegistro">Registrado desde {{ fechaRegistro | date: 'dd/MM/yyyy' }}</p>
+
+      <nav class="selector-perfil" aria-label="Opciones de perfil">
+        <button type="button" [class.activo]="seccionActiva === 'personal'" (click)="seleccionarSeccion('personal')">
+          Información personal
+        </button>
+
+        <button type="button" [class.activo]="seccionActiva === 'clave'" (click)="seleccionarSeccion('clave')">
+          Cambiar contraseña
+        </button>
+
+        <button type="button" [class.activo]="seccionActiva === 'reportes'" (click)="seleccionarSeccion('reportes')">
+          Mis reportes
+        </button>
+      </nav>
+
+      <ng-container *ngIf="!cargando; else cargandoPerfil">
+        <section *ngIf="seccionActiva === 'personal'" class="seccion-perfil">
+          <form (ngSubmit)="guardarPerfil()">
+            <ion-list>
+              <ion-item>
+                <div class="dato-informativo">
+                  <span>Nombre</span>
+                  <strong>{{ formulario.nombre }}</strong>
+                </div>
+              </ion-item>
+
+              <ion-item>
+                <div class="dato-informativo">
+                  <span>Tipo</span>
+                  <strong>{{ formulario.tipo }}</strong>
+                </div>
+              </ion-item>
+
+              <ion-item>
+                <ion-input label="Direccion" labelPlacement="stacked" name="direccion" [disabled]="!modoEdicion || guardando" [(ngModel)]="formulario.direccion"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-select label="Comuna" labelPlacement="stacked" name="comuna" [disabled]="!modoEdicion || guardando" [(ngModel)]="formulario.comuna">
+                  <ion-select-option value="">Sin comuna</ion-select-option>
+                  <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.value">
+                    {{ comuna.label }}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+
+              <ion-item>
+                <ion-input label="Region" labelPlacement="stacked" name="region" [disabled]="!modoEdicion || guardando" [(ngModel)]="formulario.region"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-input label="Telefono" labelPlacement="stacked" type="tel" inputmode="numeric" maxlength="9" name="telefono" [disabled]="!modoEdicion || guardando" [(ngModel)]="formulario.telefono"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-input label="Correo" labelPlacement="stacked" type="email" name="correo" [disabled]="!modoEdicion || guardando" [(ngModel)]="formulario.correo"></ion-input>
+              </ion-item>
+            </ion-list>
+
+            <ion-text color="danger" *ngIf="error">
+              <p>{{ error }}</p>
+            </ion-text>
+
+            <ion-text color="success" *ngIf="mensaje">
+              <p>{{ mensaje }}</p>
+            </ion-text>
+
+            <ion-button *ngIf="!modoEdicion" expand="block" type="button" [disabled]="cargando" (click)="habilitarEdicion()">
+              Editar perfil
+            </ion-button>
+
+            <ion-button *ngIf="modoEdicion" expand="block" type="submit" [disabled]="guardando">
+              {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+            </ion-button>
+
+            <ion-button expand="block" fill="clear" type="button" (click)="cancelarEdicion()">
+              {{ modoEdicion ? 'Cancelar' : 'Volver al inicio' }}
+            </ion-button>
+          </form>
+        </section>
+
+        <section *ngIf="seccionActiva === 'clave'" class="seccion-perfil seccion-clave">
+          <h2>Cambiar contraseña</h2>
+
+          <form (ngSubmit)="guardarClave()">
+            <ion-list>
+              <ion-item>
+                <ion-input label="Nueva clave" labelPlacement="stacked" type="password" maxlength="15" name="nuevaClave" [disabled]="guardando" [(ngModel)]="nuevaClave"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-input label="Verificacion nueva clave" labelPlacement="stacked" type="password" maxlength="15" name="verificacionClave" [disabled]="guardando" [(ngModel)]="verificacionClave"></ion-input>
+              </ion-item>
+            </ion-list>
+
+            <ion-text color="danger" *ngIf="error">
+              <p>{{ error }}</p>
+            </ion-text>
+
+            <ion-text color="success" *ngIf="mensaje">
+              <p>{{ mensaje }}</p>
+            </ion-text>
+
+            <ion-button expand="block" type="submit" [disabled]="guardando">
+              {{ guardando ? 'Guardando...' : 'Guardar contraseña' }}
+            </ion-button>
+
+            <ion-button expand="block" fill="clear" type="button" [disabled]="guardando" (click)="limpiarCambioClave()">
+              Limpiar
+            </ion-button>
+          </form>
+        </section>
+
+        <section *ngIf="seccionActiva === 'reportes'" class="seccion-perfil seccion-reportes">
+          <div class="encabezado-reportes">
+            <h2>Mis reportes</h2>
+
+            <button type="button" [disabled]="cargandoReportes" (click)="cargarReportes()">
+              {{ cargandoReportes ? 'Cargando...' : 'Actualizar' }}
+            </button>
+          </div>
+
+          <p class="estado-carga" *ngIf="cargandoReportes">Cargando reportes...</p>
+
+          <p class="estado-carga" *ngIf="!cargandoReportes && reportesCargados && reportes.length === 0">
+            No tienes reportes creados.
+          </p>
+
+          <p class="mensaje error" *ngIf="errorReportes">{{ errorReportes }}</p>
+          <p class="mensaje exito" *ngIf="mensajeReportes">{{ mensajeReportes }}</p>
+
+          <article class="reporte-card" *ngFor="let reporte of reportes">
+            <div class="reporte-resumen">
+              <div>
+                <span class="etiqueta-reporte">{{ reporte.tipo === 'perdida' ? 'Perdida' : 'Hallazgo' }}</span>
+                <h3>{{ reporte.titulo }}</h3>
+                <p>{{ reporte.resumen }}</p>
+                <p>Estado: {{ reporte.estadoTexto }} · Fecha: {{ reporte.fechaTexto }}</p>
+              </div>
+
+              <div class="acciones-reporte">
+                <button type="button" (click)="verReporte(reporte)">Ver</button>
+                <button type="button" [disabled]="guardandoReporteId === reporte.id" (click)="editarReporte(reporte)">Editar</button>
+              </div>
+            </div>
+
+            <div class="formulario-reporte" *ngIf="reporte.editando">
+              <ion-list>
+                <ion-item>
+                  <ion-input label="Nombre mascota" labelPlacement="stacked" [(ngModel)]="reporte.formulario.nombreMascota"></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-select label="Tipo mascota" labelPlacement="stacked" [(ngModel)]="reporte.formulario.tipoMascota">
+                    <ion-select-option value="1">Perro</ion-select-option>
+                    <ion-select-option value="2">Gato</ion-select-option>
+                    <ion-select-option value="3">Otro</ion-select-option>
+                  </ion-select>
+                </ion-item>
+
+                <ion-item>
+                  <ion-input label="Edad en meses" labelPlacement="stacked" type="number" [(ngModel)]="reporte.formulario.edad"></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-select label="Genero" labelPlacement="stacked" [(ngModel)]="reporte.formulario.genero">
+                    <ion-select-option value="">Sin especificar</ion-select-option>
+                    <ion-select-option value="1">Macho</ion-select-option>
+                    <ion-select-option value="2">Hembra</ion-select-option>
+                    <ion-select-option value="3">No especifica</ion-select-option>
+                  </ion-select>
+                </ion-item>
+
+                <ion-item>
+                  <ion-input label="Caracteristicas fisicas" labelPlacement="stacked" [(ngModel)]="reporte.formulario.fisica"></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-input label="Personalidad" labelPlacement="stacked" [(ngModel)]="reporte.formulario.personalidad"></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-input label="Informacion adicional" labelPlacement="stacked" [(ngModel)]="reporte.formulario.informacionAdicional"></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-select label="Esterilizado" labelPlacement="stacked" [(ngModel)]="reporte.formulario.esterilizado">
+                    <ion-select-option value="">Sin especificar</ion-select-option>
+                    <ion-select-option value="1">Si</ion-select-option>
+                    <ion-select-option value="2">No</ion-select-option>
+                    <ion-select-option value="3">No se sabe</ion-select-option>
+                  </ion-select>
+                </ion-item>
+
+                <ion-item>
+                  <ion-select label="Vacunas al dia" labelPlacement="stacked" [(ngModel)]="reporte.formulario.vacunas">
+                    <ion-select-option value="">Sin especificar</ion-select-option>
+                    <ion-select-option value="1">Si</ion-select-option>
+                    <ion-select-option value="2">No</ion-select-option>
+                    <ion-select-option value="3">No se sabe</ion-select-option>
+                  </ion-select>
+                </ion-item>
+
+                <ion-item>
+                  <ion-input label="Direccion o interseccion" labelPlacement="stacked" [(ngModel)]="reporte.formulario.direccion"></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-select label="Comuna" labelPlacement="stacked" [(ngModel)]="reporte.formulario.comuna">
+                    <ion-select-option value="">Sin comuna</ion-select-option>
+                    <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.value">
+                      {{ comuna.label }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+
+                <ion-item>
+                  <ion-input label="Region" labelPlacement="stacked" [(ngModel)]="reporte.formulario.region"></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-input label="Fecha" labelPlacement="stacked" type="date" [(ngModel)]="reporte.formulario.fecha"></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-select label="Estado" labelPlacement="stacked" [(ngModel)]="reporte.formulario.estado">
+                    <ion-select-option value="1">Activo</ion-select-option>
+                    <ion-select-option value="2">{{ reporte.tipo === 'perdida' ? 'Resuelto' : 'Reunificado' }}</ion-select-option>
+                    <ion-select-option value="3">Inactivo</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-list>
+
+              <div class="acciones-edicion-reporte">
+                <ion-button expand="block" type="button" [disabled]="guardandoReporteId === reporte.id" (click)="guardarReporte(reporte)">
+                  {{ guardandoReporteId === reporte.id ? 'Guardando...' : 'Guardar reporte' }}
+                </ion-button>
+
+                <ion-button expand="block" fill="clear" type="button" [disabled]="guardandoReporteId === reporte.id" (click)="cancelarEdicionReporte(reporte)">
+                  Cancelar
+                </ion-button>
+              </div>
+            </div>
+          </article>
+        </section>
+      </ng-container>
+
+      <ng-template #cargandoPerfil>
+        <p class="estado-carga">Cargando perfil...</p>
+      </ng-template>
+    </section>
+  </main>
+</ion-content>

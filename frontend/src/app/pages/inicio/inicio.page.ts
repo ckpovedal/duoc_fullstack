@@ -23,7 +23,7 @@ export class InicioPage implements OnDestroy {
     this.reproducirVideo();
     this.redireccionTimer = setTimeout(() => {
       this.router.navigateByUrl('/principal', { replaceUrl: true });
-    }, 3000);
+    }, 4000);
   }
 
   ionViewWillLeave() {

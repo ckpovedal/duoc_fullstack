@@ -1,0 +1,194 @@
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+DROP TABLE IF EXISTS GEO_ZONA_INTERES CASCADE;
+DROP TABLE IF EXISTS GEO_UBICACION CASCADE;
+
+DROP SEQUENCE IF EXISTS seq_geo_ubicacion_id CASCADE;
+DROP SEQUENCE IF EXISTS seq_geo_zona_id CASCADE;
+
+DROP FUNCTION IF EXISTS generar_geo_id() CASCADE;
+DROP FUNCTION IF EXISTS generar_zon_id() CASCADE;
+DROP FUNCTION IF EXISTS trigger_asignar_geo_id() CASCADE;
+DROP FUNCTION IF EXISTS trigger_asignar_zon_id() CASCADE;
+
+CREATE TABLE GEO_UBICACION (
+    GEO_ID            VARCHAR(40) PRIMARY KEY,
+    TIPO_REPORTE      VARCHAR(20) NOT NULL,
+    REPORTE_ID        VARCHAR(40) NOT NULL,
+    U_ID              VARCHAR(40) NOT NULL,
+    GEO_DIRECCION     VARCHAR(150) NOT NULL,
+    GEO_COMUNA        VARCHAR(30),
+    GEO_REGION        VARCHAR(50),
+    GEO_LATITUD       NUMERIC(10,7) NOT NULL,
+    GEO_LONGITUD      NUMERIC(10,7) NOT NULL,
+    GEO_PUNTO         GEOGRAPHY(POINT, 4326),
+    GEO_FUENTE        VARCHAR(30) NOT NULL,
+    GEO_FECHA         DATE DEFAULT CURRENT_DATE,
+    GEO_ESTADO        NUMERIC(1) DEFAULT 1,
+
+    CONSTRAINT chk_geo_ubicacion_tipo_reporte CHECK (TIPO_REPORTE IN ('PERDIDA', 'HALLAZGO')),
+    CONSTRAINT chk_geo_ubicacion_fuente CHECK (GEO_FUENTE IN ('NOMINATIM', 'GPS', 'MANUAL')),
+    CONSTRAINT chk_geo_ubicacion_estado CHECK (GEO_ESTADO IN (1, 2, 3)),
+    CONSTRAINT chk_geo_ubicacion_latitud CHECK (GEO_LATITUD BETWEEN -90 AND 90),
+    CONSTRAINT chk_geo_ubicacion_longitud CHECK (GEO_LONGITUD BETWEEN -180 AND 180),
+    CONSTRAINT uq_geo_ubicacion_reporte UNIQUE (TIPO_REPORTE, REPORTE_ID)
+);
+
+CREATE TABLE GEO_ZONA_INTERES (
+    ZON_ID             VARCHAR(40) PRIMARY KEY,
+    U_ID               VARCHAR(40) NOT NULL,
+    ZON_NOMBRE         VARCHAR(50),
+    ZON_DIRECCION      VARCHAR(150),
+    ZON_COMUNA         VARCHAR(30),
+    ZON_REGION         VARCHAR(50),
+    ZON_LATITUD        NUMERIC(10,7) NOT NULL,
+    ZON_LONGITUD       NUMERIC(10,7) NOT NULL,
+    ZON_PUNTO          GEOGRAPHY(POINT, 4326),
+    ZON_RADIO_KM       NUMERIC(6,2) NOT NULL,
+    ZON_TIPO_REPORTE   VARCHAR(20) NOT NULL,
+    ZON_ACTIVA         NUMERIC(1) DEFAULT 1,
+    ZON_FECHA          DATE DEFAULT CURRENT_DATE,
+
+    CONSTRAINT chk_geo_zona_tipo_reporte CHECK (ZON_TIPO_REPORTE IN ('PERDIDA', 'HALLAZGO', 'AMBOS')),
+    CONSTRAINT chk_geo_zona_activa CHECK (ZON_ACTIVA IN (1, 2)),
+    CONSTRAINT chk_geo_zona_radio CHECK (ZON_RADIO_KM > 0),
+    CONSTRAINT chk_geo_zona_latitud CHECK (ZON_LATITUD BETWEEN -90 AND 90),
+    CONSTRAINT chk_geo_zona_longitud CHECK (ZON_LONGITUD BETWEEN -180 AND 180)
+);
+
+CREATE SEQUENCE seq_geo_ubicacion_id
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE seq_geo_zona_id
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE OR REPLACE FUNCTION generar_geo_id()
+RETURNS VARCHAR(40) AS $$
+DECLARE
+    nuevo_id VARCHAR(40);
+    contador INTEGER;
+BEGIN
+    contador := nextval('seq_geo_ubicacion_id');
+    nuevo_id := 'GEO' || LPAD(contador::TEXT, 5, '0');
+
+    WHILE EXISTS (SELECT 1 FROM GEO_UBICACION WHERE GEO_ID = nuevo_id) LOOP
+        contador := nextval('seq_geo_ubicacion_id');
+        nuevo_id := 'GEO' || LPAD(contador::TEXT, 5, '0');
+    END LOOP;
+
+    RETURN nuevo_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION generar_zon_id()
+RETURNS VARCHAR(40) AS $$
+DECLARE
+    nuevo_id VARCHAR(40);
+    contador INTEGER;
+BEGIN
+    contador := nextval('seq_geo_zona_id');
+    nuevo_id := 'ZON' || LPAD(contador::TEXT, 5, '0');
+
+    WHILE EXISTS (SELECT 1 FROM GEO_ZONA_INTERES WHERE ZON_ID = nuevo_id) LOOP
+        contador := nextval('seq_geo_zona_id');
+        nuevo_id := 'ZON' || LPAD(contador::TEXT, 5, '0');
+    END LOOP;
+
+    RETURN nuevo_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION trigger_asignar_geo_id()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.GEO_ID IS NULL OR NEW.GEO_ID = '' THEN
+        NEW.GEO_ID := generar_geo_id();
+    END IF;
+
+    IF TG_OP = 'INSERT' OR NEW.GEO_LATITUD IS DISTINCT FROM OLD.GEO_LATITUD OR NEW.GEO_LONGITUD IS DISTINCT FROM OLD.GEO_LONGITUD OR NEW.GEO_PUNTO IS NULL THEN
+        NEW.GEO_PUNTO := ST_SetSRID(ST_MakePoint(NEW.GEO_LONGITUD, NEW.GEO_LATITUD), 4326)::geography;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION trigger_asignar_zon_id()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.ZON_ID IS NULL OR NEW.ZON_ID = '' THEN
+        NEW.ZON_ID := generar_zon_id();
+    END IF;
+
+    IF TG_OP = 'INSERT' OR NEW.ZON_LATITUD IS DISTINCT FROM OLD.ZON_LATITUD OR NEW.ZON_LONGITUD IS DISTINCT FROM OLD.ZON_LONGITUD OR NEW.ZON_PUNTO IS NULL THEN
+        NEW.ZON_PUNTO := ST_SetSRID(ST_MakePoint(NEW.ZON_LONGITUD, NEW.ZON_LATITUD), 4326)::geography;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_asignar_geo_id
+    BEFORE INSERT OR UPDATE ON GEO_UBICACION
+    FOR EACH ROW
+    EXECUTE FUNCTION trigger_asignar_geo_id();
+
+CREATE TRIGGER tr_asignar_zon_id
+    BEFORE INSERT OR UPDATE ON GEO_ZONA_INTERES
+    FOR EACH ROW
+    EXECUTE FUNCTION trigger_asignar_zon_id();
+
+CREATE INDEX idx_geo_ubicacion_tipo_reporte ON GEO_UBICACION(TIPO_REPORTE);
+CREATE INDEX idx_geo_ubicacion_reporte ON GEO_UBICACION(REPORTE_ID);
+CREATE INDEX idx_geo_ubicacion_usuario ON GEO_UBICACION(U_ID);
+CREATE INDEX idx_geo_ubicacion_comuna ON GEO_UBICACION(GEO_COMUNA);
+CREATE INDEX idx_geo_ubicacion_region ON GEO_UBICACION(GEO_REGION);
+CREATE INDEX idx_geo_ubicacion_estado ON GEO_UBICACION(GEO_ESTADO);
+CREATE INDEX idx_geo_ubicacion_punto ON GEO_UBICACION USING GIST(GEO_PUNTO);
+
+CREATE INDEX idx_geo_zona_usuario ON GEO_ZONA_INTERES(U_ID);
+CREATE INDEX idx_geo_zona_comuna ON GEO_ZONA_INTERES(ZON_COMUNA);
+CREATE INDEX idx_geo_zona_region ON GEO_ZONA_INTERES(ZON_REGION);
+CREATE INDEX idx_geo_zona_tipo_reporte ON GEO_ZONA_INTERES(ZON_TIPO_REPORTE);
+CREATE INDEX idx_geo_zona_activa ON GEO_ZONA_INTERES(ZON_ACTIVA);
+CREATE INDEX idx_geo_zona_punto ON GEO_ZONA_INTERES USING GIST(ZON_PUNTO);
+
+INSERT INTO GEO_UBICACION (
+    TIPO_REPORTE,
+    REPORTE_ID,
+    U_ID,
+    GEO_DIRECCION,
+    GEO_COMUNA,
+    GEO_REGION,
+    GEO_LATITUD,
+    GEO_LONGITUD,
+    GEO_FUENTE,
+    GEO_ESTADO
+) VALUES
+    ('PERDIDA', 'PRD00001', 'USR00001', 'Av. Los Alamos con Av. Vitacura', 'Vitacura', 'Metropolitana', -33.3992000, -70.5831000, 'NOMINATIM', 1),
+    ('PERDIDA', 'PRD00002', 'USR00002', 'Calle Principal con Providencia', 'Providencia', 'Metropolitana', -33.4263000, -70.6170000, 'NOMINATIM', 1),
+    ('HALLAZGO', 'HAL00001', 'USR00003', 'Av. Libertador con Las Condes', 'Las Condes', 'Metropolitana', -33.4088000, -70.5673000, 'MANUAL', 1);
+
+INSERT INTO GEO_ZONA_INTERES (
+    U_ID,
+    ZON_NOMBRE,
+    ZON_DIRECCION,
+    ZON_COMUNA,
+    ZON_REGION,
+    ZON_LATITUD,
+    ZON_LONGITUD,
+    ZON_RADIO_KM,
+    ZON_TIPO_REPORTE,
+    ZON_ACTIVA
+) VALUES
+    ('USR00001', 'Casa', 'Providencia, Santiago', 'Providencia', 'Metropolitana', -33.4263000, -70.6170000, 5.00, 'AMBOS', 1),
+    ('USR00002', 'Trabajo', 'Las Condes, Santiago', 'Las Condes', 'Metropolitana', -33.4088000, -70.5673000, 3.00, 'HALLAZGO', 1),
+    ('USR00003', 'Barrio', 'Vitacura, Santiago', 'Vitacura', 'Metropolitana', -33.3992000, -70.5831000, 4.00, 'PERDIDA', 1);

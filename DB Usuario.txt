@@ -142,8 +142,5 @@ FROM information_schema.columns
 WHERE table_name = 'usuario'
 AND column_name = 'u_pass';
 
--- Ver la secuencia actual
-SELECT currval('seq_usuario_id');
-
 -- Contar usuarios por tipo
 SELECT U_Tipo, COUNT(*) as Total FROM USUARIO GROUP BY U_Tipo;

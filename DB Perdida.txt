@@ -127,21 +127,10 @@ CREATE INDEX idx_perdida_region ON PERDIDA(P_Region);
 CREATE INDEX idx_perdida_tipo ON PERDIDA(P_Tipo);
 
 -- =====================================================
--- DATOS DE EJEMPLO (OPCIONAL)
--- =====================================================
-INSERT INTO PERDIDA (U_ID, P_Nom_Masc, P_Tipo, P_Edad, P_Genero, P_Fisica, P_Perso, P_Dire_Inter, P_Comuna, P_Region, P_Fecha, P_Estado) VALUES
-    ('USR00001', 'Luna', 1, 36, 2, 'Pelo blanco, ojos azules', 'Tímida y juguetona', 'Av. Los Alamos con Av. Vitacura', 'Vitacura', 'Metropolitana', '2025-04-10', 1),
-    ('USR00002', 'Max', 1, 60, 1, 'Pelo negro, orejas grandes', 'Muy activo y amistoso', 'Calle Principal con Providencia', 'Providencia', 'Metropolitana', '2025-04-12', 1),
-    ('USR00003', 'Simba', 2, 24, 1, 'Pelaje anaranjado', 'Independiente y curioso', 'Av. Libertador con Las Condes', 'Las Condes', 'Metropolitana', '2025-04-14', 1);
-
--- =====================================================
 -- CONSULTAS DE VERIFICACIÓN
 -- =====================================================
 -- Ver todos los reportes
 SELECT * FROM PERDIDA;
-
--- Ver la secuencia actual
-SELECT currval('seq_perdida_id');
 
 -- Ver el último ID generado
 SELECT P_ID, P_Nom_Masc, U_ID, P_Fecha FROM PERDIDA ORDER BY P_Fecha DESC LIMIT 5;

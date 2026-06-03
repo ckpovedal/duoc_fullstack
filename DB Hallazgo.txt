@@ -127,21 +127,10 @@ CREATE INDEX idx_hallazgo_region ON HALLAZGO(H_Region);
 CREATE INDEX idx_hallazgo_tipo ON HALLAZGO(H_Tipo);
 
 -- =====================================================
--- DATOS DE EJEMPLO (OPCIONAL)
--- =====================================================
-INSERT INTO HALLAZGO (U_ID, H_Nom_Masc, H_Tipo, H_Edad, H_Genero, H_Fisica, H_Perso, H_Dire_Inter, H_Comuna, H_Region, H_Fecha, H_Estado) VALUES
-    ('USR00002', 'Luna', 1, 36, 2, 'Pelo blanco, ojos azules', 'Tímida y juguetona', 'Av. Los Alamos con Av. Vitacura', 'Vitacura', 'Metropolitana', '2025-04-10', 1),
-    ('USR00001', NULL, 1, 60, 1, 'Pelo negro, orejas grandes', 'Muy activo y amistoso', 'Calle Principal con Providencia', 'Providencia', 'Metropolitana', '2025-04-12', 1),
-    ('USR00003', 'Simba', 2, 24, 1, 'Pelaje anaranjado', 'Independiente y curioso', 'Av. Libertador con Las Condes', 'Las Condes', 'Metropolitana', '2025-04-14', 1);
-
--- =====================================================
 -- CONSULTAS DE VERIFICACIÓN
 -- =====================================================
 -- Ver todos los reportes de hallazgo
 SELECT * FROM HALLAZGO;
-
--- Ver la secuencia actual
-SELECT currval('seq_hallazgo_id');
 
 -- Ver el último ID generado
 SELECT H_ID, H_Nom_Masc, U_ID, H_Fecha FROM HALLAZGO ORDER BY H_Fecha DESC LIMIT 5;

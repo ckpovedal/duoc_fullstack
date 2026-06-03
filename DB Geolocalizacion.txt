@@ -160,35 +160,3 @@ CREATE INDEX idx_geo_zona_region ON GEO_ZONA_INTERES(ZON_REGION);
 CREATE INDEX idx_geo_zona_tipo_reporte ON GEO_ZONA_INTERES(ZON_TIPO_REPORTE);
 CREATE INDEX idx_geo_zona_activa ON GEO_ZONA_INTERES(ZON_ACTIVA);
 CREATE INDEX idx_geo_zona_punto ON GEO_ZONA_INTERES USING GIST(ZON_PUNTO);
-
-INSERT INTO GEO_UBICACION (
-    TIPO_REPORTE,
-    REPORTE_ID,
-    U_ID,
-    GEO_DIRECCION,
-    GEO_COMUNA,
-    GEO_REGION,
-    GEO_LATITUD,
-    GEO_LONGITUD,
-    GEO_FUENTE,
-    GEO_ESTADO
-) VALUES
-    ('PERDIDA', 'PRD00001', 'USR00001', 'Av. Los Alamos con Av. Vitacura', 'Vitacura', 'Metropolitana', -33.3992000, -70.5831000, 'NOMINATIM', 1),
-    ('PERDIDA', 'PRD00002', 'USR00002', 'Calle Principal con Providencia', 'Providencia', 'Metropolitana', -33.4263000, -70.6170000, 'NOMINATIM', 1),
-    ('HALLAZGO', 'HAL00001', 'USR00003', 'Av. Libertador con Las Condes', 'Las Condes', 'Metropolitana', -33.4088000, -70.5673000, 'MANUAL', 1);
-
-INSERT INTO GEO_ZONA_INTERES (
-    U_ID,
-    ZON_NOMBRE,
-    ZON_DIRECCION,
-    ZON_COMUNA,
-    ZON_REGION,
-    ZON_LATITUD,
-    ZON_LONGITUD,
-    ZON_RADIO_KM,
-    ZON_TIPO_REPORTE,
-    ZON_ACTIVA
-) VALUES
-    ('USR00001', 'Casa', 'Providencia, Santiago', 'Providencia', 'Metropolitana', -33.4263000, -70.6170000, 5.00, 'AMBOS', 1),
-    ('USR00002', 'Trabajo', 'Las Condes, Santiago', 'Las Condes', 'Metropolitana', -33.4088000, -70.5673000, 3.00, 'HALLAZGO', 1),
-    ('USR00003', 'Barrio', 'Vitacura, Santiago', 'Vitacura', 'Metropolitana', -33.3992000, -70.5831000, 4.00, 'PERDIDA', 1);

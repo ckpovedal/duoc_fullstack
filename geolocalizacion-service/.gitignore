@@ -1,0 +1,8 @@
+## envrioments
+.env
+logs/
+node_modules/
+work/
+Información Railway.txt
+.vscode/*
+!.vscode/settings.json

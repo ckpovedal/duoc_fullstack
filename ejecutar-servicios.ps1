@@ -21,6 +21,11 @@ Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Comma
 
 Start-Sleep -Seconds 2
 
+# Iniciar Geolocalizacion Service
+Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\geolocalizacion-service'; npm run dev"
+
+Start-Sleep -Seconds 2
+
 # Iniciar Usuario Service (Spring Boot con Maven)
 Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\usuario-service'; .\mvnw.cmd spring-boot:run"
 

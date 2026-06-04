@@ -39,4 +39,13 @@ router.use(
   })
 );
 
+router.use(
+  '/geolocalizacion',
+  protegerEscrituraReportes,
+  crearProxyServicio({
+    target: process.env.GEOLOCALIZACION_SERVICE_URL || 'http://localhost:3005',
+    pathRewrite: (path) => `/geolocalizacion${path}`,
+  })
+);
+
 module.exports = router;

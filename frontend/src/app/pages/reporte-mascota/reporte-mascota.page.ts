@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize, switchMap, timeout } from 'rxjs';
+import { finalize, of, switchMap, timeout } from 'rxjs';
 import { ToastController } from '@ionic/angular';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { cameraOutline, pawOutline } from 'ionicons/icons';
+import { cameraOutline, locateOutline, pawOutline } from 'ionicons/icons';
+import { Capacitor } from '@capacitor/core';
+import { Geolocation } from '@capacitor/geolocation';
+import * as L from 'leaflet';
 import { COMUNAS_SANTIAGO_RM, REGION_COMUNAS_SANTIAGO_RM } from '../../data/comunas-santiago-rm';
 import { GeolocalizacionService } from '../../services/geolocalizacion.service';
 import { HallazgoService } from '../../services/hallazgo.service';
@@ -35,6 +38,12 @@ interface FormularioReporteMascota {
   fecha: string;
 }
 
+interface UbicacionSeleccionada {
+  latitud: number;
+  longitud: number;
+  fuente: 'NOMINATIM' | 'GPS' | 'MANUAL';
+}
+
 @Component({
   selector: 'app-reporte-mascota',
   templateUrl: './reporte-mascota.page.html',
@@ -42,7 +51,9 @@ interface FormularioReporteMascota {
   standalone: true,
   imports: [IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class ReporteMascotaPage implements OnInit {
+export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('mapaUbicacion') mapaUbicacion?: ElementRef<HTMLDivElement>;
+
   tipoReporte: TipoReporte = 'perdida';
   tipoMascota: TipoMascota = 'perro';
   comunas = COMUNAS_SANTIAGO_RM;
@@ -50,6 +61,19 @@ export class ReporteMascotaPage implements OnInit {
   mensaje = '';
   error = '';
   imagenVistaPrevia = '';
+  geocodificandoUbicacion = false;
+  ubicacionTexto = 'Completa la direccion y comuna para ubicar el reporte en el mapa';
+  ubicacionSeleccionada: UbicacionSeleccionada | null = null;
+
+  private mapa?: L.Map;
+  private marcador?: L.Marker;
+  private temporizadorGeocodificacion?: ReturnType<typeof setTimeout>;
+  private marcadorIcono = L.divIcon({
+    className: 'marcador-ubicacion',
+    html: '<span></span>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
 
   formulario: FormularioReporteMascota = {
     nombreMascota: '',
@@ -75,10 +99,26 @@ export class ReporteMascotaPage implements OnInit {
     private router: Router,
     private toastController: ToastController
   ) {
-    addIcons({ cameraOutline, pawOutline });
+    addIcons({ cameraOutline, locateOutline, pawOutline });
   }
 
   ngOnInit() {
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.inicializarMapa();
+    }, 250);
+  }
+
+  ngOnDestroy() {
+    if (this.temporizadorGeocodificacion) {
+      clearTimeout(this.temporizadorGeocodificacion);
+    }
+
+    if (this.mapa) {
+      this.mapa.remove();
+    }
   }
 
   seleccionarTipoReporte(tipoReporte: TipoReporte) {
@@ -89,6 +129,29 @@ export class ReporteMascotaPage implements OnInit {
 
   seleccionarTipoMascota(tipoMascota: TipoMascota) {
     this.tipoMascota = tipoMascota;
+  }
+
+  programarGeocodificacion() {
+    this.ubicacionSeleccionada = null;
+    this.ubicacionTexto = 'Buscando ubicacion aproximada...';
+
+    if (this.temporizadorGeocodificacion) {
+      clearTimeout(this.temporizadorGeocodificacion);
+    }
+
+    this.temporizadorGeocodificacion = setTimeout(() => {
+      this.geocodificarYActualizarMapa();
+    }, 750);
+  }
+
+  async usarUbicacionActual() {
+    try {
+      const posicion = await this.obtenerUbicacionActual();
+      this.actualizarUbicacionMapa(posicion.latitud, posicion.longitud, 'GPS');
+      this.ubicacionTexto = 'Ubicacion actual seleccionada. Puedes mover el pin para ajustarla';
+    } catch {
+      this.mostrarMensaje('error', 'No se pudo obtener tu ubicacion actual');
+    }
   }
 
   async mostrarMensaje(tipo: 'error' | 'exito', texto: string) {
@@ -176,10 +239,9 @@ export class ReporteMascotaPage implements OnInit {
 
     this.cargando = true;
 
-    this.geocodificarFormulario()
+    this.obtenerCoordenadasParaGuardar()
       .pipe(
-        switchMap((respuestaGeo) => {
-          const coordenadas = this.obtenerCoordenadasDesdeRespuesta(respuestaGeo);
+        switchMap((coordenadas) => {
           const datosGeolocalizacion = {
             ...coordenadas,
             geo_direccion: this.obtenerDireccionGeolocalizacion()
@@ -225,6 +287,49 @@ export class ReporteMascotaPage implements OnInit {
     this.router.navigate(['/principal']);
   }
 
+  private inicializarMapa() {
+    if (!this.mapaUbicacion || this.mapa) {
+      return;
+    }
+
+    const centroInicial: L.LatLngExpression = [-33.4489, -70.6693];
+
+    this.mapa = L.map(this.mapaUbicacion.nativeElement, {
+      center: centroInicial,
+      zoom: 11,
+      zoomControl: true
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(this.mapa);
+
+    this.marcador = L.marker(centroInicial, {
+      draggable: true,
+      icon: this.marcadorIcono
+    }).addTo(this.mapa);
+
+    this.marcador.on('dragend', () => {
+      const posicion = this.marcador?.getLatLng();
+
+      if (!posicion) {
+        return;
+      }
+
+      this.ubicacionSeleccionada = {
+        latitud: posicion.lat,
+        longitud: posicion.lng,
+        fuente: 'MANUAL'
+      };
+      this.ubicacionTexto = 'Ubicacion ajustada manualmente';
+    });
+
+    setTimeout(() => {
+      this.mapa?.invalidateSize();
+    }, 300);
+  }
+
   private crearPayloadHallazgo(usuarioId: string) {
     return {
       u_id: usuarioId,
@@ -264,6 +369,53 @@ export class ReporteMascotaPage implements OnInit {
     });
   }
 
+  private geocodificarYActualizarMapa() {
+    const direccion = this.valorOpcional(this.formulario.direccion);
+    const comuna = this.valorOpcional(this.formulario.comuna);
+
+    if (!direccion && !comuna) {
+      this.ubicacionTexto = 'Completa la direccion y comuna para ubicar el reporte en el mapa';
+      return;
+    }
+
+    this.geocodificandoUbicacion = true;
+
+    this.geocodificarFormulario()
+      .pipe(
+        timeout(10000),
+        finalize(() => {
+          this.geocodificandoUbicacion = false;
+        })
+      )
+      .subscribe({
+        next: (respuesta) => {
+          const coordenadas = this.obtenerCoordenadasDesdeRespuesta(respuesta);
+          this.actualizarUbicacionMapa(coordenadas.geo_latitud, coordenadas.geo_longitud, 'NOMINATIM');
+          this.ubicacionTexto = 'Ubicacion aproximada encontrada. Puedes mover el pin para ajustarla';
+        },
+        error: () => {
+          this.ubicacionTexto = 'No se pudo ubicar automaticamente. Puedes usar tu ubicacion actual';
+        }
+      });
+  }
+
+  private obtenerCoordenadasParaGuardar() {
+    if (this.ubicacionSeleccionada) {
+      return of({
+        geo_latitud: this.ubicacionSeleccionada.latitud,
+        geo_longitud: this.ubicacionSeleccionada.longitud,
+        geo_fuente: this.ubicacionSeleccionada.fuente
+      });
+    }
+
+    return this.geocodificarFormulario().pipe(
+      switchMap((respuestaGeo) => {
+        const coordenadas = this.obtenerCoordenadasDesdeRespuesta(respuestaGeo);
+        return of(coordenadas);
+      })
+    );
+  }
+
   private obtenerCoordenadasDesdeRespuesta(respuesta: any) {
     const data = respuesta?.respuesta || respuesta?.data || respuesta;
     const resultado = data?.resultados?.[0];
@@ -277,6 +429,59 @@ export class ReporteMascotaPage implements OnInit {
       geo_longitud: Number(resultado.longitud),
       geo_fuente: 'NOMINATIM'
     };
+  }
+
+  private actualizarUbicacionMapa(latitud: number, longitud: number, fuente: UbicacionSeleccionada['fuente']) {
+    this.ubicacionSeleccionada = {
+      latitud,
+      longitud,
+      fuente
+    };
+
+    const posicion: L.LatLngExpression = [latitud, longitud];
+
+    this.marcador?.setLatLng(posicion);
+    this.mapa?.setView(posicion, 16);
+
+    setTimeout(() => {
+      this.mapa?.invalidateSize();
+    }, 100);
+  }
+
+  private async obtenerUbicacionActual() {
+    if (Capacitor.isNativePlatform()) {
+      await Geolocation.requestPermissions();
+      const posicion = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 10000
+      });
+
+      return {
+        latitud: posicion.coords.latitude,
+        longitud: posicion.coords.longitude
+      };
+    }
+
+    if (!navigator.geolocation) {
+      throw new Error('Geolocalizacion no disponible');
+    }
+
+    return new Promise<{ latitud: number; longitud: number }>((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (posicion) => {
+          resolve({
+            latitud: posicion.coords.latitude,
+            longitud: posicion.coords.longitude
+          });
+        },
+        reject,
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    });
   }
 
   private obtenerDireccionGeolocalizacion() {

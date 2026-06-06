@@ -29,8 +29,8 @@ CREATE TABLE PERDIDA (
     P_Vacunas       NUMERIC(1),
     P_Imagen        BYTEA,
     P_Dire_Inter    VARCHAR(100),
-    P_Comuna        VARCHAR(30),
-    P_Region        VARCHAR(50),
+    P_Comuna        VARCHAR(100),
+    P_Region        VARCHAR(100),
     P_Fecha         DATE DEFAULT CURRENT_DATE,
     P_Estado        NUMERIC(1) DEFAULT 1
 );

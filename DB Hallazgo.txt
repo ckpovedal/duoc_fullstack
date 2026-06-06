@@ -29,8 +29,8 @@ CREATE TABLE HALLAZGO (
     H_Vacunas       NUMERIC(1),
     H_Imagen        BYTEA,
     H_Dire_Inter    VARCHAR(100),
-    H_Comuna        VARCHAR(30),
-    H_Region        VARCHAR(50),
+    H_Comuna        VARCHAR(100),
+    H_Region        VARCHAR(100),
     H_Fecha         DATE DEFAULT CURRENT_DATE,
     H_Estado        NUMERIC(1) DEFAULT 1
 );

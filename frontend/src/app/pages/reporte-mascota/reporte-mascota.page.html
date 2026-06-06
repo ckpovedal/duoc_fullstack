@@ -130,12 +130,12 @@
 
       <label class="campo">
         <span>Dirección o intersección</span>
-        <input type="text" name="direccion" [(ngModel)]="formulario.direccion">
+        <input type="text" name="direccion" [(ngModel)]="formulario.direccion" (ngModelChange)="programarGeocodificacion()">
       </label>
 
       <label class="campo">
         <span>Comuna *</span>
-        <select name="comuna" [(ngModel)]="formulario.comuna">
+        <select name="comuna" [(ngModel)]="formulario.comuna" (ngModelChange)="programarGeocodificacion()">
           <option value="">Selecciona una comuna</option>
           <option *ngFor="let comuna of comunas" [value]="comuna.value">{{ comuna.label }}</option>
         </select>
@@ -143,8 +143,27 @@
 
       <label class="campo">
         <span>Región</span>
-        <input type="text" name="region" [(ngModel)]="formulario.region">
+        <input type="text" name="region" [(ngModel)]="formulario.region" (ngModelChange)="programarGeocodificacion()">
       </label>
+
+      <section class="mapa-ubicacion">
+        <div class="mapa-encabezado">
+          <div>
+            <span>Ubicación del reporte</span>
+            <strong>{{ ubicacionTexto }}</strong>
+          </div>
+
+          <button class="boton-ubicacion" type="button" [disabled]="cargando || geocodificandoUbicacion" (click)="usarUbicacionActual()">
+            <ion-icon name="locate-outline"></ion-icon>
+          </button>
+        </div>
+
+        <div #mapaUbicacion class="mapa"></div>
+
+        <p class="coordenadas" *ngIf="ubicacionSeleccionada">
+          {{ ubicacionSeleccionada.latitud | number:'1.6-6' }}, {{ ubicacionSeleccionada.longitud | number:'1.6-6' }}
+        </p>
+      </section>
 
       <label class="campo">
         <span>Fecha</span>

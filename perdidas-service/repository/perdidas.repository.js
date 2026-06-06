@@ -157,6 +157,12 @@ class PerdidasRepository {
     const result = await pool.query(query, [id, estado]);
     return result.rows[0] || null;
   }
+
+  async eliminarPerdida(id) {
+    const query = 'DELETE FROM perdida WHERE p_id = $1 RETURNING *;';
+    const result = await pool.query(query, [id]);
+    return result.rows[0] || null;
+  }
 }
 
 module.exports = new PerdidasRepository();

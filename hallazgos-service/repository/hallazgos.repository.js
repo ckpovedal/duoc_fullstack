@@ -185,6 +185,12 @@ class HallazgosRepository {
     const result = await pool.query(query, values);
     return result.rows[0] || null;
   }
+
+  async eliminarHallazgo(id) {
+    const query = 'DELETE FROM hallazgo WHERE h_id = $1 RETURNING *;';
+    const result = await pool.query(query, [id]);
+    return result.rows[0] || null;
+  }
 }
 
 module.exports = new HallazgosRepository();

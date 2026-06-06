@@ -1,5 +1,6 @@
 const perdidasRepository = require('../repository/perdidas.repository');
 const usuariosClient = require('../clients/usuarios.client');
+const geolocalizacionClient = require('../clients/geolocalizacion.client');
 const AppError = require('../utils/AppError');
 const { logger } = require('../middleware/logger');
 
@@ -47,15 +48,25 @@ class PerdidasService {
     const huella = this.construirHuellaPerdida(datosReporte);
     this.registrarReporteReciente(huella);
 
+    let perdidaCreada = null;
+
     try {
-      const perdidaCreada = await perdidasRepository.crearPerdida(datosReporte);
+      perdidaCreada = await perdidasRepository.crearPerdida(datosReporte);
+      const ubicacion = await geolocalizacionClient.guardarUbicacionPerdida(perdidaCreada, datosReporte, usuarioId);
 
       return {
         ...perdidaCreada,
-        tipoReporte: 'PERDIDO'
+        tipoReporte: 'PERDIDO',
+        ubicacion
       }
     } catch (error) {
       this.reportesRecientes.delete(huella);
+
+      if (perdidaCreada?.p_id) {
+        await perdidasRepository.eliminarPerdida(perdidaCreada.p_id);
+        throw new AppError('Hubo un error al guardar la informacion del reporte', 500);
+      }
+
       throw error;
     }
   }

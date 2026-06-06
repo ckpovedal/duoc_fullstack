@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize, timeout } from 'rxjs';
+import { finalize, switchMap, timeout } from 'rxjs';
 import { ToastController } from '@ionic/angular';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { cameraOutline, pawOutline } from 'ionicons/icons';
 import { COMUNAS_SANTIAGO_RM, REGION_COMUNAS_SANTIAGO_RM } from '../../data/comunas-santiago-rm';
+import { GeolocalizacionService } from '../../services/geolocalizacion.service';
 import { HallazgoService } from '../../services/hallazgo.service';
 import { PerdidaService } from '../../services/perdida.service';
 
@@ -70,6 +71,7 @@ export class ReporteMascotaPage implements OnInit {
   constructor(
     private hallazgoService: HallazgoService,
     private perdidaService: PerdidaService,
+    private geolocalizacionService: GeolocalizacionService,
     private router: Router,
     private toastController: ToastController
   ) {
@@ -174,12 +176,29 @@ export class ReporteMascotaPage implements OnInit {
 
     this.cargando = true;
 
-    const servicio = this.tipoReporte === 'hallazgo'
-      ? this.hallazgoService.crearHallazgo(this.crearPayloadHallazgo(usuarioId))
-      : this.perdidaService.crearPerdida(this.crearPayloadPerdida(usuarioId));
-
-    servicio
+    this.geocodificarFormulario()
       .pipe(
+        switchMap((respuestaGeo) => {
+          const coordenadas = this.obtenerCoordenadasDesdeRespuesta(respuestaGeo);
+          const datosGeolocalizacion = {
+            ...coordenadas,
+            geo_direccion: this.obtenerDireccionGeolocalizacion()
+          };
+
+          const payload = this.tipoReporte === 'hallazgo'
+            ? {
+                ...this.crearPayloadHallazgo(usuarioId),
+                ...datosGeolocalizacion
+              }
+            : {
+                ...this.crearPayloadPerdida(usuarioId),
+                ...datosGeolocalizacion
+              };
+
+          return this.tipoReporte === 'hallazgo'
+            ? this.hallazgoService.crearHallazgo(payload)
+            : this.perdidaService.crearPerdida(payload);
+        }),
         timeout(10000),
         finalize(() => {
           this.cargando = false;
@@ -225,6 +244,47 @@ export class ReporteMascotaPage implements OnInit {
       h_fecha: this.valorOpcional(this.formulario.fecha),
       h_estado: 1
     };
+  }
+
+  private geocodificarFormulario() {
+    const direccion = this.valorOpcional(this.formulario.direccion);
+    const comuna = this.valorOpcional(this.formulario.comuna);
+    const region = this.valorOpcional(this.formulario.region);
+    const direccionBusqueda = direccion || comuna;
+
+    if (!direccionBusqueda) {
+      throw new Error('Debes ingresar una direccion o comuna para geolocalizar el reporte');
+    }
+
+    return this.geolocalizacionService.geocodificar({
+      direccion: direccionBusqueda,
+      comuna: comuna || undefined,
+      region: region || undefined,
+      limite: 1
+    });
+  }
+
+  private obtenerCoordenadasDesdeRespuesta(respuesta: any) {
+    const data = respuesta?.respuesta || respuesta?.data || respuesta;
+    const resultado = data?.resultados?.[0];
+
+    if (!resultado || resultado.latitud === null || resultado.longitud === null) {
+      throw new Error('No se pudo obtener una ubicacion valida para la direccion ingresada');
+    }
+
+    return {
+      geo_latitud: Number(resultado.latitud),
+      geo_longitud: Number(resultado.longitud),
+      geo_fuente: 'NOMINATIM'
+    };
+  }
+
+  private obtenerDireccionGeolocalizacion() {
+    const direccion = this.valorOpcional(this.formulario.direccion);
+    const comuna = this.valorOpcional(this.formulario.comuna);
+    const region = this.valorOpcional(this.formulario.region);
+
+    return [direccion, comuna, region].filter(Boolean).join(', ');
   }
 
   private crearPayloadPerdida(usuarioId: string) {
@@ -345,6 +405,10 @@ export class ReporteMascotaPage implements OnInit {
 
     if (error?.status === 413) {
       return 'La imagen es demasiado pesada. Selecciona una imagen mas liviana e intenta nuevamente';
+    }
+
+    if (error instanceof Error && error.message) {
+      return error.message;
     }
 
     return error?.error?.mensaje || 'No se pudo guardar el reporte. Intenta nuevamente';

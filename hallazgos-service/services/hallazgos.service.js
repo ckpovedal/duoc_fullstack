@@ -1,5 +1,6 @@
 const hallazgosRepository = require('../repository/hallazgos.repository');
 const usuariosClient = require('../clients/usuarios.client');
+const geolocalizacionClient = require('../clients/geolocalizacion.client');
 const AppError = require('../utils/AppError');
 const { logger } = require('../middleware/logger');
 
@@ -43,15 +44,25 @@ class HallazgosService {
     const huella = this.construirHuellaHallazgo(datosReporte);
     this.registrarReporteReciente(huella);
 
+    let hallazgoCreado = null;
+
     try {
-      const hallazgoCreado = await hallazgosRepository.crearHallazgo(datosReporte);
+      hallazgoCreado = await hallazgosRepository.crearHallazgo(datosReporte);
+      const ubicacion = await geolocalizacionClient.guardarUbicacionHallazgo(hallazgoCreado, datosReporte, usuarioId);
       
       return {
         ...hallazgoCreado,
-        tipoReporte: 'HALLADO'
+        tipoReporte: 'HALLADO',
+        ubicacion
       }
     } catch (error) {
       this.reportesRecientes.delete(huella);
+
+      if (hallazgoCreado?.h_id) {
+        await hallazgosRepository.eliminarHallazgo(hallazgoCreado.h_id);
+        throw new AppError('Hubo un error al guardar la informacion del reporte', 500);
+      }
+
       throw error;
     }
   }

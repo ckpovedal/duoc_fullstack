@@ -61,4 +61,8 @@ export class GeolocalizacionService {
 
     return this.http.get(`${this.apiUrl}/reverso`, { params });
   }
+
+  obtenerUbicacionReporte(tipoReporte: 'PERDIDA' | 'HALLAZGO', reporteId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/reportes/${tipoReporte}/${reporteId}`);
+  }
 }

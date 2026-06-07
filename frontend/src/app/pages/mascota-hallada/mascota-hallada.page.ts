@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, chevronBackOutline, locationOutline, pawOutline, personOutline } from 'ionicons/icons';
+import { calendarOutline, chevronBackOutline, homeOutline, locationOutline, pawOutline, personOutline } from 'ionicons/icons';
+import * as L from 'leaflet';
 import { HallazgoService } from '../../services/hallazgo.service';
+import { GeolocalizacionService } from '../../services/geolocalizacion.service';
 import {
   formatearFechaReporte,
   obtenerClaseEstado,
@@ -36,6 +38,12 @@ interface MascotaHalladaVista {
   estado: string;
   estadoClase: string;
   publicadoPor: string;
+  ubicacion: UbicacionReporteVista | null;
+}
+
+interface UbicacionReporteVista {
+  latitud: number;
+  longitud: number;
 }
 
 @Component({
@@ -45,17 +53,28 @@ interface MascotaHalladaVista {
   standalone: true,
   imports: [IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar, CommonModule]
 })
-export class MascotaHalladaPage implements OnInit {
+export class MascotaHalladaPage implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('mapaDetalle') mapaDetalle?: ElementRef<HTMLDivElement>;
+
   mascota: MascotaHalladaVista | null = null;
   cargando = false;
   error = '';
+  private mapa?: L.Map;
+  private marcador?: L.Marker;
+  private marcadorIcono = L.divIcon({
+    className: 'marcador-ubicacion',
+    html: '<span></span>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private hallazgoService: HallazgoService
+    private hallazgoService: HallazgoService,
+    private geolocalizacionService: GeolocalizacionService
   ) {
-    addIcons({ calendarOutline, chevronBackOutline, locationOutline, pawOutline, personOutline });
+    addIcons({ calendarOutline, chevronBackOutline, homeOutline, locationOutline, pawOutline, personOutline });
   }
 
   ngOnInit() {
@@ -67,6 +86,18 @@ export class MascotaHalladaPage implements OnInit {
     }
 
     this.cargarHallazgo(id);
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.inicializarMapa();
+    }, 250);
+  }
+
+  ngOnDestroy() {
+    if (this.mapa) {
+      this.mapa.remove();
+    }
   }
 
   volver() {
@@ -92,6 +123,7 @@ export class MascotaHalladaPage implements OnInit {
         next: (respuesta) => {
           const data = respuesta?.respuesta || respuesta?.data || respuesta;
           this.mascota = this.normalizarHallazgo(data);
+          this.cargarUbicacionReporte(id);
         },
         error: (error) => {
           this.error = this.obtenerMensajeError(error);
@@ -128,8 +160,80 @@ export class MascotaHalladaPage implements OnInit {
         hallazgo.usuario_id ??
         hallazgo.u_id,
         'Usuario no informado'
-      )
+      ),
+      ubicacion: null
     };
+  }
+
+  private cargarUbicacionReporte(id: string) {
+    this.geolocalizacionService.obtenerUbicacionReporte('HALLAZGO', id)
+      .pipe(timeout(10000))
+      .subscribe({
+        next: (respuesta) => {
+          const data = respuesta?.respuesta || respuesta?.data || respuesta;
+          const latitud = Number(data?.latitud ?? data?.geo_latitud);
+          const longitud = Number(data?.longitud ?? data?.geo_longitud);
+
+          if (!Number.isFinite(latitud) || !Number.isFinite(longitud) || !this.mascota) {
+            return;
+          }
+
+          this.mascota = {
+            ...this.mascota,
+            ubicacion: {
+              latitud,
+              longitud
+            }
+          };
+
+          setTimeout(() => {
+            this.inicializarMapa();
+            this.actualizarMapa(latitud, longitud);
+          }, 100);
+        },
+        error: () => {}
+      });
+  }
+
+  private inicializarMapa() {
+    if (!this.mapaDetalle || this.mapa) {
+      return;
+    }
+
+    const centroInicial: L.LatLngExpression = [-33.4489, -70.6693];
+
+    this.mapa = L.map(this.mapaDetalle.nativeElement, {
+      center: centroInicial,
+      zoom: 13,
+      zoomControl: true,
+      dragging: false,
+      scrollWheelZoom: false
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(this.mapa);
+
+    this.marcador = L.marker(centroInicial, {
+      draggable: false,
+      icon: this.marcadorIcono
+    }).addTo(this.mapa);
+
+    setTimeout(() => {
+      this.mapa?.invalidateSize();
+    }, 300);
+  }
+
+  private actualizarMapa(latitud: number, longitud: number) {
+    const posicion: L.LatLngExpression = [latitud, longitud];
+
+    this.marcador?.setLatLng(posicion);
+    this.mapa?.setView(posicion, 16);
+
+    setTimeout(() => {
+      this.mapa?.invalidateSize();
+    }, 100);
   }
 
   private obtenerMensajeError(error: any): string {

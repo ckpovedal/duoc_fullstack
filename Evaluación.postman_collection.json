@@ -167,7 +167,13 @@
           "name": "Listar Usuarios",
           "request": {
             "method": "GET",
-            "header": [],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
             "url": {
               "raw": "{{api_gateway_url}}/api/usuarios",
               "host": [
@@ -185,7 +191,13 @@
           "name": "Obtener Usuario",
           "request": {
             "method": "GET",
-            "header": [],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
             "url": {
               "raw": "{{api_gateway_url}}/api/usuarios/{{usuario_id}}",
               "host": [
@@ -208,6 +220,11 @@
               {
                 "key": "Content-Type",
                 "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
                 "type": "text"
               }
             ],
@@ -538,6 +555,45 @@
           "request": {
             "method": "GET",
             "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/hallazgos/{{hallazgo_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "hallazgos",
+                "{{hallazgo_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Hallazgo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"u_id\": \"{{usuario_id}}\",\n  \"h_nom_masc\": \"Luna\",\n  \"h_tipo\": 1,\n  \"h_edad\": 36,\n  \"h_genero\": 2,\n  \"h_fisica\": \"Pelo blanco, ojos azules\",\n  \"h_perso\": \"Timida y juguetona\",\n  \"h_inf_adic\": \"Vista cerca de una plaza actualizada\",\n  \"h_esterilizado\": 1,\n  \"h_vacunas\": 1,\n  \"h_dire_inter\": \"Av. Los Alamos con Av. Vitacura\",\n  \"h_comuna\": \"Vitacura\",\n  \"h_region\": \"Metropolitana\",\n  \"h_estado\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{api_gateway_url}}/api/hallazgos/{{hallazgo_id}}",
               "host": [

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonList, IonText, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { UsuarioService } from '../../services/usuario.service';
+import { SesionService } from '../../services/sesion.service';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ export class LoginPage implements OnInit {
 
   constructor(
     private usuarioService: UsuarioService,
+    private sesionService: SesionService,
     private router: Router
   ) { }
 
@@ -58,15 +60,7 @@ export class LoginPage implements OnInit {
         const usuario = login?.usuario || login;
         const token = login?.token || '';
 
-        localStorage.setItem('usuario', JSON.stringify(usuario));
-
-        if (usuario?.idUsuario) {
-          localStorage.setItem('usuario_id', usuario.idUsuario);
-        }
-
-        if (token) {
-          localStorage.setItem('token', token);
-        }
+        this.sesionService.guardarSesion(usuario, token);
 
         this.router.navigate(['/principal']);
       },

@@ -12,7 +12,14 @@ const { logger, requestLogger } = require('./middleware/logger');
 const app = express();
 const puerto = process.env.API_GATEWAY_PORT || 3001;
 
-app.use(cors());
+const corsOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: corsOrigins.length > 0 ? corsOrigins : true
+}));
 app.use(express.json({ limit: '70mb' }));
 app.use(requestLogger);
 

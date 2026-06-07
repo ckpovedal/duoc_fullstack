@@ -8,6 +8,7 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLis
 import { UsuarioService } from '../../services/usuario.service';
 import { PerdidaService } from '../../services/perdida.service';
 import { HallazgoService } from '../../services/hallazgo.service';
+import { SesionService } from '../../services/sesion.service';
 import {
   OpcionComuna,
   REGION_CHILE_POR_DEFECTO,
@@ -102,7 +103,8 @@ export class MiPerfilPage implements OnInit {
     private perdidaService: PerdidaService,
     private hallazgoService: HallazgoService,
     private router: Router,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private sesionService: SesionService
   ) { }
 
   ngOnInit() {
@@ -572,36 +574,11 @@ export class MiPerfilPage implements OnInit {
   }
 
   private obtenerUsuarioId() {
-    const usuarioId = localStorage.getItem('usuario_id');
-
-    if (usuarioId) {
-      return usuarioId;
-    }
-
-    const usuarioGuardado = localStorage.getItem('usuario');
-
-    if (!usuarioGuardado) {
-      return '';
-    }
-
-    try {
-      const usuario = JSON.parse(usuarioGuardado);
-      return usuario?.idUsuario || usuario?.u_id || usuario?.U_ID || '';
-    } catch {
-      return '';
-    }
+    return this.sesionService.obtenerUsuarioId();
   }
 
   private actualizarSesion(usuario: any) {
-    if (!usuario) {
-      return;
-    }
-
-    localStorage.setItem('usuario', JSON.stringify(usuario));
-
-    if (usuario?.idUsuario || usuario?.u_id || usuario?.U_ID) {
-      localStorage.setItem('usuario_id', usuario.idUsuario || usuario.u_id || usuario.U_ID);
-    }
+    this.sesionService.actualizarUsuario(usuario);
   }
 
   private obtenerTexto(valor: any) {

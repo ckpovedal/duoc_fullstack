@@ -32,7 +32,7 @@ Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Comma
 Start-Sleep -Seconds 2
 
 # Iniciar Frontend
-Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\frontend'; ionic serve"
+Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\frontend'; npm start"
 
 Write-Host "Todos los servicios han sido iniciados!" -ForegroundColor Green
 Write-Host "Logs disponibles en: $logsPath" -ForegroundColor Cyan

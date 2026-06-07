@@ -21,6 +21,7 @@ import {
 import { GeolocalizacionService } from '../../services/geolocalizacion.service';
 import { HallazgoService } from '../../services/hallazgo.service';
 import { PerdidaService } from '../../services/perdida.service';
+import { SesionService } from '../../services/sesion.service';
 
 const TAMANO_MAXIMO_IMAGEN_BYTES = 30 * 1024 * 1024;
 
@@ -105,7 +106,8 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
     private perdidaService: PerdidaService,
     private geolocalizacionService: GeolocalizacionService,
     private router: Router,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private sesionService: SesionService
   ) {
     addIcons({ cameraOutline, locateOutline, pawOutline });
   }
@@ -650,24 +652,7 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private obtenerUsuarioId() {
-    const usuarioId = localStorage.getItem('usuario_id');
-
-    if (usuarioId) {
-      return usuarioId;
-    }
-
-    const usuarioGuardado = localStorage.getItem('usuario');
-
-    if (!usuarioGuardado) {
-      return '';
-    }
-
-    try {
-      const usuario = JSON.parse(usuarioGuardado);
-      return usuario?.idUsuario || usuario?.u_id || usuario?.U_ID || '';
-    } catch {
-      return '';
-    }
+    return this.sesionService.obtenerUsuarioId();
   }
 
   private obtenerMensajeError(error: any) {

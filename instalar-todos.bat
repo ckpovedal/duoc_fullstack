@@ -9,8 +9,8 @@ cd frontend
 call npm install
 cd ..
 
-echo [2/6] Instalando api-Gateway...
-cd api-Gateway
+echo [2/6] Instalando api-gateway...
+cd api-gateway
 call npm install
 cd ..
 
@@ -36,6 +36,6 @@ cd ..
 
 echo.
 echo ========================================
-echo  ¡Todos los servicios instalados!
+echo  Todos los servicios instalados!
 echo ========================================
 pause

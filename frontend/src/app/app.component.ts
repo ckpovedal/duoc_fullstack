@@ -7,6 +7,7 @@ import { IonApp, IonIcon, IonRouterOutlet} from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
 import { addCircle, homeOutline, pawOutline, personCircleOutline, searchOutline} from 'ionicons/icons';
+import { SesionService } from './services/sesion.service';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +28,7 @@ export class AppComponent {
 
   estaLogueado = false;
 
-  constructor( private titleService: Title, private router: Router) {
+  constructor( private titleService: Title, private router: Router, private sesionService: SesionService) {
     this.titleService.setTitle('Sanos y Salvos');
     addIcons({ addCircle, homeOutline, pawOutline, personCircleOutline, searchOutline});
     this.validarSesion();
@@ -40,13 +41,11 @@ export class AppComponent {
   }
 
   validarSesion() {
-    this.estaLogueado = !!localStorage.getItem('token');
+    this.estaLogueado = this.sesionService.sesionActiva();
   }
 
   logout() {
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('usuario_id');
-    localStorage.removeItem('token');
+    this.sesionService.cerrarSesion();
     this.estaLogueado = false;
     this.router.navigate(['/inicio']);
   }

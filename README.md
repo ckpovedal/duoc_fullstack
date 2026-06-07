@@ -1,6 +1,6 @@
 # Sanos y Salvos
 
-Plataforma para registrar mascotas perdidas, publicar mascotas encontradas y buscar posibles coincidencias entre reportes.
+Plataforma web y movil para registrar mascotas perdidas, publicar mascotas encontradas y buscar posibles coincidencias entre reportes.
 
 ## Descripcion
 
@@ -11,6 +11,7 @@ Funciones principales:
 - Registro, login y edicion de usuarios.
 - Registro de mascotas perdidas y encontradas.
 - Listado, detalle y busqueda de reportes.
+- Geolocalizacion de reportes.
 - Busqueda de coincidencias entre perdidas y hallazgos.
 - Autenticacion con JWT para acciones protegidas.
 
@@ -18,24 +19,12 @@ Funciones principales:
 
 | Area | Tecnologias |
 | --- | --- |
-| Frontend | Ionic, Angular, TypeScript |
+| Frontend | Ionic, Angular, TypeScript, Capacitor |
 | Backend Node.js | Express, http-proxy-middleware, pino |
 | Backend Java | Spring Boot, Spring Data JPA |
 | Base de datos | PostgreSQL |
+| App movil | Android con Capacitor |
 | Autenticacion | JWT |
-
-## Estructura
-
-```text
-duoc_fullstack/
-  frontend/
-  api-gateway/
-  usuario-service/
-  perdidas-service/
-  hallazgos-service/
-  buscador-service/
-  logs/
-```
 
 ## Servicios
 
@@ -43,10 +32,12 @@ duoc_fullstack/
 | --- | --- | --- |
 | `frontend` | `4200` o `8100` | Aplicacion Ionic/Angular. |
 | `api-gateway` | `3001` | Punto de entrada para el frontend. |
-| `usuario-service` | `3004` | Usuarios, login, claves hasheadas y JWT. |
+| `usuario-service` | `3004` | Usuarios, login y JWT. |
 | `perdidas-service` | `3000` | Reportes de mascotas perdidas. |
 | `hallazgos-service` | `3003` | Reportes de mascotas encontradas. |
 | `buscador-service` | `3002` | Coincidencias entre reportes. |
+| `geolocalizacion-service` | `3005` | Geocodificacion y ubicacion de reportes. |
+| `eureka-server` | `8761` | Servicio de registro, disponible si se requiere. |
 
 ## Base De Datos
 
@@ -55,16 +46,9 @@ Los scripts estan en la raiz del proyecto:
 - `DB Usuario.txt`
 - `DB Perdida.txt`
 - `DB Hallazgo.txt`
+- `DB Geolocalizacion.txt`
 
-Bases utilizadas:
-
-| Servicio | Base de datos | Tabla |
-| --- | --- | --- |
-| `usuario-service` | `usuario_db` | `USUARIO` |
-| `perdidas-service` | `perdida_db` | `PERDIDA` |
-| `hallazgos-service` | `hallazgo_db` | `HALLAZGO` |
-
-`buscador-service` no tiene base de datos propia; consulta perdidas y hallazgos.
+Cada servicio con persistencia usa su propia base de datos PostgreSQL.
 
 ## Variables De Entorno
 
@@ -74,97 +58,75 @@ Crear un archivo `.env` en la raiz usando `.env.example` como base:
 Copy-Item .env.example .env
 ```
 
-Variables principales:
+Configurar las variables de puertos, URLs internas, conexion a base de datos, JWT, CORS y logs segun el entorno local.
 
-- Puertos y URLs de servicios: `API_GATEWAY_PORT`, `USUARIO_SERVICE_URL`, `PERDIDAS_SERVICE_URL`, `HALLAZGOS_SERVICE_URL`, `BUSCADOR_SERVICE_URL`.
-- Conexion a PostgreSQL: `USUARIO_DB_*`, `PERDIDAS_DB_*`, `HALLAZGOS_DB_*`.
-- JWT: `JWT_SECRET`, `JWT_EXPIRACION_MS`.
-- Logs: `LOG_LEVEL`.
+No subir archivos `.env` al repositorio.
 
 ## Instalacion
 
-Instalar dependencias manualmente:
-
-```bash
-cd frontend
-npm install
-
-cd ../api-gateway
-npm install
-
-cd ../perdidas-service
-npm install
-
-cd ../hallazgos-service
-npm install
-
-cd ../buscador-service
-npm install
-```
-
-`usuario-service` usa Maven Wrapper, por lo que no requiere `npm install`.
-
-Tambien se puede instalar todo desde la raiz:
+Instalar dependencias desde la raiz:
 
 ```powershell
 .\instalar-todos.bat
 ```
 
-## Ejecucion
+O manualmente en cada servicio Node.js:
+
+```bash
+npm install
+```
+
+`usuario-service` y `eureka-server` usan Maven Wrapper.
+
+## Ejecucion Local
 
 Antes de levantar la aplicacion, crear las bases de datos y ejecutar los scripts SQL correspondientes.
 
-Para levantar todo desde la raiz:
+Para levantar los servicios principales desde la raiz:
 
 ```powershell
 .\ejecutar-servicios.ps1
 ```
 
-Para levantar manualmente:
-
-```bash
-cd api-gateway
-npm run dev
-```
-
-```bash
-cd perdidas-service
-npm run dev
-```
-
-```bash
-cd hallazgos-service
-npm run dev
-```
-
-```bash
-cd buscador-service
-npm run dev
-```
-
-```powershell
-cd usuario-service
-.\mvnw.cmd spring-boot:run
-```
+Para levantar el frontend manualmente:
 
 ```bash
 cd frontend
-npm start
-```
-
-Si se usa Ionic CLI:
-
-```bash
 ionic serve
 ```
 
-## Endpoints Principales
+Tambien se puede usar:
 
-El frontend consume el backend desde:
+```bash
+npm start
+```
+
+El frontend local consume el backend desde:
 
 ```text
 http://localhost:3001/api
 ```
+
+## Android Local
+
+El proyecto frontend esta preparado con Capacitor para Android.
+
+Para compilar la version usada por emulador Android:
+
+```powershell
+cd frontend
+npx ng build --configuration android
+npx cap sync android
+npx cap open android
+```
+
+En emulador Android, la app usa `10.0.2.2` para conectarse al backend local de la maquina anfitriona.
+
+Antes de ejecutar la app en Android Studio, los servicios backend deben estar levantados localmente.
+
+## Endpoints Principales
+
+El frontend consume las rutas mediante el `api-gateway`:
 
 | Metodo | Ruta | Uso |
 | --- | --- | --- |
@@ -181,31 +143,30 @@ http://localhost:3001/api
 | POST | `/api/hallazgos` | Crear hallazgo. |
 | GET | `/api/hallazgos/:id` | Ver hallazgo. |
 | PUT | `/api/hallazgos/:id` | Actualizar hallazgo. |
-| GET | `/api/buscador` | Buscar coincidencias por parametros. |
+| GET | `/api/buscador` | Buscar coincidencias. |
 | GET | `/api/buscador/:perdidaId` | Buscar coincidencias desde una perdida. |
+| GET | `/api/geolocalizacion/geocodificar` | Buscar coordenadas por direccion. |
+| GET | `/api/geolocalizacion/reverso` | Buscar direccion por coordenadas. |
 
-Los servicios tambien tienen `GET /health` para revisar si estan operativos.
+Los servicios incluyen endpoint `GET /health` para revision local.
 
 ## Autenticacion
 
-El login entrega un token JWT. Las acciones de escritura deben enviarlo en el header:
+El login entrega un token JWT. Las acciones protegidas deben enviar el token en el header:
 
 ```text
 Authorization: Bearer <token>
 ```
 
-Crear y editar reportes requiere sesion iniciada. Las consultas publicas de perdidas, hallazgos y buscador no requieren token.
-
-## Logs
-
-Los logs locales quedan en la carpeta `logs/`. El nivel se controla con `LOG_LEVEL` desde `.env`.
+Crear y editar reportes requiere sesion iniciada. Las consultas publicas de reportes y busqueda no requieren sesion.
 
 ## Consideraciones
 
-- Los scripts de base de datos incluyen `DROP TABLE`, por lo que reinician las tablas si se ejecutan completos.
 - El gateway es el punto de entrada recomendado para el frontend.
-- `perdidas-service` y `hallazgos-service` validan usuarios consultando `usuario-service`.
-- No subir `.env`, logs ni archivos temporales al repositorio.
+- Mantener secretos, credenciales y configuraciones privadas fuera del repositorio.
+- Los scripts SQL pueden reiniciar tablas si se ejecutan completos.
+- Para pruebas Android locales se debe usar la configuracion `android` del frontend.
+- Para produccion se debe configurar una URL publica segura para el gateway.
 
 ## Equipo
 

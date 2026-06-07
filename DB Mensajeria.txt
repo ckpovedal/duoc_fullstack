@@ -1,0 +1,151 @@
+DROP TABLE IF EXISTS MENSAJE CASCADE;
+DROP TABLE IF EXISTS CONVERSACION CASCADE;
+
+DROP SEQUENCE IF EXISTS seq_conversacion_id CASCADE;
+DROP SEQUENCE IF EXISTS seq_mensaje_id CASCADE;
+
+DROP FUNCTION IF EXISTS generar_conv_id() CASCADE;
+DROP FUNCTION IF EXISTS generar_msg_id() CASCADE;
+DROP FUNCTION IF EXISTS trigger_asignar_conv_id() CASCADE;
+DROP FUNCTION IF EXISTS trigger_asignar_msg_id() CASCADE;
+
+CREATE TABLE CONVERSACION (
+    CONV_ID          VARCHAR(40) PRIMARY KEY,
+    TIPO_REPORTE     VARCHAR(20) NOT NULL,
+    REPORTE_ID       VARCHAR(40) NOT NULL,
+    U_ID_DUENO       VARCHAR(40) NOT NULL,
+    U_ID_CONTACTO    VARCHAR(40) NOT NULL,
+    CONV_FECHA       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONV_ESTADO      NUMERIC(1) DEFAULT 1,
+
+    CONSTRAINT chk_conversacion_tipo_reporte CHECK (TIPO_REPORTE IN ('PERDIDA', 'HALLAZGO')),
+    CONSTRAINT chk_conversacion_estado CHECK (CONV_ESTADO IN (1, 2, 3)),
+    CONSTRAINT chk_conversacion_usuarios CHECK (U_ID_DUENO <> U_ID_CONTACTO),
+    CONSTRAINT uq_conversacion_participantes UNIQUE (TIPO_REPORTE, REPORTE_ID, U_ID_DUENO, U_ID_CONTACTO)
+);
+
+CREATE TABLE MENSAJE (
+    MSG_ID           VARCHAR(40) PRIMARY KEY,
+    CONV_ID          VARCHAR(40) NOT NULL,
+    U_ID_EMISOR      VARCHAR(40) NOT NULL,
+    U_ID_RECEPTOR    VARCHAR(40) NOT NULL,
+    MSG_CONTENIDO    VARCHAR(1000) NOT NULL,
+    MSG_FECHA        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    MSG_LEIDO        NUMERIC(1) DEFAULT 2,
+    MSG_ESTADO       NUMERIC(1) DEFAULT 1,
+
+    CONSTRAINT fk_mensaje_conversacion FOREIGN KEY (CONV_ID) REFERENCES CONVERSACION(CONV_ID) ON DELETE CASCADE,
+    CONSTRAINT chk_mensaje_leido CHECK (MSG_LEIDO IN (1, 2)),
+    CONSTRAINT chk_mensaje_estado CHECK (MSG_ESTADO IN (1, 2, 3)),
+    CONSTRAINT chk_mensaje_usuarios CHECK (U_ID_EMISOR <> U_ID_RECEPTOR),
+    CONSTRAINT chk_mensaje_contenido CHECK (LENGTH(TRIM(MSG_CONTENIDO)) > 0)
+);
+
+CREATE SEQUENCE seq_conversacion_id
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE seq_mensaje_id
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE OR REPLACE FUNCTION generar_conv_id()
+RETURNS VARCHAR(40) AS $$
+DECLARE
+    nuevo_id VARCHAR(40);
+    contador INTEGER;
+BEGIN
+    contador := nextval('seq_conversacion_id');
+    nuevo_id := 'CNV' || LPAD(contador::TEXT, 5, '0');
+
+    WHILE EXISTS (SELECT 1 FROM CONVERSACION WHERE CONV_ID = nuevo_id) LOOP
+        contador := nextval('seq_conversacion_id');
+        nuevo_id := 'CNV' || LPAD(contador::TEXT, 5, '0');
+    END LOOP;
+
+    RETURN nuevo_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION generar_msg_id()
+RETURNS VARCHAR(40) AS $$
+DECLARE
+    nuevo_id VARCHAR(40);
+    contador INTEGER;
+BEGIN
+    contador := nextval('seq_mensaje_id');
+    nuevo_id := 'MSG' || LPAD(contador::TEXT, 5, '0');
+
+    WHILE EXISTS (SELECT 1 FROM MENSAJE WHERE MSG_ID = nuevo_id) LOOP
+        contador := nextval('seq_mensaje_id');
+        nuevo_id := 'MSG' || LPAD(contador::TEXT, 5, '0');
+    END LOOP;
+
+    RETURN nuevo_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION trigger_asignar_conv_id()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.CONV_ID IS NULL OR NEW.CONV_ID = '' THEN
+        NEW.CONV_ID := generar_conv_id();
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION trigger_asignar_msg_id()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.MSG_ID IS NULL OR NEW.MSG_ID = '' THEN
+        NEW.MSG_ID := generar_msg_id();
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_asignar_conv_id
+    BEFORE INSERT ON CONVERSACION
+    FOR EACH ROW
+    EXECUTE FUNCTION trigger_asignar_conv_id();
+
+CREATE TRIGGER tr_asignar_msg_id
+    BEFORE INSERT ON MENSAJE
+    FOR EACH ROW
+    EXECUTE FUNCTION trigger_asignar_msg_id();
+
+CREATE INDEX idx_conversacion_tipo_reporte ON CONVERSACION(TIPO_REPORTE);
+CREATE INDEX idx_conversacion_reporte ON CONVERSACION(REPORTE_ID);
+CREATE INDEX idx_conversacion_dueno ON CONVERSACION(U_ID_DUENO);
+CREATE INDEX idx_conversacion_contacto ON CONVERSACION(U_ID_CONTACTO);
+CREATE INDEX idx_conversacion_estado ON CONVERSACION(CONV_ESTADO);
+CREATE INDEX idx_conversacion_fecha ON CONVERSACION(CONV_FECHA);
+
+CREATE INDEX idx_mensaje_conversacion ON MENSAJE(CONV_ID);
+CREATE INDEX idx_mensaje_emisor ON MENSAJE(U_ID_EMISOR);
+CREATE INDEX idx_mensaje_receptor ON MENSAJE(U_ID_RECEPTOR);
+CREATE INDEX idx_mensaje_fecha ON MENSAJE(MSG_FECHA);
+CREATE INDEX idx_mensaje_leido ON MENSAJE(MSG_LEIDO);
+CREATE INDEX idx_mensaje_estado ON MENSAJE(MSG_ESTADO);
+
+SELECT * FROM CONVERSACION;
+SELECT * FROM MENSAJE;
+
+SELECT CONV_ID, TIPO_REPORTE, REPORTE_ID, U_ID_DUENO, U_ID_CONTACTO, CONV_FECHA
+FROM CONVERSACION
+ORDER BY CONV_FECHA DESC
+LIMIT 5;
+
+SELECT MSG_ID, CONV_ID, U_ID_EMISOR, U_ID_RECEPTOR, MSG_CONTENIDO, MSG_FECHA, MSG_LEIDO
+FROM MENSAJE
+ORDER BY MSG_FECHA DESC
+LIMIT 10;

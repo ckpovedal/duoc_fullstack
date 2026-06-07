@@ -4,7 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonTitle, IonButton, IonContent, IonHeader, IonInput, IonItem, IonList, IonSelect, IonSelectOption, IonText, IonToolbar, IonButtons} from '@ionic/angular/standalone';
 import { UsuarioService } from '../../services/usuario.service';
-import { COMUNAS_SANTIAGO_RM, REGION_COMUNAS_SANTIAGO_RM } from '../../data/comunas-santiago-rm';
+import {
+  OpcionComuna,
+  REGION_CHILE_POR_DEFECTO,
+  REGIONES_CHILE,
+  obtenerComunasPorRegion
+} from '../../data/regiones-comunas-chile';
 import { addIcons } from 'ionicons';
 import { logOutOutline } from 'ionicons/icons';
 import { ToastController } from '@ionic/angular';
@@ -18,14 +23,15 @@ import { ToastController } from '@ionic/angular';
 })
 export class NuevoUsuarioPage implements OnInit {
 
-  comunas = COMUNAS_SANTIAGO_RM;
+  regiones = REGIONES_CHILE;
+  comunas: OpcionComuna[] = obtenerComunasPorRegion(REGION_CHILE_POR_DEFECTO);
 
   usuario = {
     nombre: '',
     tipo: 'Dueño',
     direccion: '',
     comuna: '',
-    region: REGION_COMUNAS_SANTIAGO_RM,
+    region: REGION_CHILE_POR_DEFECTO,
     telefono: '',
     correo: '',
     clave: ''
@@ -48,6 +54,12 @@ export class NuevoUsuarioPage implements OnInit {
    }
 
   ngOnInit() {
+  }
+
+  cambiarRegion(region: string) {
+    this.usuario.region = region;
+    this.usuario.comuna = '';
+    this.comunas = obtenerComunasPorRegion(region);
   }
 
   salir() {

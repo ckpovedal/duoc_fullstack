@@ -54,16 +54,21 @@
               </ion-item>
 
               <ion-item>
+                <ion-select label="Region" labelPlacement="stacked" name="region" [disabled]="!modoEdicion || guardando" [(ngModel)]="formulario.region" (ngModelChange)="cambiarRegionPerfil($event)">
+                  <ion-select-option value="">Selecciona una region</ion-select-option>
+                  <ion-select-option *ngFor="let region of regiones" [value]="region.value">
+                    {{ region.label }}
+                  </ion-select-option>
+                </ion-select>
+              </ion-item>
+
+              <ion-item>
                 <ion-select label="Comuna" labelPlacement="stacked" name="comuna" [disabled]="!modoEdicion || guardando" [(ngModel)]="formulario.comuna">
                   <ion-select-option value="">Sin comuna</ion-select-option>
                   <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.value">
                     {{ comuna.label }}
                   </ion-select-option>
                 </ion-select>
-              </ion-item>
-
-              <ion-item>
-                <ion-input label="Region" labelPlacement="stacked" name="region" [disabled]="!modoEdicion || guardando" [(ngModel)]="formulario.region"></ion-input>
               </ion-item>
 
               <ion-item>
@@ -224,16 +229,21 @@
                 </ion-item>
 
                 <ion-item>
-                  <ion-select label="Comuna" labelPlacement="stacked" [(ngModel)]="reporte.formulario.comuna">
-                    <ion-select-option value="">Sin comuna</ion-select-option>
-                    <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.value">
-                      {{ comuna.label }}
+                  <ion-select label="Region" labelPlacement="stacked" [(ngModel)]="reporte.formulario.region" (ngModelChange)="cambiarRegionReporte(reporte, $event)">
+                    <ion-select-option value="">Selecciona una region</ion-select-option>
+                    <ion-select-option *ngFor="let region of regiones" [value]="region.value">
+                      {{ region.label }}
                     </ion-select-option>
                   </ion-select>
                 </ion-item>
 
                 <ion-item>
-                  <ion-input label="Region" labelPlacement="stacked" [(ngModel)]="reporte.formulario.region"></ion-input>
+                  <ion-select label="Comuna" labelPlacement="stacked" [(ngModel)]="reporte.formulario.comuna">
+                    <ion-select-option value="">Sin comuna</ion-select-option>
+                    <ion-select-option *ngFor="let comuna of obtenerComunasReporte(reporte)" [value]="comuna.value">
+                      {{ comuna.label }}
+                    </ion-select-option>
+                  </ion-select>
                 </ion-item>
 
                 <ion-item>

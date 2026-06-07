@@ -10,7 +10,14 @@ import { cameraOutline, locateOutline, pawOutline } from 'ionicons/icons';
 import { Capacitor } from '@capacitor/core';
 import { Geolocation } from '@capacitor/geolocation';
 import * as L from 'leaflet';
-import { COMUNAS_SANTIAGO_RM, REGION_COMUNAS_SANTIAGO_RM } from '../../data/comunas-santiago-rm';
+import {
+  OpcionComuna,
+  REGION_CHILE_POR_DEFECTO,
+  REGIONES_CHILE,
+  obtenerComunaValida,
+  obtenerComunasPorRegion,
+  obtenerRegionValida
+} from '../../data/regiones-comunas-chile';
 import { GeolocalizacionService } from '../../services/geolocalizacion.service';
 import { HallazgoService } from '../../services/hallazgo.service';
 import { PerdidaService } from '../../services/perdida.service';
@@ -56,7 +63,8 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
 
   tipoReporte: TipoReporte = 'perdida';
   tipoMascota: TipoMascota = 'perro';
-  comunas = COMUNAS_SANTIAGO_RM;
+  regiones = REGIONES_CHILE;
+  comunas: OpcionComuna[] = obtenerComunasPorRegion(REGION_CHILE_POR_DEFECTO);
   cargando = false;
   mensaje = '';
   error = '';
@@ -88,7 +96,7 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
     imagen: '',
     direccion: '',
     comuna: '',
-    region: REGION_COMUNAS_SANTIAGO_RM,
+    region: REGION_CHILE_POR_DEFECTO,
     fecha: ''
   };
 
@@ -131,6 +139,13 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
     this.tipoMascota = tipoMascota;
   }
 
+  cambiarRegion(region: string) {
+    this.formulario.region = region;
+    this.formulario.comuna = '';
+    this.comunas = obtenerComunasPorRegion(region);
+    this.programarGeocodificacion();
+  }
+
   programarGeocodificacion() {
     this.ubicacionSeleccionada = null;
     this.ubicacionTexto = 'Buscando ubicacion aproximada...';
@@ -149,6 +164,7 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
       const posicion = await this.obtenerUbicacionActual();
       this.actualizarUbicacionMapa(posicion.latitud, posicion.longitud, 'GPS');
       this.ubicacionTexto = 'Ubicacion actual seleccionada. Puedes mover el pin para ajustarla';
+      this.completarDireccionDesdeCoordenadas(posicion.latitud, posicion.longitud);
     } catch {
       this.mostrarMensaje('error', 'No se pudo obtener tu ubicacion actual');
     }
@@ -323,6 +339,7 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
         fuente: 'MANUAL'
       };
       this.ubicacionTexto = 'Ubicacion ajustada manualmente';
+      this.completarDireccionDesdeCoordenadas(posicion.lat, posicion.lng);
     });
 
     setTimeout(() => {
@@ -446,6 +463,60 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
     setTimeout(() => {
       this.mapa?.invalidateSize();
     }, 100);
+  }
+
+  private completarDireccionDesdeCoordenadas(latitud: number, longitud: number) {
+    this.geolocalizacionService.geocodificarInversa({ latitud, longitud })
+      .pipe(timeout(10000))
+      .subscribe({
+        next: (respuesta) => {
+          const direccion = this.obtenerDireccionDesdeRespuestaInversa(respuesta);
+
+          if (direccion.direccion) {
+            this.formulario.direccion = direccion.direccion;
+          }
+
+          const region = obtenerRegionValida(direccion.region);
+
+          if (region) {
+            this.formulario.region = region;
+            this.comunas = obtenerComunasPorRegion(region);
+          }
+
+          const comuna = obtenerComunaValida(this.formulario.region, direccion.comuna);
+
+          if (comuna) {
+            this.formulario.comuna = comuna;
+          }
+        },
+        error: () => {
+          this.ubicacionTexto = 'Ubicacion seleccionada. No se pudo completar la direccion automaticamente';
+        }
+      });
+  }
+
+  private obtenerDireccionDesdeRespuestaInversa(respuesta: any) {
+    const data = respuesta?.respuesta || respuesta?.data || respuesta;
+    const direccionFormateada = String(data?.direccionFormateada || '');
+
+    return {
+      direccion: this.obtenerDireccionCorta(direccionFormateada),
+      comuna: data?.comuna || '',
+      region: data?.region || ''
+    };
+  }
+
+  private obtenerDireccionCorta(direccion: string) {
+    const partes = direccion
+      .split(',')
+      .map((parte) => parte.trim())
+      .filter(Boolean);
+
+    const direccionCorta = partes.slice(0, 2).join(', ');
+
+    return direccionCorta.length > 100
+      ? direccionCorta.slice(0, 100).trim()
+      : direccionCorta;
   }
 
   private async obtenerUbicacionActual() {
@@ -645,12 +716,13 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
       imagen: '',
       direccion: '',
       comuna: '',
-      region: REGION_COMUNAS_SANTIAGO_RM,
+      region: REGION_CHILE_POR_DEFECTO,
       fecha: ''
     };
     this.imagenVistaPrevia = '';
     this.tipoReporte = 'perdida';
     this.tipoMascota = 'perro';
+    this.comunas = obtenerComunasPorRegion(REGION_CHILE_POR_DEFECTO);
   }
 
 }

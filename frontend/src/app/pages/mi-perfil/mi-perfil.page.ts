@@ -8,7 +8,14 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLis
 import { UsuarioService } from '../../services/usuario.service';
 import { PerdidaService } from '../../services/perdida.service';
 import { HallazgoService } from '../../services/hallazgo.service';
-import { COMUNAS_SANTIAGO_RM, REGION_COMUNAS_SANTIAGO_RM } from '../../data/comunas-santiago-rm';
+import {
+  OpcionComuna,
+  REGION_CHILE_POR_DEFECTO,
+  REGIONES_CHILE,
+  obtenerComunaValida,
+  obtenerComunasPorRegion,
+  obtenerRegionValida
+} from '../../data/regiones-comunas-chile';
 
 type SeccionPerfil = 'personal' | 'clave' | 'reportes';
 type TipoReporteUsuario = 'perdida' | 'hallazgo';
@@ -60,7 +67,8 @@ interface ReporteUsuario {
   imports: [IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonList, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class MiPerfilPage implements OnInit {
-  comunas = COMUNAS_SANTIAGO_RM;
+  regiones = REGIONES_CHILE;
+  comunas: OpcionComuna[] = obtenerComunasPorRegion(REGION_CHILE_POR_DEFECTO);
   usuarioId = '';
   fechaRegistro = '';
   cargando = false;
@@ -84,7 +92,7 @@ export class MiPerfilPage implements OnInit {
     tipo: 'Dueño',
     direccion: '',
     comuna: '',
-    region: REGION_COMUNAS_SANTIAGO_RM,
+    region: REGION_CHILE_POR_DEFECTO,
     telefono: '',
     correo: ''
   };
@@ -99,6 +107,21 @@ export class MiPerfilPage implements OnInit {
 
   ngOnInit() {
     this.cargarPerfil();
+  }
+
+  cambiarRegionPerfil(region: string) {
+    this.formulario.region = region;
+    this.formulario.comuna = '';
+    this.comunas = obtenerComunasPorRegion(region);
+  }
+
+  cambiarRegionReporte(reporte: ReporteUsuario, region: string) {
+    reporte.formulario.region = region;
+    reporte.formulario.comuna = '';
+  }
+
+  obtenerComunasReporte(reporte: ReporteUsuario): OpcionComuna[] {
+    return obtenerComunasPorRegion(reporte.formulario.region);
   }
 
   cargarPerfil() {
@@ -345,6 +368,8 @@ export class MiPerfilPage implements OnInit {
 
   private cargarFormulario(usuario: any) {
     const telefono = usuario?.telefono ?? usuario?.u_fono ?? usuario?.U_Fono ?? '';
+    const region = obtenerRegionValida(usuario?.region || usuario?.u_region || usuario?.U_Region);
+    const comuna = obtenerComunaValida(region, usuario?.comuna || usuario?.u_comuna || usuario?.U_Comuna);
 
     this.usuarioId = usuario?.idUsuario || usuario?.u_id || usuario?.U_ID || this.usuarioId;
     this.fechaRegistro = usuario?.fecha || usuario?.u_fecha || usuario?.U_Fecha || '';
@@ -352,11 +377,12 @@ export class MiPerfilPage implements OnInit {
       nombre: usuario?.nombre || usuario?.u_nombre || usuario?.U_Nombre || '',
       tipo: usuario?.tipo || usuario?.u_tipo || usuario?.U_Tipo || 'Dueño',
       direccion: usuario?.direccion || usuario?.u_dire || usuario?.U_Dire || '',
-      comuna: usuario?.comuna || usuario?.u_comuna || usuario?.U_Comuna || '',
-      region: usuario?.region || usuario?.u_region || usuario?.U_Region || REGION_COMUNAS_SANTIAGO_RM,
+      comuna,
+      region,
       telefono: telefono ? String(telefono) : '',
       correo: usuario?.correo || usuario?.u_correo || usuario?.U_Correo || ''
     };
+    this.comunas = obtenerComunasPorRegion(region);
     this.formularioOriginal = { ...this.formulario };
     this.limpiarCambioClave();
   }
@@ -480,6 +506,8 @@ export class MiPerfilPage implements OnInit {
   private crearFormularioReporte(reporte: any, tipo: TipoReporteUsuario): FormularioReporteUsuario {
     const prefijo = tipo === 'perdida' ? 'p' : 'h';
     const prefijoMayuscula = tipo === 'perdida' ? 'P' : 'H';
+    const region = obtenerRegionValida(this.obtenerTexto(reporte[`${prefijo}_region`] ?? reporte[`${prefijoMayuscula}_Region`]));
+    const comuna = obtenerComunaValida(region, this.obtenerTexto(reporte[`${prefijo}_comuna`] ?? reporte[`${prefijoMayuscula}_Comuna`]));
 
     return {
       nombreMascota: this.obtenerTexto(reporte[`${prefijo}_nom_masc`] ?? reporte[`${prefijoMayuscula}_Nom_Masc`]),
@@ -492,8 +520,8 @@ export class MiPerfilPage implements OnInit {
       esterilizado: this.obtenerTexto(reporte[`${prefijo}_esterilizado`] ?? reporte[`${prefijoMayuscula}_Esterilizado`]),
       vacunas: this.obtenerTexto(reporte[`${prefijo}_vacunas`] ?? reporte[`${prefijoMayuscula}_Vacunas`]),
       direccion: this.obtenerTexto(reporte[`${prefijo}_dire_inter`] ?? reporte[`${prefijoMayuscula}_Dire_Inter`]),
-      comuna: this.obtenerTexto(reporte[`${prefijo}_comuna`] ?? reporte[`${prefijoMayuscula}_Comuna`]),
-      region: this.obtenerTexto(reporte[`${prefijo}_region`] ?? reporte[`${prefijoMayuscula}_Region`]) || REGION_COMUNAS_SANTIAGO_RM,
+      comuna,
+      region,
       fecha: this.obtenerFechaInput(reporte[`${prefijo}_fecha`] ?? reporte[`${prefijoMayuscula}_Fecha`]),
       estado: this.obtenerTexto(reporte[`${prefijo}_estado`] ?? reporte[`${prefijoMayuscula}_Estado`]) || '1'
     };

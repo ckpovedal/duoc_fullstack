@@ -50,4 +50,15 @@ export class GeolocalizacionService {
 
     return this.http.get(`${this.apiUrl}/geocodificar`, { params });
   }
+
+  geocodificarInversa(data: {
+    latitud: number;
+    longitud: number;
+  }): Observable<any> {
+    const params = new HttpParams()
+      .set('latitud', String(data.latitud))
+      .set('longitud', String(data.longitud));
+
+    return this.http.get(`${this.apiUrl}/reverso`, { params });
+  }
 }

@@ -38,15 +38,21 @@
           </ion-item>
 
           <ion-item>
-            <ion-select label="Comuna" labelPlacement="stacked" name="comuna" [(ngModel)]="usuario.comuna">
-              <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.value">
-                {{ comuna.label }}
+            <ion-select label="Region" labelPlacement="stacked" name="region" [(ngModel)]="usuario.region" (ngModelChange)="cambiarRegion($event)">
+              <ion-select-option value="">Selecciona una region</ion-select-option>
+              <ion-select-option *ngFor="let region of regiones" [value]="region.value">
+                {{ region.label }}
               </ion-select-option>
             </ion-select>
           </ion-item>
 
           <ion-item>
-            <ion-input label="Region" labelPlacement="stacked" name="region" [(ngModel)]="usuario.region"></ion-input>
+            <ion-select label="Comuna" labelPlacement="stacked" name="comuna" [(ngModel)]="usuario.comuna">
+              <ion-select-option value="">Selecciona una comuna</ion-select-option>
+              <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.value">
+                {{ comuna.label }}
+              </ion-select-option>
+            </ion-select>
           </ion-item>
 
           <ion-item>

@@ -134,16 +134,19 @@
       </label>
 
       <label class="campo">
+        <span>Región *</span>
+        <select name="region" [(ngModel)]="formulario.region" (ngModelChange)="cambiarRegion($event)">
+          <option value="">Selecciona una región</option>
+          <option *ngFor="let region of regiones" [value]="region.value">{{ region.label }}</option>
+        </select>
+      </label>
+
+      <label class="campo">
         <span>Comuna *</span>
         <select name="comuna" [(ngModel)]="formulario.comuna" (ngModelChange)="programarGeocodificacion()">
           <option value="">Selecciona una comuna</option>
           <option *ngFor="let comuna of comunas" [value]="comuna.value">{{ comuna.label }}</option>
         </select>
-      </label>
-
-      <label class="campo">
-        <span>Región</span>
-        <input type="text" name="region" [(ngModel)]="formulario.region" (ngModelChange)="programarGeocodificacion()">
       </label>
 
       <section class="mapa-ubicacion">

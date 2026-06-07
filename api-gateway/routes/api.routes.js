@@ -1,5 +1,5 @@
 const express = require('express');
-const { protegerEscrituraReportes, protegerUsuarios } = require('../middleware/auth.middleware');
+const { autenticar, protegerEscrituraReportes, protegerUsuarios } = require('../middleware/auth.middleware');
 const { crearProxyServicio } = require('../services/proxy.factory');
 
 const router = express.Router();
@@ -45,6 +45,15 @@ router.use(
   crearProxyServicio({
     target: process.env.GEOLOCALIZACION_SERVICE_URL || 'http://localhost:3005',
     pathRewrite: (path) => `/geolocalizacion${path}`,
+  })
+);
+
+router.use(
+  '/mensajeria',
+  autenticar,
+  crearProxyServicio({
+    target: process.env.MENSAJERIA_SERVICE_URL || 'http://localhost:3006',
+    pathRewrite: (path) => path,
   })
 );
 

@@ -110,6 +110,23 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Mensajeria Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{mensajeria_service_url}}/health",
+              "host": [
+                "{{mensajeria_service_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -1180,6 +1197,198 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Mensajeria - API Gateway",
+      "item": [
+        {
+          "name": "Crear Conversacion",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.conv_id) {",
+                  "  pm.collectionVariables.set('conversacion_id', json.conv_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoReporte\": \"PERDIDA\",\n  \"reporteId\": \"{{perdida_id}}\",\n  \"uIdDueno\": \"{{usuario_id}}\",\n  \"uIdContacto\": \"{{usuario_contacto_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/mensajeria/conversaciones",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "mensajeria",
+                "conversaciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Conversaciones Por Usuario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/mensajeria/conversaciones/usuario/{{usuario_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "mensajeria",
+                "conversaciones",
+                "usuario",
+                "{{usuario_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Mensajes Por Conversacion",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/mensajeria/conversaciones/{{conversacion_id}}/mensajes",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "mensajeria",
+                "conversaciones",
+                "{{conversacion_id}}",
+                "mensajes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Enviar Mensaje",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.msg_id) {",
+                  "  pm.collectionVariables.set('mensaje_id', json.msg_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"convId\": \"{{conversacion_id}}\",\n  \"uIdEmisor\": \"{{usuario_contacto_id}}\",\n  \"msgContenido\": \"Hola, creo que vi a tu mascota cerca de la plaza.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/mensajeria/mensajes",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "mensajeria",
+                "mensajes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Marcar Mensaje Como Leido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/mensajeria/mensajes/{{mensaje_id}}/leido",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "mensajeria",
+                "mensajes",
+                "{{mensaje_id}}",
+                "leido"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [
@@ -1214,6 +1423,11 @@
       "type": "string"
     },
     {
+      "key": "mensajeria_service_url",
+      "value": "http://localhost:3006",
+      "type": "string"
+    },
+    {
       "key": "usuario_id",
       "value": "USR00001",
       "type": "string"
@@ -1236,6 +1450,21 @@
     {
       "key": "geo_zona_id",
       "value": "ZON00001",
+      "type": "string"
+    },
+    {
+      "key": "conversacion_id",
+      "value": "CNV00001",
+      "type": "string"
+    },
+    {
+      "key": "mensaje_id",
+      "value": "MSG00001",
+      "type": "string"
+    },
+    {
+      "key": "usuario_contacto_id",
+      "value": "USR00002",
       "type": "string"
     },
     {

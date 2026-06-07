@@ -138,6 +138,12 @@ class HallazgosRepository {
     return result.rows[0] || null;
   }
 
+  async obtenerImagenHallazgoPorId(id) {
+    const query = 'SELECT h_imagen FROM hallazgo WHERE h_id = $1';
+    const result = await pool.query(query, [id]);
+    return result.rows[0]?.h_imagen || null;
+  }
+
   async actualizarHallazgo(id, data) {
     const query = `
       UPDATE hallazgo

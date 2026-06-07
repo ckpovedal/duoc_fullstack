@@ -99,6 +99,12 @@ class PerdidasRepository {
     return result.rows[0] || null;
   }
 
+  async obtenerImagenPerdidaPorId(id) {
+    const query = 'SELECT p_imagen FROM perdida WHERE p_id = $1';
+    const result = await pool.query(query, [id]);
+    return result.rows[0]?.p_imagen || null;
+  }
+
   async actualizarPerdida(id, data) {
     const query = `
       UPDATE perdida

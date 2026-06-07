@@ -4,7 +4,12 @@ export function obtenerImagenMascota(imagen: unknown): string {
   }
 
   if (typeof imagen === 'string') {
-    if (imagen.startsWith('data:image/')) {
+    if (
+      imagen.startsWith('data:image/') ||
+      imagen.startsWith('http://') ||
+      imagen.startsWith('https://') ||
+      imagen.startsWith('/')
+    ) {
       return imagen;
     }
 

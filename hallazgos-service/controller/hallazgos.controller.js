@@ -5,6 +5,7 @@ class HallazgosController {
   constructor() {
     this.crearHallazgo = this.crearHallazgo.bind(this);
     this.listarHallazgos = this.listarHallazgos.bind(this);
+    this.obtenerImagenHallazgo = this.obtenerImagenHallazgo.bind(this);
     this.obtenerHallazgoPorId = this.obtenerHallazgoPorId.bind(this);
     this.actualizarHallazgo = this.actualizarHallazgo.bind(this);
   }
@@ -36,6 +37,16 @@ class HallazgosController {
     try {
       const data = await hallazgosService.obtenerHallazgoPorId(req.params.id);
       return this.enviarRespuesta(res, data, 'Hallazgo obtenido correctamente');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async obtenerImagenHallazgo(req, res, next) {
+    try {
+      const imagen = await hallazgosService.obtenerImagenHallazgo(req.params.id);
+      res.set('Content-Type', imagen.contentType);
+      return res.send(imagen.buffer);
     } catch (error) {
       next(error);
     }

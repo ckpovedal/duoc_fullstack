@@ -5,6 +5,7 @@ const AppError = require('../utils/AppError');
 const { logger } = require('../middleware/logger');
 
 const VENTANA_DUPLICADO_MS = 5 * 60 * 1000;
+const API_PUBLICA = process.env.API_PUBLIC_URL || 'http://localhost:3001/api';
 
 class PerdidasService {
   constructor() {
@@ -55,7 +56,7 @@ class PerdidasService {
       const ubicacion = await geolocalizacionClient.guardarUbicacionPerdida(perdidaCreada, datosReporte, usuarioId);
 
       return {
-        ...perdidaCreada,
+        ...this.normalizarImagenPerdida(perdidaCreada),
         tipoReporte: 'PERDIDO',
         ubicacion
       }
@@ -75,7 +76,7 @@ class PerdidasService {
     const perdidas = await perdidasRepository.listarPerdidas(filtros);
 
     return perdidas.map((perdida) => ({
-      ...perdida,
+      ...this.normalizarImagenPerdida(perdida),
       tipoReporte: 'PERDIDO'
     }))
   }
@@ -96,7 +97,7 @@ class PerdidasService {
     }
 
     return { 
-      ...perdida,
+      ...this.normalizarImagenPerdida(perdida),
       usuario_nombre:
         usuario?.nombre ||
         usuario?.u_nombre ||
@@ -104,6 +105,25 @@ class PerdidasService {
         'Usuario no informado',
       usuario_id: usuarioId,
       tipoReporte: 'PERDIDO'
+    };
+  }
+
+  async obtenerImagenPerdida(id) {
+    const imagen = await perdidasRepository.obtenerImagenPerdidaPorId(id);
+
+    if (!imagen) {
+      throw new AppError('Imagen no encontrada', 404);
+    }
+
+    const buffer = this.obtenerBufferImagen(imagen);
+
+    if (!buffer) {
+      throw new AppError('Imagen no encontrada', 404);
+    }
+
+    return {
+      buffer,
+      contentType: this.obtenerTipoImagen(buffer)
     };
   }
 
@@ -138,7 +158,7 @@ class PerdidasService {
     const perdidaActualizada = await perdidasRepository.actualizarPerdida(id, datosActualizados);
 
     return {
-      ...perdidaActualizada,
+      ...this.normalizarImagenPerdida(perdidaActualizada),
       tipoReporte: 'PERDIDO'
     };
   }
@@ -166,7 +186,7 @@ class PerdidasService {
     const resultado = await perdidasRepository.cambiarEstadoPerdida(id, estado);
 
     return {
-      ...resultado,
+      ...this.normalizarImagenPerdida(resultado),
       tipoReporte: 'PERDIDO'
     };
   }
@@ -227,6 +247,57 @@ class PerdidasService {
     }
 
     return `${valor.slice(0, 3)}***${valor.slice(-2)}`;
+  }
+
+  normalizarImagenPerdida(perdida) {
+    const id = perdida.p_id ?? perdida.P_ID;
+    const imagen = perdida.p_imagen ?? perdida.P_Imagen;
+
+    return {
+      ...perdida,
+      p_imagen: id && imagen ? `${API_PUBLICA}/perdidas/${id}/imagen` : null
+    };
+  }
+
+  obtenerBufferImagen(imagen) {
+    if (Buffer.isBuffer(imagen)) {
+      return imagen;
+    }
+
+    if (imagen?.type === 'Buffer' && Array.isArray(imagen.data)) {
+      return Buffer.from(imagen.data);
+    }
+
+    if (typeof imagen === 'string' && imagen.startsWith('data:image/')) {
+      const base64 = imagen.split(',')[1];
+      return base64 ? Buffer.from(base64, 'base64') : null;
+    }
+
+    if (typeof imagen === 'string' && imagen.startsWith('\\x')) {
+      return Buffer.from(imagen.slice(2), 'hex');
+    }
+
+    return null;
+  }
+
+  obtenerTipoImagen(buffer) {
+    if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
+      return 'image/png';
+    }
+
+    if (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+      return 'image/jpeg';
+    }
+
+    if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) {
+      return 'image/gif';
+    }
+
+    if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46) {
+      return 'image/webp';
+    }
+
+    return 'image/jpeg';
   }
 }
 

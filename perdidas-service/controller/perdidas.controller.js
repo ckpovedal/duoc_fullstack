@@ -5,6 +5,7 @@ class PerdidasController {
   constructor() {
     this.crearPerdida = this.crearPerdida.bind(this);
     this.listarPerdidas = this.listarPerdidas.bind(this);
+    this.obtenerImagenPerdida = this.obtenerImagenPerdida.bind(this);
     this.obtenerPerdidaPorId = this.obtenerPerdidaPorId.bind(this);
     this.actualizarPerdida = this.actualizarPerdida.bind(this);
     this.cambiarEstado = this.cambiarEstado.bind(this);
@@ -37,6 +38,16 @@ class PerdidasController {
     try {
       const data = await perdidasService.obtenerPerdidaPorId(req.params.id);
       return this.enviarRespuesta(res, data, 'Reporte de Perdida de mascota obtenida correctamente');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async obtenerImagenPerdida(req, res, next) {
+    try {
+      const imagen = await perdidasService.obtenerImagenPerdida(req.params.id);
+      res.set('Content-Type', imagen.contentType);
+      return res.send(imagen.buffer);
     } catch (error) {
       next(error);
     }

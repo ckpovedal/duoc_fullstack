@@ -51,6 +51,16 @@
   opacity: 0.8;
 }
 
+.boton-perfil {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.boton-perfil ion-icon {
+  font-size: 20px;
+}
+
 .menu-movil {
   position: fixed;
   left: 0;

@@ -1,0 +1,38 @@
+<ion-header class="encabezado-mapa">
+  <ion-toolbar>
+    <ion-title>Mapa</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="contenido-pagina">
+  <main class="contenedor-mapa">
+    <section class="panel-controles">
+      <div>
+        <span>Reportes cercanos</span>
+        <strong>{{ ubicaciones.length }} encontrados en {{ radioKm }} km</strong>
+      </div>
+
+      <button type="button" [disabled]="cargando" (click)="cargarMapa()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button>
+    </section>
+
+    <section class="radios-mapa" aria-label="Radio de búsqueda">
+      <button type="button" [class.activo]="radioKm === 1" (click)="cambiarRadio(1)">1 km</button>
+      <button type="button" [class.activo]="radioKm === 3" (click)="cambiarRadio(3)">3 km</button>
+      <button type="button" [class.activo]="radioKm === 5" (click)="cambiarRadio(5)">5 km</button>
+      <button type="button" [class.activo]="radioKm === 10" (click)="cambiarRadio(10)">10 km</button>
+    </section>
+
+    <p class="mensaje-mapa" *ngIf="cargando">Cargando reportes cercanos...</p>
+    <p class="mensaje-mapa error" *ngIf="!cargando && error">{{ error }}</p>
+
+    <section class="leyenda-mapa">
+      <span><i class="leyenda usuario"></i> Tú</span>
+      <span><i class="leyenda perdida"></i> Perdida</span>
+      <span><i class="leyenda hallazgo"></i> Hallada</span>
+    </section>
+
+    <div #mapaReportes class="mapa-reportes"></div>
+  </main>
+</ion-content>

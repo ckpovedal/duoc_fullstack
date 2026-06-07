@@ -65,4 +65,20 @@ export class GeolocalizacionService {
   obtenerUbicacionReporte(tipoReporte: 'PERDIDA' | 'HALLAZGO', reporteId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/reportes/${tipoReporte}/${reporteId}`);
   }
+
+  listarUbicacionesCercanas(data: {
+    latitud: number;
+    longitud: number;
+    radioKm: number;
+    limite?: number;
+  }): Observable<any> {
+    const params = new HttpParams()
+      .set('latitud', String(data.latitud))
+      .set('longitud', String(data.longitud))
+      .set('radioKm', String(data.radioKm))
+      .set('estado', '1')
+      .set('limite', String(data.limite || 100));
+
+    return this.http.get(`${this.apiUrl}/ubicaciones`, { params });
+  }
 }

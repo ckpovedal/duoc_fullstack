@@ -6,7 +6,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive} from '@angular/rou
 import { IonApp, IonIcon, IonRouterOutlet} from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
-import { addCircle, homeOutline, pawOutline, personCircleOutline, searchOutline} from 'ionicons/icons';
+import { addCircle, homeOutline, mapOutline, pawOutline, personCircleOutline, searchOutline} from 'ionicons/icons';
 import { SesionService } from './services/sesion.service';
 
 @Component({
@@ -30,7 +30,7 @@ export class AppComponent {
 
   constructor( private titleService: Title, private router: Router, private sesionService: SesionService) {
     this.titleService.setTitle('Sanos y Salvos');
-    addIcons({ addCircle, homeOutline, pawOutline, personCircleOutline, searchOutline});
+    addIcons({ addCircle, homeOutline, mapOutline, pawOutline, personCircleOutline, searchOutline});
     this.validarSesion();
 
     this.router.events.subscribe((event) => {
@@ -58,6 +58,7 @@ export class AppComponent {
     const rutasConMenu = [
       '/principal',
       '/buscador',
+      '/mapa',
       '/reporte-mascota',
       '/mascotas-halladas',
       '/hallazgos',

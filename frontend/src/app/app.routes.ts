@@ -29,6 +29,12 @@ export const routes: Routes = [
       import('./pages/buscador/buscador.page').then(m => m.BuscadorPage)
   },
   {
+    path: 'mapa',
+    loadComponent: () =>
+      import('./pages/mapa-reportes/mapa-reportes.page')
+        .then(m => m.MapaReportesPage)
+  },
+  {
     path: 'mascotas-halladas',
     loadComponent: () =>
       import('./pages/hallazgos/hallazgos.page').then(m => m.HallazgosPage)

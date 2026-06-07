@@ -8,6 +8,7 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToo
 import { addIcons } from 'ionicons';
 import { cameraOutline, locateOutline, pawOutline } from 'ionicons/icons';
 import { Capacitor } from '@capacitor/core';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Geolocation } from '@capacitor/geolocation';
 import * as L from 'leaflet';
 import {
@@ -187,6 +188,46 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
     });
 
     await toast.present();
+  }
+
+  async abrirSelectorFoto(inputFoto: HTMLInputElement) {
+    if (!Capacitor.isNativePlatform()) {
+      inputFoto.click();
+      return;
+    }
+
+    try {
+      const foto = await Camera.getPhoto({
+        quality: 80,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Prompt,
+        width: 1600,
+        correctOrientation: true,
+        promptLabelHeader: 'Foto del reporte',
+        promptLabelPhoto: 'Elegir desde galeria',
+        promptLabelPicture: 'Tomar foto',
+        promptLabelCancel: 'Cancelar'
+      });
+
+      const dataUrl = foto.dataUrl || '';
+
+      if (!dataUrl) {
+        return;
+      }
+
+      if (this.obtenerTamanoDataUrlEnBytes(dataUrl) > TAMANO_MAXIMO_IMAGEN_BYTES) {
+        this.error = 'La imagen supera el maximo permitido de 30 MB. Selecciona una imagen mas liviana';
+        this.mostrarMensaje('error', this.error);
+        return;
+      }
+
+      this.imagenVistaPrevia = dataUrl;
+      this.formulario.imagen = this.convertirDataUrlABytea(dataUrl);
+      this.error = '';
+    } catch {
+      this.mostrarMensaje('error', 'No se pudo cargar la foto desde el dispositivo');
+    }
   }
 
   seleccionarFoto(evento: Event) {
@@ -685,6 +726,13 @@ export class ReporteMascotaPage implements OnInit, AfterViewInit, OnDestroy {
     }
 
     return hexadecimal;
+  }
+
+  private obtenerTamanoDataUrlEnBytes(dataUrl: string) {
+    const base64 = dataUrl.split(',')[1] || '';
+    const relleno = base64.endsWith('==') ? 2 : base64.endsWith('=') ? 1 : 0;
+
+    return Math.floor((base64.length * 3) / 4) - relleno;
   }
 
   private limpiarFormulario() {

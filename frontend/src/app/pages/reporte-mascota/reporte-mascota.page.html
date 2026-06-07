@@ -19,7 +19,7 @@
     <section class="fotos">
       <input #inputFoto class="input-foto" type="file" accept="image/*" (change)="seleccionarFoto($event)">
 
-      <button class="boton-foto" type="button" aria-label="Agregar fotos" (click)="inputFoto.click()">
+      <button class="boton-foto" type="button" aria-label="Agregar fotos" (click)="abrirSelectorFoto(inputFoto)">
         <img *ngIf="imagenVistaPrevia" [src]="imagenVistaPrevia" alt="Foto de la mascota">
         <ion-icon name="camera-outline"></ion-icon>
       </button>

@@ -62,10 +62,31 @@ app.get('/conversaciones/usuario/:uId', async (req, res) => {
   const { uId } = req.params;
 
   const result = await pool.query(
-    `SELECT *
-     FROM CONVERSACION
-     WHERE U_ID_DUENO = $1 OR U_ID_CONTACTO = $1
-     ORDER BY CONV_FECHA DESC`,
+    `SELECT
+       c.*,
+       m.MSG_CONTENIDO AS ultimo_mensaje,
+       m.MSG_FECHA AS ultimo_mensaje_fecha,
+       m.U_ID_EMISOR AS ultimo_mensaje_emisor,
+       COALESCE(n.no_leidos, 0) AS mensajes_no_leidos
+     FROM CONVERSACION c
+     LEFT JOIN LATERAL (
+       SELECT MSG_CONTENIDO, MSG_FECHA, U_ID_EMISOR
+       FROM MENSAJE
+       WHERE CONV_ID = c.CONV_ID
+       AND MSG_ESTADO = 1
+       ORDER BY MSG_FECHA DESC
+       LIMIT 1
+     ) m ON true
+     LEFT JOIN (
+       SELECT CONV_ID, COUNT(*) AS no_leidos
+       FROM MENSAJE
+       WHERE U_ID_RECEPTOR = $1
+       AND MSG_LEIDO = 2
+       AND MSG_ESTADO = 1
+       GROUP BY CONV_ID
+     ) n ON n.CONV_ID = c.CONV_ID
+     WHERE c.U_ID_DUENO = $1 OR c.U_ID_CONTACTO = $1
+     ORDER BY COALESCE(m.MSG_FECHA, c.CONV_FECHA) DESC`,
     [uId]
   );
 

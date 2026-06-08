@@ -6,6 +6,7 @@ import java.util.Set;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import usuarioService.usuario_service.dto.ContactoUsuarioDto;
 import usuarioService.usuario_service.dto.LoginRequest;
 import usuarioService.usuario_service.dto.UsuarioDto;
 import usuarioService.usuario_service.dto.UsuarioRequest;
@@ -34,6 +35,10 @@ public class UsuarioService {
 
     public UsuarioDto obtenerUsuarioPorId(String idUsuario) {
         return UsuarioDto.desdeEntidad(buscarUsuario(idUsuario));
+    }
+
+    public ContactoUsuarioDto obtenerContactoPorId(String idUsuario) {
+        return ContactoUsuarioDto.desdeEntidad(buscarUsuario(idUsuario));
     }
 
     public UsuarioDto crearUsuario(UsuarioRequest solicitud) {

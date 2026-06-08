@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import usuarioService.usuario_service.dto.ContactoUsuarioDto;
 import usuarioService.usuario_service.dto.LoginRequest;
 import usuarioService.usuario_service.dto.LoginResponse;
 import usuarioService.usuario_service.dto.RespuestaDto;
@@ -33,6 +34,12 @@ public class UsuarioController {
     public ResponseEntity<RespuestaDto<List<UsuarioDto>>> listarUsuarios() {
         List<UsuarioDto> usuarios = usuarioService.listarUsuarios();
         return ResponseEntity.ok(RespuestaDto.ok(usuarios, "Usuarios obtenidos correctamente", 200));
+    }
+
+    @GetMapping("/contactos/{idUsuario}")
+    public ResponseEntity<RespuestaDto<ContactoUsuarioDto>> obtenerContactoPorId(@PathVariable String idUsuario) {
+        ContactoUsuarioDto contacto = usuarioService.obtenerContactoPorId(idUsuario);
+        return ResponseEntity.ok(RespuestaDto.ok(contacto, "Contacto obtenido correctamente", 200));
     }
 
     @GetMapping("/{idUsuario}")

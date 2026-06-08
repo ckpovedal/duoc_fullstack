@@ -27,6 +27,10 @@ export class UsuarioService {
     return this.http.get(`${this.apiUrl}/${idUsuario}`);
   }
 
+  obtenerContacto(idUsuario: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/contactos/${idUsuario}`);
+  }
+
   actualizarUsuario(idUsuario: string, data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${idUsuario}`, data);
   }

@@ -81,4 +81,11 @@ export const routes: Routes = [
       import('./pages/mi-perfil/mi-perfil.page')
         .then(m => m.MiPerfilPage)
   },
+  {
+    path: 'mensajes',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/mensajes/mensajes.page')
+        .then(m => m.MensajesPage)
+  },
 ];

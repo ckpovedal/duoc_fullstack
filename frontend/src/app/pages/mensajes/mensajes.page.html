@@ -1,0 +1,56 @@
+<ion-header class="encabezado-mensajes">
+  <ion-toolbar>
+    <ion-title>Mensajes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="contenido-pagina">
+  <main class="contenedor-mensajes">
+    <section class="cabecera-bandeja">
+      <div class="cabecera-icono">
+        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+      </div>
+
+      <div>
+        <h1>Mensajes</h1>
+        <p>Conversaciones iniciadas desde reportes de mascotas.</p>
+      </div>
+    </section>
+
+    <p class="mensaje-estado" *ngIf="cargando">Cargando conversaciones...</p>
+
+    <section class="estado-listado" *ngIf="!cargando && error">
+      <p>{{ error }}</p>
+      <button type="button" (click)="cargarConversaciones()">Reintentar</button>
+    </section>
+
+    <section class="estado-listado" *ngIf="!cargando && !error && conversaciones.length === 0">
+      <ion-icon name="mail-outline"></ion-icon>
+      <p>Todavía no tienes conversaciones.</p>
+    </section>
+
+    <section class="lista-conversaciones" *ngIf="!cargando && !error && conversaciones.length > 0">
+      <button class="conversacion-item" type="button" *ngFor="let conversacion of conversaciones" (click)="abrirConversacion(conversacion)">
+        <span class="icono-conversacion">
+          <ion-icon name="mail-outline"></ion-icon>
+        </span>
+
+        <span class="contenido-conversacion">
+          <span class="fila-principal">
+            <strong>{{ conversacion.contactoNombre }}</strong>
+            <span class="fecha">{{ conversacion.fechaTexto }}</span>
+          </span>
+
+          <span class="ultimo-mensaje">{{ conversacion.ultimoMensaje }}</span>
+
+          <span class="fila-secundaria">
+            <span>{{ conversacion.tipoReporte }}</span>
+            <span class="no-leidos" *ngIf="conversacion.noLeidos > 0">{{ conversacion.noLeidos }}</span>
+          </span>
+        </span>
+
+        <ion-icon class="flecha" name="chevron-forward-outline"></ion-icon>
+      </button>
+    </section>
+  </main>
+</ion-content>

@@ -36,6 +36,10 @@ function protegerUsuarios(req, res, next) {
     return next();
   }
 
+  if (req.method === 'GET' && ruta.startsWith('/contactos/')) {
+    return autenticar(req, res, next);
+  }
+
   return autenticar(req, res, () => {
     const idRuta = ruta.split('/').filter(Boolean)[0];
 

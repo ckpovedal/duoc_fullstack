@@ -4,10 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, chevronBackOutline, homeOutline, locationOutline, pawOutline, personOutline } from 'ionicons/icons';
+import { calendarOutline, chatbubbleEllipsesOutline, chevronBackOutline, locationOutline, pawOutline, personOutline } from 'ionicons/icons';
 import * as L from 'leaflet';
 import { HallazgoService } from '../../services/hallazgo.service';
 import { GeolocalizacionService } from '../../services/geolocalizacion.service';
+import { MensajeriaService } from '../../services/mensajeria.service';
+import { SesionService } from '../../services/sesion.service';
 import {
   formatearFechaReporte,
   obtenerClaseEstado,
@@ -21,6 +23,8 @@ import {
 } from '../../utils/reporte-mascota.utils';
 
 interface MascotaHalladaVista {
+  id: string;
+  usuarioId: string;
   nombre: string;
   tipo: string;
   edad: string;
@@ -58,6 +62,7 @@ export class MascotaHalladaPage implements OnInit, AfterViewInit, OnDestroy {
 
   mascota: MascotaHalladaVista | null = null;
   cargando = false;
+  contactando = false;
   error = '';
   private mapa?: L.Map;
   private marcador?: L.Marker;
@@ -72,9 +77,11 @@ export class MascotaHalladaPage implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private hallazgoService: HallazgoService,
-    private geolocalizacionService: GeolocalizacionService
+    private geolocalizacionService: GeolocalizacionService,
+    private mensajeriaService: MensajeriaService,
+    private sesionService: SesionService
   ) {
-    addIcons({ calendarOutline, chevronBackOutline, homeOutline, locationOutline, pawOutline, personOutline });
+    addIcons({ calendarOutline, chatbubbleEllipsesOutline, chevronBackOutline, locationOutline, pawOutline, personOutline });
   }
 
   ngOnInit() {
@@ -104,8 +111,49 @@ export class MascotaHalladaPage implements OnInit, AfterViewInit, OnDestroy {
     this.router.navigate(['/buscador']);
   }
 
-  irInicio() {
-    this.router.navigate(['/principal']);
+  puedeContactar() {
+    if (!this.mascota || !this.sesionService.sesionActiva()) {
+      return false;
+    }
+
+    const usuarioActualId = this.sesionService.obtenerUsuarioId();
+    return !!usuarioActualId && !!this.mascota.usuarioId && usuarioActualId !== this.mascota.usuarioId;
+  }
+
+  contactar() {
+    if (!this.mascota || !this.puedeContactar()) {
+      return;
+    }
+
+    const usuarioActualId = this.sesionService.obtenerUsuarioId();
+
+    if (!usuarioActualId) {
+      return;
+    }
+
+    this.contactando = true;
+    this.error = '';
+
+    this.mensajeriaService.crearConversacion({
+      tipoReporte: 'HALLAZGO',
+      reporteId: this.mascota.id,
+      uIdDueno: this.mascota.usuarioId,
+      uIdContacto: usuarioActualId
+    })
+      .pipe(
+        timeout(10000),
+        finalize(() => {
+          this.contactando = false;
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/mensajes']);
+        },
+        error: (error) => {
+          this.error = this.obtenerMensajeError(error);
+        }
+      });
   }
 
   cargarHallazgo(id: string) {
@@ -136,6 +184,8 @@ export class MascotaHalladaPage implements OnInit, AfterViewInit, OnDestroy {
     const estado = hallazgo.h_estado ?? hallazgo.H_Estado;
 
     return {
+      id: obtenerTextoReporte(hallazgo.h_id ?? hallazgo.H_ID, ''),
+      usuarioId: obtenerTextoReporte(hallazgo.u_id ?? hallazgo.U_ID, ''),
       nombre: obtenerTextoReporte(hallazgo.h_nom_masc ?? hallazgo.H_Nom_Masc, 'Mascota hallada'),
       tipo: obtenerTipoMascota(hallazgo.h_tipo ?? hallazgo.H_Tipo),
       edad: obtenerEdadMascota(hallazgo.h_edad ?? hallazgo.H_Edad),

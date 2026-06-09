@@ -4,10 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { calendarOutline, chevronBackOutline, homeOutline, locationOutline, pawOutline, personAddOutline, personOutline } from 'ionicons/icons';
+import { calendarOutline, chatbubbleEllipsesOutline, chevronBackOutline, locationOutline, pawOutline, personOutline } from 'ionicons/icons';
 import * as L from 'leaflet';
 import { PerdidaService } from '../../services/perdida.service';
 import { GeolocalizacionService } from '../../services/geolocalizacion.service';
+import { MensajeriaService } from '../../services/mensajeria.service';
+import { SesionService } from '../../services/sesion.service';
 import {
   formatearFechaReporte,
   obtenerClaseEstado,
@@ -21,6 +23,8 @@ import {
 } from '../../utils/reporte-mascota.utils';
 
 interface MascotaPerdidaVista {
+  id: string;
+  usuarioId: string;
   nombre: string;
   tipo: string;
   edad: string;
@@ -58,6 +62,7 @@ export class MascotaPerdidaPage implements OnInit, AfterViewInit, OnDestroy {
 
   mascota: MascotaPerdidaVista | null = null;
   cargando = false;
+  contactando = false;
   error = '';
   private mapa?: L.Map;
   private marcador?: L.Marker;
@@ -72,9 +77,11 @@ export class MascotaPerdidaPage implements OnInit, AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private perdidaService: PerdidaService,
-    private geolocalizacionService: GeolocalizacionService
+    private geolocalizacionService: GeolocalizacionService,
+    private mensajeriaService: MensajeriaService,
+    private sesionService: SesionService
   ) {
-    addIcons({ calendarOutline, chevronBackOutline, homeOutline, locationOutline, pawOutline, personOutline });
+    addIcons({ calendarOutline, chatbubbleEllipsesOutline, chevronBackOutline, locationOutline, pawOutline, personOutline });
   }
 
   ngOnInit() {
@@ -100,12 +107,53 @@ export class MascotaPerdidaPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  irInicio() {
-    this.router.navigate(['/principal']);
-  }
-
   volver() {
     this.router.navigate(['/buscador']);
+  }
+
+  puedeContactar() {
+    if (!this.mascota || !this.sesionService.sesionActiva()) {
+      return false;
+    }
+
+    const usuarioActualId = this.sesionService.obtenerUsuarioId();
+    return !!usuarioActualId && !!this.mascota.usuarioId && usuarioActualId !== this.mascota.usuarioId;
+  }
+
+  contactar() {
+    if (!this.mascota || !this.puedeContactar()) {
+      return;
+    }
+
+    const usuarioActualId = this.sesionService.obtenerUsuarioId();
+
+    if (!usuarioActualId) {
+      return;
+    }
+
+    this.contactando = true;
+    this.error = '';
+
+    this.mensajeriaService.crearConversacion({
+      tipoReporte: 'PERDIDA',
+      reporteId: this.mascota.id,
+      uIdDueno: this.mascota.usuarioId,
+      uIdContacto: usuarioActualId
+    })
+      .pipe(
+        timeout(10000),
+        finalize(() => {
+          this.contactando = false;
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/mensajes']);
+        },
+        error: (error) => {
+          this.error = this.obtenerMensajeError(error);
+        }
+      });
   }
 
   cargarPerdida(id: string) {
@@ -139,6 +187,8 @@ export class MascotaPerdidaPage implements OnInit, AfterViewInit, OnDestroy {
     const estado = perdida.p_estado ?? perdida.P_Estado;
 
     return {
+      id: obtenerTextoReporte(perdida.p_id ?? perdida.P_ID, ''),
+      usuarioId: obtenerTextoReporte(perdida.u_id ?? perdida.U_ID, ''),
       nombre: obtenerTextoReporte(perdida.p_nom_masc ?? perdida.P_Nom_Masc, 'Mascota perdida'),
       tipo: obtenerTipoMascota(perdida.p_tipo ?? perdida.P_Tipo),
       edad: obtenerEdadMascota(perdida.p_edad ?? perdida.P_Edad),

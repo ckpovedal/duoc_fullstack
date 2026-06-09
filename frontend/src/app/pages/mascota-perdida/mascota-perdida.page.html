@@ -25,10 +25,6 @@
           Volver
         </button>
 
-        <button type="button" (click)="irInicio()">
-          <ion-icon name="home-outline"></ion-icon>
-          Inicio
-        </button>
       </div>
 
       <div class="foto-hero">
@@ -42,7 +38,14 @@
       <section class="resumen-card">
         <span class="estado" [ngClass]="mascota.estadoClase">{{ mascota.estado }}</span>
 
-        <h1>{{ mascota.nombre }}</h1>
+        <div class="titulo-contacto">
+          <h1>{{ mascota.nombre }}</h1>
+
+          <button class="boton-contactar-resumen" type="button" *ngIf="puedeContactar()" [disabled]="contactando" (click)="contactar()">
+            <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+            {{ contactando ? 'Abriendo...' : 'Contactar' }}
+          </button>
+        </div>
 
         <p>
           <ion-icon name="paw-outline"></ion-icon>

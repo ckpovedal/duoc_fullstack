@@ -39,6 +39,7 @@
 .acciones-detalle {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
   padding: 14px 16px;
   background: var(--color-superficie);
@@ -101,11 +102,49 @@
 }
 
 .resumen-card h1 {
-  margin: 12px 0 14px;
+  margin: 0;
   color: var(--color-texto);
   font-size: 25px;
   font-weight: 800;
   line-height: 1.15;
+}
+
+.titulo-contacto {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0 14px;
+}
+
+.titulo-contacto h1 {
+  min-width: 0;
+  flex: 1;
+}
+
+.boton-contactar-resumen {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-acento-fuerte);
+  color: var(--color-superficie);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.boton-contactar-resumen ion-icon {
+  color: var(--color-superficie);
+  font-size: 16px;
+}
+
+.boton-contactar-resumen:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .resumen-card p {

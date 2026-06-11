@@ -88,4 +88,11 @@ export const routes: Routes = [
       import('./pages/mensajes/mensajes.page')
         .then(m => m.MensajesPage)
   },
+  {
+    path: 'mensajes/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/conversacion/conversacion.page')
+        .then(m => m.ConversacionPage)
+  },
 ];

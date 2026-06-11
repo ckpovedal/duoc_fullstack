@@ -51,6 +51,10 @@ ion-app.con-menu-movil ion-content.contenido-pagina::part(scroll) {
   padding-bottom: 82px;
 }
 
+ion-app.con-menu-movil ion-content.pagina-conversacion::part(scroll) {
+  padding-bottom: 0;
+}
+
 ion-toolbar {
   --background: var(--color-superficie);
   --color: var(--color-texto);

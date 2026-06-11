@@ -1,0 +1,209 @@
+:host {
+  position: fixed;
+  top: 64px;
+  right: 0;
+  bottom: 68px;
+  left: 0;
+  display: block;
+  overflow: hidden;
+  background: var(--color-fondo);
+}
+
+.contenido-pagina {
+  height: 100%;
+  --overflow: hidden;
+}
+
+.contenedor-conversacion {
+  width: 100%;
+  max-width: 430px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 14px 12px 12px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  overflow: hidden;
+  background: var(--color-fondo);
+}
+
+.barra-conversacion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+}
+
+.boton-volver {
+  min-width: 90px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--color-superficie);
+  color: var(--color-acento-fuerte);
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+  cursor: pointer;
+}
+
+.boton-volver ion-icon {
+  font-size: 18px;
+}
+
+.titulo-conversacion {
+  min-width: 0;
+}
+
+.titulo-conversacion h1 {
+  margin: 0;
+  color: var(--color-texto);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.titulo-conversacion p {
+  margin: 3px 0 0;
+  color: var(--color-texto-suave);
+  font-size: 13px;
+}
+
+.lista-mensajes {
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 8px 2px 12px;
+}
+
+.mensaje {
+  width: fit-content;
+  max-width: min(78%, 320px);
+  padding: 10px 12px;
+  align-self: flex-start;
+  border: 1px solid var(--color-borde);
+  border-radius: 16px 16px 16px 4px;
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+}
+
+.mensaje.propio {
+  align-self: flex-end;
+  border-color: transparent;
+  border-radius: 16px 16px 4px 16px;
+  background: var(--color-acento-fuerte);
+  color: var(--color-superficie);
+}
+
+.mensaje:not(.propio) {
+  background: var(--color-superficie-suave);
+}
+
+.mensaje p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.mensaje span {
+  display: block;
+  margin-top: 5px;
+  color: var(--color-texto-suave);
+  font-size: 11px;
+  opacity: 0.9;
+  text-align: left;
+}
+
+.mensaje.propio span {
+  color: rgba(255, 255, 255, 0.88);
+  text-align: right;
+}
+
+.sin-mensajes,
+.estado-listado {
+  margin: auto 0;
+  color: var(--color-texto-suave);
+  text-align: center;
+}
+
+.estado-listado button {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--color-acento-fuerte);
+  color: var(--color-superficie);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.formulario-mensaje {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--color-borde);
+  border-radius: 18px;
+  background: var(--color-superficie);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.formulario-mensaje ion-input {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  color: var(--color-texto);
+}
+
+.formulario-mensaje button {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--color-acento-fuerte);
+  color: var(--color-superficie);
+  cursor: pointer;
+}
+
+.formulario-mensaje button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.formulario-mensaje ion-icon {
+  font-size: 19px;
+}
+
+@media (max-width: 520px) {
+  .contenedor-conversacion {
+    max-width: none;
+    padding: 12px 10px 10px;
+  }
+
+  .barra-conversacion {
+    gap: 10px;
+    min-height: 46px;
+  }
+
+  .boton-volver {
+    min-width: 84px;
+    height: 38px;
+    font-size: 13px;
+  }
+
+  .titulo-conversacion h1 {
+    font-size: 17px;
+  }
+
+  .titulo-conversacion p {
+    font-size: 12px;
+  }
+}

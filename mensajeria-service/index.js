@@ -1,10 +1,14 @@
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const pino = require('pino');
 const pinoHttp = require('pino-http');
+const { Server } = require('socket.io');
 const pool = require('./db');
 
 const app = express();
+const server = http.createServer(app);
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 const port = Number(process.env.MENSAJERIA_SERVICE_PORT) || 3006;
 
@@ -12,6 +16,14 @@ const allowedOrigins = (process.env.CORS_ORIGINS || '')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
+
+const io = new Server(server, {
+  path: '/socket.io',
+  cors: {
+    origin: allowedOrigins.length === 0 ? true : allowedOrigins,
+    methods: ['GET', 'POST']
+  }
+});
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -25,6 +37,74 @@ app.use(cors({
 
 app.use(express.json());
 app.use(pinoHttp({ logger }));
+
+io.use((socket, next) => {
+  const token = socket.handshake.auth?.token;
+
+  if (!token) {
+    return next(new Error('Debes iniciar sesion'));
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    socket.data.usuario = {
+      id: payload.sub,
+      tipo: payload.tipo
+    };
+    return next();
+  } catch {
+    return next(new Error('Sesion invalida o expirada'));
+  }
+});
+
+io.on('connection', (socket) => {
+  socket.on('conversacion:unirse', async ({ convId }, callback) => {
+    try {
+      const usuarioId = socket.data.usuario?.id;
+
+      if (!convId || !usuarioId) {
+        if (callback) {
+          callback({ ok: false });
+        }
+
+        return;
+      }
+
+      const result = await pool.query(
+        `SELECT 1
+         FROM CONVERSACION
+         WHERE CONV_ID = $1
+         AND CONV_ESTADO = 1
+         AND (U_ID_DUENO = $2 OR U_ID_CONTACTO = $2)`,
+        [convId, usuarioId]
+      );
+
+      if (result.rows.length === 0) {
+        if (callback) {
+          callback({ ok: false });
+        }
+
+        return;
+      }
+
+      socket.join(`conversacion:${convId}`);
+
+      if (callback) {
+        callback({ ok: true });
+      }
+    } catch {
+      if (callback) {
+        callback({ ok: false });
+      }
+    }
+  });
+
+  socket.on('conversacion:salir', ({ convId }) => {
+    if (convId) {
+      socket.leave(`conversacion:${convId}`);
+    }
+  });
+});
 
 app.get('/health', async (req, res) => {
   const result = await pool.query('SELECT NOW() AS fecha');
@@ -142,7 +222,11 @@ app.post('/mensajes', async (req, res) => {
     [convId, uIdEmisor, uIdReceptor, msgContenido]
   );
 
-  res.status(201).json(result.rows[0]);
+  const mensaje = result.rows[0];
+
+  io.to(`conversacion:${convId}`).emit('mensaje:nuevo', mensaje);
+
+  res.status(201).json(mensaje);
 });
 
 app.put('/mensajes/:msgId/leido', async (req, res) => {
@@ -168,6 +252,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Error interno del servicio de mensajería' });
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
   logger.info(`mensajeria-service escuchando en puerto ${port}`);
 });

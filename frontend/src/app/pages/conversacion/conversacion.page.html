@@ -1,0 +1,49 @@
+<ion-content class="contenido-pagina pagina-conversacion">
+  <main class="contenedor-conversacion">
+    <section class="barra-conversacion">
+      <button type="button" class="boton-volver" (click)="volver()" aria-label="Volver a mensajes">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+        <span>Volver</span>
+      </button>
+
+      <div class="titulo-conversacion">
+        <h1>Conversación</h1>
+        <p>Mensajes del reporte</p>
+      </div>
+    </section>
+
+    <section class="estado-listado" *ngIf="cargando">
+      <p>Cargando mensajes...</p>
+    </section>
+
+    <section class="estado-listado" *ngIf="!cargando && error">
+      <p>{{ error }}</p>
+      <button type="button" (click)="cargarMensajes()">Reintentar</button>
+    </section>
+
+    <section #contenedorMensajes class="lista-mensajes" *ngIf="!cargando && !error">
+      <article class="mensaje" *ngFor="let mensaje of mensajes" [ngClass]="{ propio: mensaje.propio }">
+        <p>{{ mensaje.contenido }}</p>
+        <span>{{ mensaje.fecha }}</span>
+      </article>
+
+      <p class="sin-mensajes" *ngIf="mensajes.length === 0">
+        Escribe el primer mensaje de esta conversación.
+      </p>
+    </section>
+
+    <form class="formulario-mensaje" (ngSubmit)="enviarMensaje()" *ngIf="!cargando">
+      <ion-input
+        name="nuevoMensaje"
+        placeholder="Escribe un mensaje"
+        [(ngModel)]="nuevoMensaje"
+        [disabled]="enviando"
+        maxlength="1000">
+      </ion-input>
+
+      <button type="submit" [disabled]="enviando || !nuevoMensaje.trim()" aria-label="Enviar mensaje">
+        <ion-icon name="paper-plane-outline"></ion-icon>
+      </button>
+    </form>
+  </main>
+</ion-content>

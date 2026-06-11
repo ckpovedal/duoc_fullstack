@@ -147,8 +147,10 @@ export class MascotaHalladaPage implements OnInit, AfterViewInit, OnDestroy {
         })
       )
       .subscribe({
-        next: () => {
-          this.router.navigate(['/mensajes']);
+        next: (respuesta) => {
+          const conversacion = respuesta?.respuesta || respuesta?.data || respuesta;
+          const conversacionId = conversacion?.conv_id ?? conversacion?.CONV_ID;
+          this.router.navigate(conversacionId ? ['/mensajes', conversacionId] : ['/mensajes']);
         },
         error: (error) => {
           this.error = this.obtenerMensajeError(error);

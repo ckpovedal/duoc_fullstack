@@ -13,6 +13,7 @@ Funciones principales:
 - Listado, detalle y busqueda de reportes.
 - Geolocalizacion de reportes.
 - Busqueda de coincidencias entre perdidas y hallazgos.
+- Mensajeria entre usuarios desde reportes.
 - Autenticacion con JWT para acciones protegidas.
 
 ## Tecnologias
@@ -37,6 +38,7 @@ Funciones principales:
 | `hallazgos-service` | `3003` | Reportes de mascotas encontradas. |
 | `buscador-service` | `3002` | Coincidencias entre reportes. |
 | `geolocalizacion-service` | `3005` | Geocodificacion y ubicacion de reportes. |
+| `mensajeria-service` | `3006` | Conversaciones y mensajes entre usuarios. |
 | `eureka-server` | `8761` | Servicio de registro, disponible si se requiere. |
 
 ## Base De Datos
@@ -47,6 +49,7 @@ Los scripts estan en la raiz del proyecto:
 - `DB Perdida.txt`
 - `DB Hallazgo.txt`
 - `DB Geolocalizacion.txt`
+- `DB Mensajeria.txt`
 
 Cada servicio con persistencia usa su propia base de datos PostgreSQL.
 
@@ -147,6 +150,11 @@ El frontend consume las rutas mediante el `api-gateway`:
 | GET | `/api/buscador/:perdidaId` | Buscar coincidencias desde una perdida. |
 | GET | `/api/geolocalizacion/geocodificar` | Buscar coordenadas por direccion. |
 | GET | `/api/geolocalizacion/reverso` | Buscar direccion por coordenadas. |
+| POST | `/api/mensajeria/conversaciones` | Crear conversacion. |
+| GET | `/api/mensajeria/conversaciones/usuario/:uId` | Listar conversaciones de un usuario. |
+| GET | `/api/mensajeria/conversaciones/:convId/mensajes` | Listar mensajes de una conversacion. |
+| POST | `/api/mensajeria/mensajes` | Enviar mensaje. |
+| PUT | `/api/mensajeria/mensajes/:msgId/leido` | Marcar mensaje como leido. |
 
 Los servicios incluyen endpoint `GET /health` para revision local.
 
@@ -165,6 +173,7 @@ Crear y editar reportes requiere sesion iniciada. Las consultas publicas de repo
 - El gateway es el punto de entrada recomendado para el frontend.
 - Mantener secretos, credenciales y configuraciones privadas fuera del repositorio.
 - Los scripts SQL pueden reiniciar tablas si se ejecutan completos.
+- Mensajeria usa REST para conversaciones y Socket.IO por medio del gateway para mensajes en tiempo real.
 - Para pruebas Android locales se debe usar la configuracion `android` del frontend.
 - Para produccion se debe configurar una URL publica segura para el gateway.
 

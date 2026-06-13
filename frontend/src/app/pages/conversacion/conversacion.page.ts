@@ -127,7 +127,9 @@ export class ConversacionPage implements OnInit, OnDestroy {
         })
       )
       .subscribe({
-        next: (mensaje) => {
+        next: (respuesta) => {
+          const mensaje = respuesta?.respuesta || respuesta?.data || respuesta;
+
           this.nuevoMensaje = '';
           this.agregarMensajeSiNoExiste(mensaje);
           this.bajarAlFinal();
@@ -151,7 +153,7 @@ export class ConversacionPage implements OnInit, OnDestroy {
     this.mensajesSocketSubscription = this.mensajeriaSocketService
       .escucharMensajeNuevo()
       .subscribe((mensaje) => {
-        const convId = mensaje?.conv_id ?? mensaje?.CONV_ID;
+        const convId = String(mensaje?.conv_id ?? mensaje?.CONV_ID ?? '');
 
         if (convId !== this.conversacionId) {
           return;
@@ -165,6 +167,11 @@ export class ConversacionPage implements OnInit, OnDestroy {
 
   private agregarMensajeSiNoExiste(mensaje: any) {
     const mensajeNormalizado = this.normalizarMensaje(mensaje);
+
+    if (!mensajeNormalizado.id) {
+      return;
+    }
+
     const existe = this.mensajes.some((item) => item.id === mensajeNormalizado.id);
 
     if (existe) {
@@ -178,11 +185,11 @@ export class ConversacionPage implements OnInit, OnDestroy {
   }
 
   private normalizarMensaje(mensaje: any): MensajeVista {
-    const id = mensaje.msg_id ?? mensaje.MSG_ID;
-    const contenido = mensaje.msg_contenido ?? mensaje.MSG_CONTENIDO ?? '';
-    const fecha = mensaje.msg_fecha ?? mensaje.MSG_FECHA;
-    const emisor = mensaje.u_id_emisor ?? mensaje.U_ID_EMISOR;
-    const leido = Number(mensaje.msg_leido ?? mensaje.MSG_LEIDO) === 1;
+    const id = String(mensaje?.msg_id ?? mensaje?.MSG_ID ?? '');
+    const contenido = mensaje?.msg_contenido ?? mensaje?.MSG_CONTENIDO ?? '';
+    const fecha = mensaje?.msg_fecha ?? mensaje?.MSG_FECHA;
+    const emisor = String(mensaje?.u_id_emisor ?? mensaje?.U_ID_EMISOR ?? '');
+    const leido = Number(mensaje?.msg_leido ?? mensaje?.MSG_LEIDO) === 1;
 
     return {
       id,
@@ -195,9 +202,13 @@ export class ConversacionPage implements OnInit, OnDestroy {
 
   private marcarRecibidosComoLeidos() {
     this.mensajes
-      .filter((mensaje) => !mensaje.propio && !mensaje.leido)
+      .filter((mensaje) => mensaje.id && !mensaje.propio && !mensaje.leido)
       .forEach((mensaje) => {
-        this.mensajeriaService.marcarMensajeLeido(mensaje.id).subscribe();
+        this.mensajeriaService.marcarMensajeLeido(mensaje.id).subscribe({
+          next: () => {
+            mensaje.leido = true;
+          }
+        });
       });
   }
 

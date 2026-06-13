@@ -1209,8 +1209,9 @@
               "script": {
                 "exec": [
                   "const json = pm.response.json();",
-                  "if (json.conv_id) {",
-                  "  pm.collectionVariables.set('conversacion_id', json.conv_id);",
+                  "const conversacion = json.respuesta || json;",
+                  "if (conversacion.conv_id) {",
+                  "  pm.collectionVariables.set('conversacion_id', conversacion.conv_id);",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -1316,8 +1317,9 @@
               "script": {
                 "exec": [
                   "const json = pm.response.json();",
-                  "if (json.msg_id) {",
-                  "  pm.collectionVariables.set('mensaje_id', json.msg_id);",
+                  "const mensaje = json.respuesta || json;",
+                  "if (mensaje.msg_id) {",
+                  "  pm.collectionVariables.set('mensaje_id', mensaje.msg_id);",
                   "}"
                 ],
                 "type": "text/javascript"

@@ -1,5 +1,11 @@
 const express = require('express');
-const { autenticar, protegerEscrituraReportes, protegerUsuarios } = require('../middleware/auth.middleware');
+const {
+  autenticar,
+  autenticarOpcional,
+  protegerEscrituraReportes,
+  protegerUsuarios,
+  protegerAdminDonativos
+} = require('../middleware/auth.middleware');
 const { crearProxyServicio } = require('../services/proxy.factory');
 
 const router = express.Router();
@@ -54,6 +60,44 @@ router.use(
   crearProxyServicio({
     target: process.env.MENSAJERIA_SERVICE_URL || 'http://localhost:3006',
     pathRewrite: (path) => path,
+  })
+);
+
+router.use(
+  '/donativos/resumen',
+  autenticar,
+  protegerAdminDonativos,
+  crearProxyServicio({
+    target: process.env.DONATIVOS_SERVICE_URL || 'http://localhost:3007',
+    pathRewrite: (path) => `/donativos/resumen${path}`,
+  })
+);
+
+router.use(
+  '/donativos/admin',
+  autenticar,
+  protegerAdminDonativos,
+  crearProxyServicio({
+    target: process.env.DONATIVOS_SERVICE_URL || 'http://localhost:3007',
+    pathRewrite: (path) => `/donativos/admin${path}`,
+  })
+);
+
+router.use(
+  '/donativos/mis-donativos',
+  autenticar,
+  crearProxyServicio({
+    target: process.env.DONATIVOS_SERVICE_URL || 'http://localhost:3007',
+    pathRewrite: (path) => `/donativos/mis-donativos${path}`,
+  })
+);
+
+router.use(
+  '/donativos',
+  autenticarOpcional,
+  crearProxyServicio({
+    target: process.env.DONATIVOS_SERVICE_URL || 'http://localhost:3007',
+    pathRewrite: (path) => `/donativos${path}`,
   })
 );
 

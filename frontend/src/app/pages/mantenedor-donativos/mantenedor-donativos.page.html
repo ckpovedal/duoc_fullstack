@@ -1,0 +1,90 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mantenedor de donativos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="contenido-pagina">
+  <main class="contenedor-pagina contenedor-con-padding contenedor-mantenedor">
+    <section class="panel-pagina panel-mantenedor">
+      <div class="barra-acciones">
+        <button type="button" class="boton-secundario" (click)="volverPrincipal()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          <span>Volver</span>
+        </button>
+
+        <button type="button" class="boton-secundario" (click)="cargarDatos()" [disabled]="cargando">
+          <ion-icon name="refresh-outline"></ion-icon>
+          <span>Actualizar</span>
+        </button>
+      </div>
+
+      <h1>Donativos</h1>
+
+      <ion-text color="danger" *ngIf="error">
+        <p class="mensaje-error">{{ error }}</p>
+      </ion-text>
+
+      <div class="estado-carga" *ngIf="cargando">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Cargando donativos...</span>
+      </div>
+
+      <section class="resumen-admin" *ngIf="resumen">
+        <article>
+          <span>Total recaudado</span>
+          <strong>{{ formatearMoneda(resumen.total_recaudado) }}</strong>
+        </article>
+
+        <article>
+          <span>Donativos</span>
+          <strong>{{ resumen.cantidad_donativos || 0 }}</strong>
+        </article>
+
+        <article>
+          <span>Aprobados</span>
+          <strong>{{ resumen.aprobados || 0 }}</strong>
+        </article>
+
+        <article>
+          <span>Pendientes</span>
+          <strong>{{ resumen.pendientes || 0 }}</strong>
+        </article>
+
+        <article>
+          <span>Rechazados</span>
+          <strong>{{ resumen.rechazados || 0 }}</strong>
+        </article>
+      </section>
+
+      <section class="tabla-donativos" *ngIf="donativos.length">
+        <article class="fila-donativo encabezado-donativo">
+          <span>Código</span>
+          <span>Donante</span>
+          <span>Monto</span>
+          <span>Estado</span>
+          <span>Fecha</span>
+        </article>
+
+        <article class="fila-donativo" *ngFor="let donativo of donativos">
+          <span>{{ donativo.d_codigo_transaccion || donativo.d_id }}</span>
+          <span>
+            <strong>{{ donativo.d_nombre_donante }}</strong>
+            <small>{{ donativo.d_correo_donante }}</small>
+          </span>
+          <span>{{ formatearMoneda(donativo.d_monto) }}</span>
+          <span>
+            <mark [class]="obtenerClaseEstado(donativo.d_estado)">
+              {{ obtenerEstado(donativo.d_estado) }}
+            </mark>
+          </span>
+          <span>{{ formatearFecha(donativo.d_fecha) }}</span>
+        </article>
+      </section>
+
+      <p class="sin-datos" *ngIf="!cargando && !error && !donativos.length">
+        No hay donativos registrados.
+      </p>
+    </section>
+  </main>
+</ion-content>

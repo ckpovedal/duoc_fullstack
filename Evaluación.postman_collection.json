@@ -127,6 +127,23 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Donativos Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{donativos_service_url}}/health",
+              "host": [
+                "{{donativos_service_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -1391,6 +1408,159 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "Donativos - API Gateway",
+      "item": [
+        {
+          "name": "Crear Donativo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.respuesta && json.respuesta.d_id) {",
+                  "  pm.collectionVariables.set('donativo_id', json.respuesta.d_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Donante Prueba\",\n  \"correo\": \"donante.prueba@email.com\",\n  \"monto\": 5000,\n  \"mensaje\": \"Aporte simulado para Sanos y Salvos\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/donativos",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "donativos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mis Donativos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/donativos/mis-donativos",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "donativos",
+                "mis-donativos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Resumen Donativos Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/donativos/resumen",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "donativos",
+                "resumen"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Donativos Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/donativos/admin",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "donativos",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Donativo Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/donativos/admin/{{donativo_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "donativos",
+                "admin",
+                "{{donativo_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [
@@ -1430,6 +1600,11 @@
       "type": "string"
     },
     {
+      "key": "donativos_service_url",
+      "value": "http://localhost:3007",
+      "type": "string"
+    },
+    {
       "key": "usuario_id",
       "value": "USR00001",
       "type": "string"
@@ -1462,6 +1637,11 @@
     {
       "key": "mensaje_id",
       "value": "MSG00001",
+      "type": "string"
+    },
+    {
+      "key": "donativo_id",
+      "value": "DON00001",
       "type": "string"
     },
     {

@@ -1,0 +1,103 @@
+.contenedor-donativos {
+  background: var(--color-superficie-suave);
+}
+
+.panel-donativos {
+  padding: 24px;
+}
+
+.boton-volver {
+  border: none;
+  background: transparent;
+  color: var(--color-acento-fuerte);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.boton-volver ion-icon {
+  font-size: 20px;
+}
+
+.panel-donativos h1 {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.intro-donativos {
+  margin: 0 auto 24px;
+  max-width: 440px;
+  color: var(--color-texto-suave);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.formulario-donativos ion-list {
+  background: transparent;
+  padding: 0;
+}
+
+.formulario-donativos ion-item {
+  --background: var(--color-superficie);
+  --border-color: var(--color-borde);
+  margin-bottom: 10px;
+  border-radius: var(--radio-panel);
+}
+
+.mensaje-error {
+  margin: 10px 0 0;
+  font-size: 14px;
+}
+
+.boton-donar {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 18px;
+  border: none;
+  border-radius: var(--radio-panel);
+  background: var(--color-acento-fuerte);
+  color: var(--color-superficie);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.boton-donar:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.boton-donar ion-icon,
+.boton-donar ion-spinner {
+  font-size: 20px;
+}
+
+.comprobante-donativo {
+  margin-top: 20px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-panel);
+  background: var(--color-calido-suave);
+  padding: 16px;
+}
+
+.comprobante-donativo h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.comprobante-donativo p {
+  margin: 6px 0;
+  color: var(--color-texto);
+  font-size: 14px;
+}

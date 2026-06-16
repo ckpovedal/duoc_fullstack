@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Donativos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="contenido-pagina">
+  <main class="contenedor-pagina contenedor-con-padding contenedor-donativos">
+    <section class="panel-pagina panel-donativos">
+      <button type="button" class="boton-volver" (click)="volverPrincipal()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+        <span>Volver</span>
+      </button>
+
+      <img src="assets/img/SanosySalvos.png" class="logo-pagina" alt="Logo">
+
+      <h1>Donativos</h1>
+      <p class="intro-donativos">Tu aporte ayuda a mantener activa la plataforma Sanos y Salvos.</p>
+
+      <form class="formulario-donativos" (ngSubmit)="crearDonativo()">
+        <ion-list>
+          <ion-item>
+            <ion-input label="Nombre" labelPlacement="stacked" name="nombre" [(ngModel)]="donativo.nombre" maxlength="80" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input label="Correo" labelPlacement="stacked" name="correo" type="email" [(ngModel)]="donativo.correo" maxlength="100" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input label="Monto" labelPlacement="stacked" name="monto" type="number" min="1" [(ngModel)]="donativo.monto" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-textarea label="Mensaje opcional" labelPlacement="stacked" name="mensaje" [(ngModel)]="donativo.mensaje" maxlength="300" rows="4"></ion-textarea>
+          </ion-item>
+        </ion-list>
+
+        <ion-text color="danger" *ngIf="error">
+          <p class="mensaje-error">{{ error }}</p>
+        </ion-text>
+
+        <button type="submit" class="boton-donar" [disabled]="cargando">
+          <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+          <ion-icon *ngIf="!cargando" name="heart-outline"></ion-icon>
+          <span>{{ cargando ? 'Procesando' : 'Donar' }}</span>
+        </button>
+      </form>
+
+      <section class="comprobante-donativo" *ngIf="donativoCreado">
+        <h2>Donativo recibido</h2>
+        <p>Código: <strong>{{ donativoCreado.d_codigo_transaccion }}</strong></p>
+        <p>Monto: <strong>{{ formatearMoneda(donativoCreado.d_monto) }}</strong></p>
+      </section>
+    </section>
+  </main>
+</ion-content>

@@ -14,6 +14,7 @@ Funciones principales:
 - Geolocalizacion de reportes.
 - Busqueda de coincidencias entre perdidas y hallazgos.
 - Mensajeria entre usuarios desde reportes.
+- Donativos generales simulados para apoyar la plataforma.
 - Autenticacion con JWT para acciones protegidas.
 
 ## Tecnologias
@@ -39,6 +40,7 @@ Funciones principales:
 | `buscador-service` | `3002` | Coincidencias entre reportes. |
 | `geolocalizacion-service` | `3005` | Geocodificacion y ubicacion de reportes. |
 | `mensajeria-service` | `3006` | Conversaciones y mensajes entre usuarios. |
+| `donativos-service` | `3007` | Registro y administracion de donativos simulados. |
 | `eureka-server` | `8761` | Servicio de registro, disponible si se requiere. |
 
 ## Base De Datos
@@ -50,6 +52,7 @@ Los scripts estan en la raiz del proyecto:
 - `DB Hallazgo.txt`
 - `DB Geolocalizacion.txt`
 - `DB Mensajeria.txt`
+- `DB Donativos.txt`
 
 Cada servicio con persistencia usa su propia base de datos PostgreSQL.
 
@@ -64,6 +67,8 @@ Copy-Item .env.example .env
 Configurar las variables de puertos, URLs internas, conexion a base de datos, JWT, CORS y logs segun el entorno local.
 
 No subir archivos `.env` al repositorio.
+
+Para donativos se debe crear la base `donativos_db` y ejecutar el script `DB Donativos.txt`.
 
 ## Instalacion
 
@@ -155,6 +160,11 @@ El frontend consume las rutas mediante el `api-gateway`:
 | GET | `/api/mensajeria/conversaciones/:convId/mensajes` | Listar mensajes de una conversacion. |
 | POST | `/api/mensajeria/mensajes` | Enviar mensaje. |
 | PUT | `/api/mensajeria/mensajes/:msgId/leido` | Marcar mensaje como leido. |
+| POST | `/api/donativos` | Registrar donativo simulado. |
+| GET | `/api/donativos/resumen` | Obtener resumen de donativos para administracion. |
+| GET | `/api/donativos/mis-donativos` | Listar donativos del usuario autenticado. |
+| GET | `/api/donativos/admin` | Listar donativos para administracion. |
+| GET | `/api/donativos/admin/:id` | Ver detalle de donativo para administracion. |
 
 Los servicios incluyen endpoint `GET /health` para revision local.
 
@@ -168,12 +178,15 @@ Authorization: Bearer <token>
 
 Crear y editar reportes requiere sesion iniciada. Las consultas publicas de reportes y busqueda no requieren sesion.
 
+El registro de donativos es publico y usa pago simulado. Las consultas administrativas de donativos requieren autenticacion y usuario autorizado.
+
 ## Consideraciones
 
 - El gateway es el punto de entrada recomendado para el frontend.
 - Mantener secretos, credenciales y configuraciones privadas fuera del repositorio.
 - Los scripts SQL pueden reiniciar tablas si se ejecutan completos.
 - Mensajeria usa REST para conversaciones y Socket.IO por medio del gateway para mensajes en tiempo real.
+- Donativos registra aportes generales, sin integracion con pasarelas de pago reales.
 - Para pruebas Android locales se debe usar la configuracion `android` del frontend.
 - Para produccion se debe configurar una URL publica segura para el gateway.
 

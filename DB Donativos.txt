@@ -1,0 +1,77 @@
+DROP TABLE IF EXISTS DONATIVO CASCADE;
+
+DROP SEQUENCE IF EXISTS seq_donativo_id CASCADE;
+
+DROP FUNCTION IF EXISTS generar_d_id() CASCADE;
+DROP FUNCTION IF EXISTS trigger_asignar_d_id() CASCADE;
+
+CREATE TABLE DONATIVO (
+    D_ID                  VARCHAR(40) PRIMARY KEY,
+    U_ID                  VARCHAR(40),
+    D_NOMBRE_DONANTE      VARCHAR(80) NOT NULL,
+    D_CORREO_DONANTE      VARCHAR(100) NOT NULL,
+    D_MONTO               NUMERIC(10) NOT NULL,
+    D_MONEDA              VARCHAR(3) NOT NULL DEFAULT 'CLP',
+    D_MENSAJE             VARCHAR(300),
+    D_ESTADO              NUMERIC(1) NOT NULL DEFAULT 1,
+    D_METODO_PAGO         VARCHAR(30) NOT NULL DEFAULT 'SIMULADO',
+    D_CODIGO_TRANSACCION  VARCHAR(40) UNIQUE,
+    D_FECHA               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_donativo_nombre CHECK (LENGTH(TRIM(D_NOMBRE_DONANTE)) > 0),
+    CONSTRAINT chk_donativo_correo CHECK (LENGTH(TRIM(D_CORREO_DONANTE)) > 0),
+    CONSTRAINT chk_donativo_monto CHECK (D_MONTO > 0),
+    CONSTRAINT chk_donativo_moneda CHECK (D_MONEDA IN ('CLP')),
+    CONSTRAINT chk_donativo_estado CHECK (D_ESTADO IN (1, 2, 3)),
+    CONSTRAINT chk_donativo_metodo CHECK (D_METODO_PAGO IN ('SIMULADO'))
+);
+
+CREATE SEQUENCE seq_donativo_id
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE OR REPLACE FUNCTION generar_d_id()
+RETURNS VARCHAR(40) AS $$
+DECLARE
+    nuevo_id VARCHAR(40);
+    contador INTEGER;
+BEGIN
+    contador := nextval('seq_donativo_id');
+    nuevo_id := 'DON' || LPAD(contador::TEXT, 5, '0');
+
+    WHILE EXISTS (SELECT 1 FROM DONATIVO WHERE D_ID = nuevo_id) LOOP
+        contador := nextval('seq_donativo_id');
+        nuevo_id := 'DON' || LPAD(contador::TEXT, 5, '0');
+    END LOOP;
+
+    RETURN nuevo_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION trigger_asignar_d_id()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.D_ID IS NULL OR NEW.D_ID = '' THEN
+        NEW.D_ID := generar_d_id();
+    END IF;
+
+    IF NEW.D_CODIGO_TRANSACCION IS NULL OR NEW.D_CODIGO_TRANSACCION = '' THEN
+        NEW.D_CODIGO_TRANSACCION := 'SIM-' || NEW.D_ID;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_asignar_d_id
+    BEFORE INSERT ON DONATIVO
+    FOR EACH ROW
+    EXECUTE FUNCTION trigger_asignar_d_id();
+
+CREATE INDEX idx_donativo_usuario ON DONATIVO(U_ID);
+CREATE INDEX idx_donativo_correo ON DONATIVO(D_CORREO_DONANTE);
+CREATE INDEX idx_donativo_estado ON DONATIVO(D_ESTADO);
+CREATE INDEX idx_donativo_fecha ON DONATIVO(D_FECHA);

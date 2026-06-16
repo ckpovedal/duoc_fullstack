@@ -24,6 +24,18 @@ export const routes: Routes = [
       import('./pages/principal/principal.page').then(m => m.PrincipalPage)
   },
   {
+    path: 'donativos',
+    loadComponent: () =>
+      import('./pages/donativos/donativos.page').then(m => m.DonativosPage)
+  },
+  {
+    path: 'mantenedor-donativos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/mantenedor-donativos/mantenedor-donativos.page')
+        .then(m => m.MantenedorDonativosPage)
+  },
+  {
     path: 'buscador',
     loadComponent: () =>
       import('./pages/buscador/buscador.page').then(m => m.BuscadorPage)

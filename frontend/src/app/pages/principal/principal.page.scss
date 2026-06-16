@@ -34,6 +34,33 @@
   font-size: 14px;
 }
 
+.acciones-principal {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+}
+
+.boton-donativos {
+  min-width: 160px;
+  min-height: 46px;
+  border: none;
+  border-radius: var(--radio-panel);
+  background: var(--color-acento-fuerte);
+  color: var(--color-superficie);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(255, 111, 123, 0.28);
+}
+
+.boton-donativos ion-icon {
+  font-size: 20px;
+}
+
 @media (min-width: 768px) {
   .contenedor-principal {
     margin-top: 24px;

@@ -20,6 +20,10 @@ function crearProxyServicio({ target, pathRewrite }) {
           proxyReq.setHeader('X-Usuario-Tipo', req.usuario.tipo);
         }
 
+        if (req.adminAutorizado) {
+          proxyReq.setHeader('X-Admin-Autorizado', 'true');
+        }
+
         if (!req.body || !Object.keys(req.body).length) {
           return;
         }

@@ -8,6 +8,7 @@ import { IonApp, IonIcon, IonRouterOutlet} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addCircle, chatbubbleEllipsesOutline, homeOutline, mapOutline, pawOutline, personCircleOutline, searchOutline} from 'ionicons/icons';
 import { SesionService } from './services/sesion.service';
+import { NotificacionService } from './services/notificacion.service';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +29,12 @@ export class AppComponent {
 
   estaLogueado = false;
 
-  constructor( private titleService: Title, private router: Router, private sesionService: SesionService) {
+  constructor(
+    private titleService: Title,
+    private router: Router,
+    private sesionService: SesionService,
+    private notificacionService: NotificacionService
+  ) {
     this.titleService.setTitle('Sanos y Salvos');
     addIcons({ addCircle, chatbubbleEllipsesOutline, homeOutline, mapOutline, pawOutline, personCircleOutline, searchOutline});
     this.validarSesion();
@@ -45,9 +51,11 @@ export class AppComponent {
   }
 
   logout() {
-    this.sesionService.cerrarSesion();
-    this.estaLogueado = false;
-    this.router.navigate(['/inicio']);
+    this.notificacionService.desactivarDispositivoActual().finally(() => {
+      this.sesionService.cerrarSesion();
+      this.estaLogueado = false;
+      this.router.navigate(['/inicio']);
+    });
   }
 
   mostrarNavbar(): boolean {

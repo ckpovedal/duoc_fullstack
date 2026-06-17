@@ -64,6 +64,15 @@ router.use(
 );
 
 router.use(
+  '/notificaciones',
+  autenticar,
+  crearProxyServicio({
+    target: process.env.NOTIFICACIONES_SERVICE_URL || 'http://localhost:3008',
+    pathRewrite: (path) => `/notificaciones${path}`,
+  })
+);
+
+router.use(
   '/donativos/resumen',
   autenticar,
   protegerAdminDonativos,

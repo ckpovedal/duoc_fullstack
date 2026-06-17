@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { IonButton, IonContent, IonHeader, IonInput, IonItem, IonList, IonText, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { UsuarioService } from '../../services/usuario.service';
 import { SesionService } from '../../services/sesion.service';
+import { NotificacionService } from '../../services/notificacion.service';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ export class LoginPage implements OnInit {
   constructor(
     private usuarioService: UsuarioService,
     private sesionService: SesionService,
+    private notificacionService: NotificacionService,
     private router: Router
   ) { }
 
@@ -61,6 +63,7 @@ export class LoginPage implements OnInit {
         const token = login?.token || '';
 
         this.sesionService.guardarSesion(usuario, token);
+        this.notificacionService.inicializarPush();
 
         this.router.navigate(['/principal']);
       },

@@ -25,6 +25,10 @@ Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Comma
 
 Start-Sleep -Seconds 2
 
+Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\notificaciones-service'; npm run dev"
+
+Start-Sleep -Seconds 2
+
 Start-Process powershell -WindowStyle Minimized -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\donativos-service'; npm run dev"
 
 Start-Sleep -Seconds 2

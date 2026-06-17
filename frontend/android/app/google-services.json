@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "886165124879",
+    "project_id": "sanos-y-salvos-370b6",
+    "storage_bucket": "sanos-y-salvos-370b6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886165124879:android:90eefb467f23500eff707a",
+        "android_client_info": {
+          "package_name": "cl.duoc.sanosysalvos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC97RQkdbxuHgAicM4lK2PhaLZ6k22Z0S0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

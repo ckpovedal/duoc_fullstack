@@ -1,0 +1,206 @@
+DROP TABLE IF EXISTS NOTIFICACION CASCADE;
+DROP TABLE IF EXISTS DISPOSITIVO_PUSH CASCADE;
+DROP TABLE IF EXISTS PREFERENCIA_NOTIFICACION CASCADE;
+
+DROP SEQUENCE IF EXISTS seq_dispositivo_push_id CASCADE;
+DROP SEQUENCE IF EXISTS seq_notificacion_id CASCADE;
+DROP SEQUENCE IF EXISTS seq_preferencia_notificacion_id CASCADE;
+
+DROP FUNCTION IF EXISTS generar_dp_id() CASCADE;
+DROP FUNCTION IF EXISTS generar_not_id() CASCADE;
+DROP FUNCTION IF EXISTS generar_pref_id() CASCADE;
+DROP FUNCTION IF EXISTS trigger_asignar_dp_id() CASCADE;
+DROP FUNCTION IF EXISTS trigger_asignar_not_id() CASCADE;
+DROP FUNCTION IF EXISTS trigger_asignar_pref_id() CASCADE;
+
+CREATE TABLE DISPOSITIVO_PUSH (
+    DP_ID              VARCHAR(40) PRIMARY KEY,
+    U_ID               VARCHAR(40) NOT NULL,
+    DP_TOKEN           VARCHAR(500) NOT NULL UNIQUE,
+    DP_PLATAFORMA      VARCHAR(20) NOT NULL,
+    DP_MODELO          VARCHAR(100),
+    DP_ESTADO          NUMERIC(1) NOT NULL DEFAULT 1,
+    DP_FECHA_REGISTRO  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    DP_FECHA_ACTUALIZA TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_dispositivo_plataforma CHECK (DP_PLATAFORMA IN ('ANDROID', 'WEB')),
+    CONSTRAINT chk_dispositivo_estado CHECK (DP_ESTADO IN (1, 2, 3)),
+    CONSTRAINT chk_dispositivo_token CHECK (LENGTH(TRIM(DP_TOKEN)) > 0)
+);
+
+CREATE TABLE NOTIFICACION (
+    NOT_ID             VARCHAR(40) PRIMARY KEY,
+    U_ID_DESTINO       VARCHAR(40) NOT NULL,
+    NOT_TITULO         VARCHAR(120) NOT NULL,
+    NOT_CUERPO         VARCHAR(500) NOT NULL,
+    NOT_TIPO           VARCHAR(30) NOT NULL,
+    NOT_DATA           JSONB NOT NULL DEFAULT '{}'::jsonb,
+    NOT_LEIDA          NUMERIC(1) NOT NULL DEFAULT 2,
+    NOT_ENVIADA        NUMERIC(1) NOT NULL DEFAULT 2,
+    NOT_ERROR          VARCHAR(500),
+    NOT_FECHA          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    NOT_FECHA_ENVIO    TIMESTAMP,
+
+    CONSTRAINT chk_notificacion_tipo CHECK (NOT_TIPO IN ('MENSAJE', 'COINCIDENCIA', 'SISTEMA')),
+    CONSTRAINT chk_notificacion_leida CHECK (NOT_LEIDA IN (1, 2)),
+    CONSTRAINT chk_notificacion_enviada CHECK (NOT_ENVIADA IN (1, 2, 3)),
+    CONSTRAINT chk_notificacion_titulo CHECK (LENGTH(TRIM(NOT_TITULO)) > 0),
+    CONSTRAINT chk_notificacion_cuerpo CHECK (LENGTH(TRIM(NOT_CUERPO)) > 0)
+);
+
+CREATE TABLE PREFERENCIA_NOTIFICACION (
+    PREF_ID              VARCHAR(40) PRIMARY KEY,
+    U_ID                 VARCHAR(40) NOT NULL UNIQUE,
+    PREF_MENSAJES        NUMERIC(1) NOT NULL DEFAULT 1,
+    PREF_COINCIDENCIAS   NUMERIC(1) NOT NULL DEFAULT 1,
+    PREF_SISTEMA         NUMERIC(1) NOT NULL DEFAULT 1,
+    PREF_FECHA_REGISTRO  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PREF_FECHA_ACTUALIZA TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_pref_mensajes CHECK (PREF_MENSAJES IN (1, 2)),
+    CONSTRAINT chk_pref_coincidencias CHECK (PREF_COINCIDENCIAS IN (1, 2)),
+    CONSTRAINT chk_pref_sistema CHECK (PREF_SISTEMA IN (1, 2))
+);
+
+CREATE SEQUENCE seq_dispositivo_push_id
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE seq_notificacion_id
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE SEQUENCE seq_preferencia_notificacion_id
+    START WITH 1
+    INCREMENT BY 1
+    MINVALUE 1
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE OR REPLACE FUNCTION generar_dp_id()
+RETURNS VARCHAR(40) AS $$
+DECLARE
+    nuevo_id VARCHAR(40);
+    contador INTEGER;
+BEGIN
+    contador := nextval('seq_dispositivo_push_id');
+    nuevo_id := 'DPU' || LPAD(contador::TEXT, 5, '0');
+
+    WHILE EXISTS (SELECT 1 FROM DISPOSITIVO_PUSH WHERE DP_ID = nuevo_id) LOOP
+        contador := nextval('seq_dispositivo_push_id');
+        nuevo_id := 'DPU' || LPAD(contador::TEXT, 5, '0');
+    END LOOP;
+
+    RETURN nuevo_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION generar_not_id()
+RETURNS VARCHAR(40) AS $$
+DECLARE
+    nuevo_id VARCHAR(40);
+    contador INTEGER;
+BEGIN
+    contador := nextval('seq_notificacion_id');
+    nuevo_id := 'NOT' || LPAD(contador::TEXT, 5, '0');
+
+    WHILE EXISTS (SELECT 1 FROM NOTIFICACION WHERE NOT_ID = nuevo_id) LOOP
+        contador := nextval('seq_notificacion_id');
+        nuevo_id := 'NOT' || LPAD(contador::TEXT, 5, '0');
+    END LOOP;
+
+    RETURN nuevo_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION generar_pref_id()
+RETURNS VARCHAR(40) AS $$
+DECLARE
+    nuevo_id VARCHAR(40);
+    contador INTEGER;
+BEGIN
+    contador := nextval('seq_preferencia_notificacion_id');
+    nuevo_id := 'PRF' || LPAD(contador::TEXT, 5, '0');
+
+    WHILE EXISTS (SELECT 1 FROM PREFERENCIA_NOTIFICACION WHERE PREF_ID = nuevo_id) LOOP
+        contador := nextval('seq_preferencia_notificacion_id');
+        nuevo_id := 'PRF' || LPAD(contador::TEXT, 5, '0');
+    END LOOP;
+
+    RETURN nuevo_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION trigger_asignar_dp_id()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.DP_ID IS NULL OR NEW.DP_ID = '' THEN
+        NEW.DP_ID := generar_dp_id();
+    END IF;
+
+    NEW.DP_FECHA_ACTUALIZA := CURRENT_TIMESTAMP;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION trigger_asignar_not_id()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.NOT_ID IS NULL OR NEW.NOT_ID = '' THEN
+        NEW.NOT_ID := generar_not_id();
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION trigger_asignar_pref_id()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.PREF_ID IS NULL OR NEW.PREF_ID = '' THEN
+        NEW.PREF_ID := generar_pref_id();
+    END IF;
+
+    NEW.PREF_FECHA_ACTUALIZA := CURRENT_TIMESTAMP;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_asignar_dp_id
+    BEFORE INSERT OR UPDATE ON DISPOSITIVO_PUSH
+    FOR EACH ROW
+    EXECUTE FUNCTION trigger_asignar_dp_id();
+
+CREATE TRIGGER tr_asignar_not_id
+    BEFORE INSERT ON NOTIFICACION
+    FOR EACH ROW
+    EXECUTE FUNCTION trigger_asignar_not_id();
+
+CREATE TRIGGER tr_asignar_pref_id
+    BEFORE INSERT OR UPDATE ON PREFERENCIA_NOTIFICACION
+    FOR EACH ROW
+    EXECUTE FUNCTION trigger_asignar_pref_id();
+
+CREATE INDEX idx_dispositivo_usuario ON DISPOSITIVO_PUSH(U_ID);
+CREATE INDEX idx_dispositivo_estado ON DISPOSITIVO_PUSH(DP_ESTADO);
+CREATE INDEX idx_dispositivo_plataforma ON DISPOSITIVO_PUSH(DP_PLATAFORMA);
+
+CREATE INDEX idx_notificacion_usuario ON NOTIFICACION(U_ID_DESTINO);
+CREATE INDEX idx_notificacion_tipo ON NOTIFICACION(NOT_TIPO);
+CREATE INDEX idx_notificacion_leida ON NOTIFICACION(NOT_LEIDA);
+CREATE INDEX idx_notificacion_enviada ON NOTIFICACION(NOT_ENVIADA);
+CREATE INDEX idx_notificacion_fecha ON NOTIFICACION(NOT_FECHA);
+
+CREATE INDEX idx_preferencia_usuario ON PREFERENCIA_NOTIFICACION(U_ID);
+
+SELECT * FROM DISPOSITIVO_PUSH;
+SELECT * FROM NOTIFICACION;
+SELECT * FROM PREFERENCIA_NOTIFICACION;

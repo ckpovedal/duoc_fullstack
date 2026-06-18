@@ -1,5 +1,6 @@
 const notificacionesRepository = require('../repository/notificaciones.repository');
 const firebaseService = require('./firebase.service');
+const socketService = require('./socket.service');
 const AppError = require('../utils/AppError');
 
 class NotificacionesService {
@@ -78,6 +79,8 @@ class NotificacionesService {
       throw new AppError('Notificacion no encontrada', 404);
     }
 
+    socketService.emitirNotificacionLeida(usuarioId, notificacion);
+
     return notificacion;
   }
 
@@ -126,11 +129,44 @@ class NotificacionesService {
     });
   }
 
+  async notificarCoincidencia(data, internalToken) {
+    this.validarTokenInterno(internalToken);
+
+    const usuarioDestinoId = this.obtenerTexto(data.usuarioDestinoId || data.uIdDestino || data.u_id_destino);
+    const perdidaId = this.obtenerTexto(data.perdidaId || data.pId || data.p_id);
+    const hallazgoId = this.obtenerTexto(data.hallazgoId || data.hId || data.h_id);
+    const nivel = this.obtenerTexto(data.nivel || 'MEDIA').toUpperCase();
+    const origen = this.obtenerTexto(data.origen || 'COINCIDENCIA').toUpperCase();
+    const resumen = this.obtenerTexto(data.resumen);
+    const criterios = Array.isArray(data.criterios) ? data.criterios : [];
+
+    if (!usuarioDestinoId || !perdidaId || !hallazgoId) {
+      throw new AppError('Faltan datos obligatorios para notificar coincidencia', 400);
+    }
+
+    const cuerpo = this.obtenerCuerpoCoincidencia(origen, resumen);
+
+    return this.crearYEnviar({
+      usuarioDestinoId,
+      titulo: 'Posible coincidencia encontrada',
+      cuerpo,
+      tipo: 'COINCIDENCIA',
+      data: {
+        tipo: 'COINCIDENCIA',
+        perdidaId,
+        hallazgoId,
+        nivel,
+        origen,
+        criterios: criterios.join(', ')
+      }
+    });
+  }
+
   async crearYEnviar({ usuarioDestinoId, titulo, cuerpo, tipo, data }) {
     const preferencias = await notificacionesRepository.obtenerPreferencias(usuarioDestinoId);
 
     if (!this.notificacionPermitida(tipo, preferencias)) {
-      return notificacionesRepository.crearNotificacion({
+      const notificacion = await notificacionesRepository.crearNotificacion({
         u_id_destino: usuarioDestinoId,
         not_titulo: titulo,
         not_cuerpo: cuerpo,
@@ -139,6 +175,10 @@ class NotificacionesService {
         not_enviada: 3,
         not_error: 'Notificacion desactivada por preferencias'
       });
+
+      socketService.emitirNotificacionNueva(usuarioDestinoId, notificacion);
+
+      return notificacion;
     }
 
     const dispositivos = await notificacionesRepository.listarDispositivosActivos(usuarioDestinoId);
@@ -149,7 +189,7 @@ class NotificacionesService {
       data
     });
 
-    return notificacionesRepository.crearNotificacion({
+    const notificacion = await notificacionesRepository.crearNotificacion({
       u_id_destino: usuarioDestinoId,
       not_titulo: titulo,
       not_cuerpo: cuerpo,
@@ -159,6 +199,26 @@ class NotificacionesService {
       not_error: envio.error,
       not_fecha_envio: envio.enviado ? new Date() : null
     });
+
+    socketService.emitirNotificacionNueva(usuarioDestinoId, notificacion);
+
+    return notificacion;
+  }
+
+  obtenerCuerpoCoincidencia(origen, resumen) {
+    if (resumen) {
+      return this.recortarTexto(resumen, 180);
+    }
+
+    if (origen === 'HALLAZGO_PUBLICADO') {
+      return 'Se publico una mascota hallada similar a tu reporte de perdida.';
+    }
+
+    if (origen === 'PERDIDA_PUBLICADA') {
+      return 'Encontramos una mascota hallada similar a tu nuevo reporte de perdida.';
+    }
+
+    return 'Hay una posible coincidencia entre una mascota perdida y una mascota hallada.';
   }
 
   notificacionPermitida(tipo, preferencias) {

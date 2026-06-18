@@ -1,6 +1,8 @@
 const perdidasRepository = require('../repository/perdidas.repository');
 const usuariosClient = require('../clients/usuarios.client');
 const geolocalizacionClient = require('../clients/geolocalizacion.client');
+const buscadorClient = require('../clients/buscador.client');
+const notificacionesClient = require('../clients/notificaciones.client');
 const AppError = require('../utils/AppError');
 const { logger } = require('../middleware/logger');
 
@@ -55,6 +57,8 @@ class PerdidasService {
       perdidaCreada = await perdidasRepository.crearPerdida(datosReporte);
       const ubicacion = await geolocalizacionClient.guardarUbicacionPerdida(perdidaCreada, datosReporte, usuarioId);
 
+      this.notificarCoincidenciasPerdida(perdidaCreada, usuarioId);
+
       return {
         ...this.normalizarImagenPerdida(perdidaCreada),
         tipoReporte: 'PERDIDO',
@@ -70,6 +74,72 @@ class PerdidasService {
 
       throw error;
     }
+  }
+
+  async notificarCoincidenciasPerdida(perdida, usuarioCreadorId) {
+    try {
+      const perdidaId = perdida.p_id || perdida.P_ID;
+      const resultado = await buscadorClient.buscarCoincidenciasPorPerdida(perdidaId);
+      const coincidencias = Array.isArray(resultado?.coincidencias) ? resultado.coincidencias : [];
+
+      const relevantes = coincidencias.filter((coincidencia) =>
+        String(coincidencia.tipoReporte || '').toUpperCase() === 'HALLADO' &&
+        ['ALTA', 'MEDIA'].includes(String(coincidencia.nivel || '').toUpperCase())
+      );
+
+      const hallazgosNotificados = new Set();
+
+      for (const coincidencia of relevantes) {
+        const hallazgo = coincidencia.hallazgo || coincidencia.reporte || {};
+        const hallazgoId = String(hallazgo.h_id || hallazgo.H_ID || '').trim();
+        const usuarioHallazgoId = String(hallazgo.u_id || hallazgo.U_ID || '').trim();
+
+        if (!hallazgoId || usuarioHallazgoId === String(usuarioCreadorId)) {
+          continue;
+        }
+
+        if (hallazgosNotificados.has(hallazgoId)) {
+          continue;
+        }
+
+        hallazgosNotificados.add(hallazgoId);
+
+        await notificacionesClient.notificarCoincidencia({
+          usuarioDestinoId: usuarioCreadorId,
+          perdidaId,
+          hallazgoId,
+          nivel: coincidencia.nivel,
+          origen: 'PERDIDA_PUBLICADA',
+          resumen: this.construirResumenPerdida(perdida),
+          criterios: coincidencia.criterios || []
+        });
+      }
+    } catch (error) {
+      logger.warn({
+        error: {
+          nombre: error.name,
+          mensaje: error.message
+        },
+        perdidaId: perdida?.p_id || perdida?.P_ID
+      }, 'No fue posible notificar coincidencias de la perdida');
+    }
+  }
+
+  construirResumenPerdida(perdida) {
+    const tipo = this.obtenerTipoTexto(perdida.p_tipo ?? perdida.P_Tipo);
+    const comuna = perdida.p_comuna || perdida.P_Comuna || 'tu zona';
+
+    return `Encontramos un ${tipo} hallado en ${comuna} que podria coincidir con tu reporte.`;
+  }
+
+  obtenerTipoTexto(tipo) {
+    const tipos = {
+      1: 'perro',
+      2: 'gato',
+      3: 'animal'
+    };
+
+    return tipos[Number(tipo)] || 'animal';
   }
 
   async listarPerdidas(filtros) {

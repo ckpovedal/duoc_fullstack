@@ -3,16 +3,28 @@ require('dotenv').config({
   path: path.resolve(__dirname, '../.env'),
 });
 
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const notificacionesRoutes = require('./routes/notificaciones.routes');
 const errorHandler = require('./middleware/errorHandler');
 const { logger, requestLogger } = require('./middleware/logger');
+const socketService = require('./services/socket.service');
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.NOTIFICACIONES_SERVICE_PORT || 3008;
 
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+socketService.inicializarSocket(server, allowedOrigins);
+
+app.use(cors({
+  origin: allowedOrigins.length === 0 ? true : allowedOrigins
+}));
 app.use(express.json());
 app.use(requestLogger);
 
@@ -29,6 +41,6 @@ app.use('/notificaciones', notificacionesRoutes);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   logger.info({ puerto: PORT }, `Notificaciones service corriendo en puerto ${PORT}`);
 });

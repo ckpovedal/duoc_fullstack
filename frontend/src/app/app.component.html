@@ -11,9 +11,53 @@
 
       <button *ngIf="!estaLogueado" routerLink="/nuevo-usuario"> Registro </button>
 
-      <button class="boton-mensajes" *ngIf="estaLogueado" routerLink="/mensajes" aria-label="Mensajes">
+      <div class="notificaciones-navbar" *ngIf="estaLogueado">
+        <button class="boton-notificaciones boton-con-badge" type="button" aria-label="Notificaciones" (click)="alternarPanelNotificaciones()">
+          <ion-icon name="notifications-outline"></ion-icon>
+          <span>Notificaciones</span>
+          <span class="badge" *ngIf="notificacionesNoLeidas > 0">{{ notificacionesNoLeidas }}</span>
+        </button>
+
+        <section class="panel-notificaciones-navbar" *ngIf="panelNotificacionesAbierto" aria-label="Listado de notificaciones">
+          <div class="panel-notificaciones-cabecera">
+            <h2>Notificaciones</h2>
+            <span *ngIf="notificacionesNoLeidas > 0">{{ notificacionesNoLeidas }} nuevas</span>
+          </div>
+
+          <div class="panel-notificaciones-vacio" *ngIf="notificacionesNavbar.length === 0">
+            <ion-icon name="notifications-outline"></ion-icon>
+            <p>Todavia no tienes notificaciones.</p>
+          </div>
+
+          <button
+            class="notificacion-navbar-item"
+            type="button"
+            *ngFor="let notificacion of notificacionesNavbar"
+            [class.no-leida]="!notificacion.leida"
+            (click)="abrirNotificacionNavbar(notificacion)"
+          >
+            <span class="notificacion-navbar-icono">
+              <ion-icon [name]="iconoNotificacionNavbar(notificacion)"></ion-icon>
+            </span>
+
+            <span class="notificacion-navbar-contenido">
+              <strong>{{ notificacion.titulo }}</strong>
+              <span>{{ notificacion.cuerpo }}</span>
+              <small>
+                {{ notificacion.tiempoTexto }}
+                <span *ngIf="notificacion.nivel"> - {{ notificacion.nivel }}</span>
+              </small>
+            </span>
+
+            <span class="notificacion-navbar-punto" *ngIf="!notificacion.leida"></span>
+          </button>
+        </section>
+      </div>
+
+      <button class="boton-mensajes boton-con-badge" *ngIf="estaLogueado" routerLink="/mensajes" aria-label="Mensajes">
         <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
         <span>Mensajes</span>
+        <span class="badge" *ngIf="mensajesNoLeidos > 0">{{ mensajesNoLeidos }}</span>
       </button>
 
       <button class="boton-perfil" *ngIf="estaLogueado" routerLink="/mi-perfil" aria-label="Mi perfil">

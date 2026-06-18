@@ -7,7 +7,9 @@ class FirebaseService {
   }
 
   inicializar() {
-    if (this.inicializado || admin.apps.length > 0) {
+    const apps = Array.isArray(admin.apps) ? admin.apps : [];
+
+    if (this.inicializado || apps.length > 0) {
       this.inicializado = true;
       return;
     }
@@ -19,11 +21,21 @@ class FirebaseService {
       return;
     }
 
-    admin.initializeApp({
-      credential: admin.credential.applicationDefault(),
-    });
+    try {
+      admin.initializeApp({
+        credential: admin.credential.applicationDefault(),
+      });
 
-    this.inicializado = true;
+      this.inicializado = true;
+    } catch (error) {
+      logger.warn({
+        error: {
+          nombre: error.name,
+          mensaje: error.message
+        }
+      }, 'Firebase Admin no pudo inicializarse. Se guardaran notificaciones sin enviar push.');
+      this.inicializado = false;
+    }
   }
 
   async enviarATokens(tokens, payload) {

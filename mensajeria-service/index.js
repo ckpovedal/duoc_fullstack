@@ -6,6 +6,7 @@ const pino = require('pino');
 const pinoHttp = require('pino-http');
 const { Server } = require('socket.io');
 const pool = require('./db');
+const notificacionesClient = require('./clients/notificaciones.client');
 
 const app = express();
 const server = http.createServer(app);
@@ -329,6 +330,39 @@ app.post('/mensajes', async (req, res, next) => {
     const mensaje = result.rows[0];
 
     io.to(`conversacion:${convId}`).emit('mensaje:nuevo', mensaje);
+
+    const payloadNotificacion = {
+      usuarioDestinoId: uIdReceptor,
+      usuarioEmisorId: usuarioId,
+      conversacionId: convId,
+      mensajeId: mensaje.msg_id || mensaje.MSG_ID,
+      contenido: msgContenido
+    };
+
+    logger.info({
+      payloadNotificacion,
+      notificacionesServiceUrl: process.env.NOTIFICACIONES_SERVICE_URL || 'http://localhost:3008',
+      tieneInternalToken: !!process.env.INTERNAL_SERVICE_TOKEN
+    }, 'Intentando notificar mensaje');
+
+    notificacionesClient.notificarMensaje(payloadNotificacion)
+      .then((respuesta) => {
+        logger.info({
+          respuesta,
+          payloadNotificacion
+        }, 'Mensaje notificado correctamente');
+      })
+      .catch((error) => {
+      logger.warn({
+        error: {
+          nombre: error.name,
+          mensaje: error.message
+        },
+        payloadNotificacion,
+        notificacionesServiceUrl: process.env.NOTIFICACIONES_SERVICE_URL || 'http://localhost:3008',
+        tieneInternalToken: !!process.env.INTERNAL_SERVICE_TOKEN
+      }, 'No fue posible notificar el mensaje');
+    });
 
     return responderOk(res, mensaje, 'Mensaje enviado correctamente', 201);
   } catch (error) {

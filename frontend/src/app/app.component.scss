@@ -51,6 +51,7 @@
   opacity: 0.8;
 }
 
+.boton-notificaciones,
 .boton-mensajes,
 .boton-perfil {
   display: inline-flex;
@@ -58,9 +59,172 @@
   gap: 5px;
 }
 
+.boton-notificaciones ion-icon,
 .boton-mensajes ion-icon,
 .boton-perfil ion-icon {
   font-size: 20px;
+}
+
+.notificaciones-navbar {
+  position: relative;
+}
+
+.boton-con-badge {
+  position: relative;
+}
+
+.badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-acento-fuerte);
+  color: var(--color-superficie);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.panel-notificaciones-navbar {
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(520px, calc(100vh - 92px));
+  overflow-y: auto;
+  position: absolute;
+  top: 34px;
+  right: 0;
+  z-index: 50;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+  background: var(--color-superficie);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+}
+
+.panel-notificaciones-cabecera {
+  min-height: 34px;
+  padding: 0 4px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.panel-notificaciones-cabecera h2 {
+  margin: 0;
+  color: var(--color-texto);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.panel-notificaciones-cabecera span {
+  color: var(--color-acento-fuerte);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.panel-notificaciones-vacio {
+  min-height: 124px;
+  padding: 18px 12px;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  color: var(--color-texto-suave);
+  text-align: center;
+}
+
+.panel-notificaciones-vacio ion-icon {
+  color: var(--color-acento-fuerte);
+  font-size: 30px;
+}
+
+.panel-notificaciones-vacio p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.notificacion-navbar-item {
+  width: 100%;
+  min-height: 68px;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 10px;
+  align-items: center;
+  gap: 9px;
+  background: transparent;
+  color: var(--color-texto);
+  text-align: left;
+  cursor: pointer;
+}
+
+.notificacion-navbar-item:hover,
+.notificacion-navbar-item:focus-visible,
+.notificacion-navbar-item.no-leida {
+  background: var(--color-acento-suave);
+  outline: none;
+}
+
+.notificacion-navbar-icono {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--color-superficie);
+  color: var(--color-acento-fuerte);
+}
+
+.notificacion-navbar-icono ion-icon {
+  font-size: 21px;
+}
+
+.notificacion-navbar-contenido {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.notificacion-navbar-contenido strong,
+.notificacion-navbar-contenido span,
+.notificacion-navbar-contenido small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notificacion-navbar-contenido strong {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.notificacion-navbar-contenido span {
+  color: var(--color-texto);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.notificacion-navbar-contenido small {
+  color: var(--color-acento-fuerte);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.notificacion-navbar-punto {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  justify-self: center;
+  background: var(--color-acento-fuerte);
 }
 
 .menu-movil {
@@ -130,5 +294,15 @@
 
   .navbar-global {
     padding: 0 32px;
+  }
+}
+
+@media (max-width: 520px) {
+  .panel-notificaciones-navbar {
+    position: fixed;
+    top: 72px;
+    left: 12px;
+    right: 12px;
+    width: auto;
   }
 }

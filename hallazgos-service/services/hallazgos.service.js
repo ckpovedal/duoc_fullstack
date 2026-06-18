@@ -1,6 +1,8 @@
 const hallazgosRepository = require('../repository/hallazgos.repository');
 const usuariosClient = require('../clients/usuarios.client');
 const geolocalizacionClient = require('../clients/geolocalizacion.client');
+const buscadorClient = require('../clients/buscador.client');
+const notificacionesClient = require('../clients/notificaciones.client');
 const AppError = require('../utils/AppError');
 const { logger } = require('../middleware/logger');
 
@@ -50,6 +52,8 @@ class HallazgosService {
     try {
       hallazgoCreado = await hallazgosRepository.crearHallazgo(datosReporte);
       const ubicacion = await geolocalizacionClient.guardarUbicacionHallazgo(hallazgoCreado, datosReporte, usuarioId);
+
+      this.notificarCoincidenciasHallazgo(hallazgoCreado, usuarioId);
       
       return {
         ...this.normalizarImagenHallazgo(hallazgoCreado),
@@ -66,6 +70,71 @@ class HallazgosService {
 
       throw error;
     }
+  }
+
+  async notificarCoincidenciasHallazgo(hallazgo, usuarioCreadorId) {
+    try {
+      const hallazgoId = hallazgo.h_id || hallazgo.H_ID;
+      const resultado = await buscadorClient.buscarCoincidenciasPorHallazgo(hallazgoId);
+      const coincidencias = Array.isArray(resultado?.coincidencias) ? resultado.coincidencias : [];
+
+      const relevantes = coincidencias.filter((coincidencia) =>
+        ['ALTA', 'MEDIA'].includes(String(coincidencia.nivel || '').toUpperCase())
+      );
+
+      const usuariosNotificados = new Set();
+
+      for (const coincidencia of relevantes) {
+        const perdida = coincidencia.perdida || coincidencia.reporte || {};
+        const usuarioDestinoId = String(perdida.u_id || perdida.U_ID || '').trim();
+        const perdidaId = String(perdida.p_id || perdida.P_ID || '').trim();
+
+        if (!usuarioDestinoId || !perdidaId || usuarioDestinoId === String(usuarioCreadorId)) {
+          continue;
+        }
+
+        if (usuariosNotificados.has(`${usuarioDestinoId}:${perdidaId}`)) {
+          continue;
+        }
+
+        usuariosNotificados.add(`${usuarioDestinoId}:${perdidaId}`);
+
+        await notificacionesClient.notificarCoincidencia({
+          usuarioDestinoId,
+          perdidaId,
+          hallazgoId,
+          nivel: coincidencia.nivel,
+          origen: 'HALLAZGO_PUBLICADO',
+          resumen: this.construirResumenHallazgo(hallazgo),
+          criterios: coincidencia.criterios || []
+        });
+      }
+    } catch (error) {
+      logger.warn({
+        error: {
+          nombre: error.name,
+          mensaje: error.message
+        },
+        hallazgoId: hallazgo?.h_id || hallazgo?.H_ID
+      }, 'No fue posible notificar coincidencias del hallazgo');
+    }
+  }
+
+  construirResumenHallazgo(hallazgo) {
+    const tipo = this.obtenerTipoTexto(hallazgo.h_tipo ?? hallazgo.H_Tipo);
+    const comuna = hallazgo.h_comuna || hallazgo.H_Comuna || 'tu zona';
+
+    return `Se publico un ${tipo} hallado en ${comuna} que podria coincidir con tu reporte.`;
+  }
+
+  obtenerTipoTexto(tipo) {
+    const tipos = {
+      1: 'perro',
+      2: 'gato',
+      3: 'animal'
+    };
+
+    return tipos[Number(tipo)] || 'animal';
   }
 
   async listarHallazgos(filtros) {

@@ -13,9 +13,14 @@ function errorHandler(error, req, res, next) {
       error: {
         nombre: error.name,
         mensaje: error.message,
-        stack: (process.env.LOG_LEVEL || '').toLowerCase() === 'debug' ? error.stack : undefined
+        stack: error.stack,
+        codigo: error.code,
+        detalle: error.detail,
+        tabla: error.table,
+        columna: error.column,
+        restriccion: error.constraint
       }
-    });
+    }, 'Error en notificaciones-service');
   }
 
   return res.status(codigo).json({

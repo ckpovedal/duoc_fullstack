@@ -9,5 +9,6 @@ router.get('/', notificacionesController.listarNotificaciones);
 router.patch('/:id/leida', notificacionesController.marcarLeida);
 router.post('/enviar-prueba', notificacionesController.enviarPrueba);
 router.post('/eventos/mensaje', notificacionesController.notificarMensaje);
+router.post('/eventos/coincidencia', notificacionesController.notificarCoincidencia);
 
 module.exports = router;

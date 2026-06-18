@@ -58,11 +58,50 @@ const mensajeriaSocketProxy = createProxyMiddleware({
   }
 });
 
+const notificacionesSocketProxy = createProxyMiddleware({
+  target: process.env.NOTIFICACIONES_SERVICE_URL || 'http://localhost:3008',
+  changeOrigin: true,
+  ws: true,
+  pathRewrite: (ruta) => {
+    if (ruta.startsWith('/api/notificaciones/socket.io')) {
+      return ruta.replace('/api/notificaciones/socket.io', '/socket.io');
+    }
+
+    if (ruta.startsWith('/socket.io')) {
+      return ruta;
+    }
+
+    return `/socket.io${ruta === '/' ? '' : ruta}`;
+  },
+  on: {
+    error(error, req, res) {
+      logger.error({
+        error: {
+          nombre: error.name,
+          mensaje: error.message
+        }
+      }, 'No fue posible conectar con el socket de notificaciones');
+
+      if (res?.headersSent) {
+        return;
+      }
+
+      res?.status?.(503).json({
+        estado: 'ERROR',
+        codigo: 503,
+        mensaje: 'No fue posible conectar con el socket de notificaciones',
+        respuesta: {},
+      });
+    }
+  }
+});
+
 app.use(cors({
   origin: corsOrigins.length > 0 ? corsOrigins : true
 }));
 
 app.use('/api/mensajeria/socket.io', mensajeriaSocketProxy);
+app.use('/api/notificaciones/socket.io', notificacionesSocketProxy);
 
 app.use(express.json({ limit: '70mb' }));
 app.use(requestLogger);
@@ -83,6 +122,11 @@ app.use(manejarErrores);
 server.on('upgrade', (req, socket, head) => {
   if (req.url?.startsWith('/api/mensajeria/socket.io')) {
     mensajeriaSocketProxy.upgrade(req, socket, head);
+    return;
+  }
+
+  if (req.url?.startsWith('/api/notificaciones/socket.io')) {
+    notificacionesSocketProxy.upgrade(req, socket, head);
   }
 });
 

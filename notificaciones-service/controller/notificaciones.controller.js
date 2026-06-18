@@ -9,6 +9,7 @@ class NotificacionesController {
     this.marcarLeida = this.marcarLeida.bind(this);
     this.enviarPrueba = this.enviarPrueba.bind(this);
     this.notificarMensaje = this.notificarMensaje.bind(this);
+    this.notificarCoincidencia = this.notificarCoincidencia.bind(this);
   }
 
   enviarRespuesta(res, data, mensaje, codigo = 200) {
@@ -65,6 +66,15 @@ class NotificacionesController {
     try {
       const data = await notificacionesService.notificarMensaje(req.body, req.headers['x-internal-token']);
       return this.enviarRespuesta(res, data, 'Notificacion de mensaje procesada', 201);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async notificarCoincidencia(req, res, next) {
+    try {
+      const data = await notificacionesService.notificarCoincidencia(req.body, req.headers['x-internal-token']);
+      return this.enviarRespuesta(res, data, 'Notificacion de coincidencia procesada', 201);
     } catch (error) {
       next(error);
     }

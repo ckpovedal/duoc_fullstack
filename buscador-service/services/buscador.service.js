@@ -16,6 +16,18 @@ class BuscadorService {
     return this.buscarCoincidenciasDesdePerdida(perdidaBase);
   }
 
+  async buscarCoincidenciasPorHallazgo(hallazgoId) {
+    logger.debug({ hallazgoId }, 'Buscando coincidencias por hallazgo');
+
+    const hallazgoBase = await hallazgosClient.obtenerHallazgoPorId(hallazgoId);
+
+    if (!hallazgoBase) {
+      throw new AppError('Hallazgo no encontrado', 404);
+    }
+
+    return this.buscarCoincidenciasDesdeHallazgo(hallazgoBase);
+  }
+
   async buscarCoincidenciasPorParametros(parametros) {
     const textoBusqueda = this.obtenerParametro(parametros, 'texto', 'busqueda', 'q');
     const perdidaBase = this.construirPerdidaBase(parametros);
@@ -58,6 +70,32 @@ class BuscadorService {
       }));
 
     return {
+      perdidaBase,
+      total: coincidencias.length,
+      coincidencias,
+    };
+  }
+
+  async buscarCoincidenciasDesdeHallazgo(hallazgoBase) {
+    const perdidas = await perdidasClient.listarPerdidas();
+
+    const perdidaBase = this.adaptarHallazgoAPerdida(hallazgoBase);
+
+    const coincidencias = perdidas
+      .map((perdida) => this.construirCoincidencia(perdida, hallazgoBase, null, 'PERDIDO', perdida))
+      .filter((item) => item.puntaje > 0)
+      .sort((a, b) => b.puntaje - a.puntaje)
+      .map((item) => ({
+        reporte: item.reporte,
+        perdida: item.perdida,
+        hallazgo: hallazgoBase,
+        tipoReporte: item.tipoReporte,
+        nivel: item.nivel,
+        criterios: item.criterios,
+      }));
+
+    return {
+      hallazgoBase,
       perdidaBase,
       total: coincidencias.length,
       coincidencias,
@@ -169,6 +207,21 @@ class BuscadorService {
       h_comuna: perdida.p_comuna,
       h_region: perdida.p_region,
       h_fecha: perdida.p_fecha,
+    };
+  }
+
+  adaptarHallazgoAPerdida(hallazgo) {
+    return {
+      p_nom_masc: hallazgo.h_nom_masc,
+      p_tipo: hallazgo.h_tipo,
+      p_genero: hallazgo.h_genero,
+      p_fisica: hallazgo.h_fisica,
+      p_perso: hallazgo.h_perso,
+      p_inf_adic: hallazgo.h_inf_adic,
+      p_dire_inter: hallazgo.h_dire_inter,
+      p_comuna: hallazgo.h_comuna,
+      p_region: hallazgo.h_region,
+      p_fecha: hallazgo.h_fecha,
     };
   }
 

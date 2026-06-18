@@ -43,6 +43,10 @@ export class MensajesPage implements OnInit {
     this.cargarConversaciones();
   }
 
+  ionViewWillEnter() {
+    this.cargarConversaciones();
+  }
+
   cargarConversaciones() {
     const usuarioId = this.sesionService.obtenerUsuarioId();
 

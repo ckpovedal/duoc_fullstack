@@ -33,6 +33,22 @@ class BuscadorController {
       next(error);
     }
   }
+
+  async obtenerCoincidenciasPorHallazgo(req, res, next) {
+    try {
+      const data = await buscadorService.buscarCoincidenciasPorHallazgo(req.params.hallazgoId);
+
+      const respuesta = new RespuestaDTO().ok(
+        data,
+        'Coincidencias por hallazgo obtenidas correctamente',
+        200
+      );
+
+      return res.status(200).json(respuesta);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new BuscadorController();

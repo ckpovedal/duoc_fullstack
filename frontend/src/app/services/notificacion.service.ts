@@ -115,13 +115,20 @@ export class NotificacionService {
     await PushNotifications.addListener('pushNotificationActionPerformed', (evento) => {
       const data = evento.notification.data || {};
       const conversacionId = data.conversacionId;
-
-      if (!conversacionId) {
-        return;
-      }
+      const hallazgoId = data.hallazgoId;
 
       this.zone.run(() => {
-        this.router.navigate(['/mensajes', conversacionId]);
+        if (conversacionId) {
+          this.router.navigate(['/mensajes', conversacionId]);
+          return;
+        }
+
+        if (hallazgoId) {
+          this.router.navigate(['/mascota-hallada', hallazgoId]);
+          return;
+        }
+
+        this.router.navigate(['/principal']);
       });
     });
 

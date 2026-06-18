@@ -34,6 +34,7 @@ temp/
 .vscode/*
 !.vscode/settings.json
 .idea/
+.agents/
 
 ## OS files
 .DS_Store

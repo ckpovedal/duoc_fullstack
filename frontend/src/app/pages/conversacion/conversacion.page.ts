@@ -8,6 +8,7 @@ import { addIcons } from 'ionicons';
 import { chevronBackOutline, paperPlaneOutline } from 'ionicons/icons';
 import { MensajeriaService } from '../../services/mensajeria.service';
 import { MensajeriaSocketService } from '../../services/mensajeria-socket.service';
+import { MensajeriaEstadoService } from '../../services/mensajeria-estado.service';
 import { SesionService } from '../../services/sesion.service';
 
 interface MensajeVista {
@@ -42,6 +43,7 @@ export class ConversacionPage implements OnInit, OnDestroy {
     private router: Router,
     private mensajeriaService: MensajeriaService,
     private mensajeriaSocketService: MensajeriaSocketService,
+    private mensajeriaEstadoService: MensajeriaEstadoService,
     private sesionService: SesionService
   ) {
     addIcons({ chevronBackOutline, paperPlaneOutline });
@@ -201,15 +203,16 @@ export class ConversacionPage implements OnInit, OnDestroy {
   }
 
   private marcarRecibidosComoLeidos() {
-    this.mensajes
-      .filter((mensaje) => mensaje.id && !mensaje.propio && !mensaje.leido)
-      .forEach((mensaje) => {
-        this.mensajeriaService.marcarMensajeLeido(mensaje.id).subscribe({
-          next: () => {
-            mensaje.leido = true;
-          }
-        });
+    const pendientes = this.mensajes.filter((mensaje) => mensaje.id && !mensaje.propio && !mensaje.leido);
+
+    pendientes.forEach((mensaje) => {
+      this.mensajeriaService.marcarMensajeLeido(mensaje.id).subscribe({
+        next: () => {
+          mensaje.leido = true;
+          this.mensajeriaEstadoService.notificarMensajesLeidos();
+        }
       });
+    });
   }
 
   private bajarAlFinal() {

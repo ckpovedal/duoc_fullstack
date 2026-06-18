@@ -28,6 +28,29 @@ class HallazgosClient {
     }
   }
 
+  async obtenerHallazgoPorId(id) {
+    try {
+      const response = await fetch(`${HALLAZGOS_SERVICE_URL}/hallazgos/${id}`);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new AppError('Hallazgo no encontrado', 404);
+        }
+
+        throw new AppError('Error al consultar hallazgos-service', 502);
+      }
+
+      const body = await this.obtenerBody(response);
+      return body.respuesta || body.data || body;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      throw new AppError('No fue posible conectar con hallazgos-service', 502);
+    }
+  }
+
   async obtenerBody(response) {
     try {
       return await response.json();

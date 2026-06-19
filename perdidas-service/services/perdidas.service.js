@@ -84,7 +84,8 @@ class PerdidasService {
 
       const relevantes = coincidencias.filter((coincidencia) =>
         String(coincidencia.tipoReporte || '').toUpperCase() === 'HALLADO' &&
-        ['ALTA', 'MEDIA'].includes(String(coincidencia.nivel || '').toUpperCase())
+        ['ALTA', 'MEDIA'].includes(String(coincidencia.nivel || '').toUpperCase()) &&
+        this.coincidenciaNotificable(coincidencia)
       );
 
       const hallazgosNotificados = new Set();
@@ -93,8 +94,14 @@ class PerdidasService {
         const hallazgo = coincidencia.hallazgo || coincidencia.reporte || {};
         const hallazgoId = String(hallazgo.h_id || hallazgo.H_ID || '').trim();
         const usuarioHallazgoId = String(hallazgo.u_id || hallazgo.U_ID || '').trim();
+        const tipoPerdida = perdida.p_tipo ?? perdida.P_Tipo;
+        const tipoHallazgo = hallazgo.h_tipo ?? hallazgo.H_Tipo;
 
         if (!hallazgoId || usuarioHallazgoId === String(usuarioCreadorId)) {
+          continue;
+        }
+
+        if (!this.tiposIguales(tipoPerdida, tipoHallazgo)) {
           continue;
         }
 
@@ -123,6 +130,24 @@ class PerdidasService {
         perdidaId: perdida?.p_id || perdida?.P_ID
       }, 'No fue posible notificar coincidencias de la perdida');
     }
+  }
+
+  coincidenciaNotificable(coincidencia) {
+    const criterios = Array.isArray(coincidencia.criterios) ? coincidencia.criterios : [];
+
+    return this.tieneCriterioAdicional(criterios);
+  }
+
+  tieneCriterioAdicional(criterios) {
+    return criterios.some((criterio) => String(criterio || '').trim().toLowerCase() !== 'mismo tipo');
+  }
+
+  tiposIguales(tipoA, tipoB) {
+    if (tipoA === undefined || tipoA === null || tipoB === undefined || tipoB === null) {
+      return false;
+    }
+
+    return String(tipoA).trim().toLowerCase() === String(tipoB).trim().toLowerCase();
   }
 
   construirResumenPerdida(perdida) {

@@ -89,7 +89,7 @@ export class NotificacionService {
   }
 
   marcarLeida(id: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/leida`, {});
+    return this.http.patch(`${this.apiUrl}/${id}/leida`, null);
   }
 
   enviarPrueba(): Observable<any> {

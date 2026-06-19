@@ -141,6 +141,19 @@ class BuscadorService {
     const criterios = [];
     let puntaje = 0;
     const reporte = reporteOriginal || hallazgoComparado;
+    const coincidenciaBase = {
+      reporte,
+      hallazgo: tipoReporte === 'HALLADO' ? reporte : null,
+      perdida: tipoReporte === 'PERDIDO' ? reporte : null,
+      tipoReporte,
+      puntaje,
+      nivel: this.obtenerNivel(puntaje),
+      criterios,
+    };
+
+    if (this.tieneValor(perdidaBase.p_tipo) && !this.valoresIguales(perdidaBase.p_tipo, hallazgoComparado.h_tipo)) {
+      return coincidenciaBase;
+    }
 
     const puntajeTexto = this.calcularPuntajeTexto(textoBusqueda, hallazgoComparado);
 
@@ -226,11 +239,15 @@ class BuscadorService {
   }
 
   valoresIguales(valorBase, valorComparado) {
-    if (valorBase === undefined || valorBase === null || valorComparado === undefined || valorComparado === null) {
+    if (!this.tieneValor(valorBase) || !this.tieneValor(valorComparado)) {
       return false;
     }
 
     return String(valorBase).trim().toLowerCase() === String(valorComparado).trim().toLowerCase();
+  }
+
+  tieneValor(valor) {
+    return valor !== undefined && valor !== null && String(valor).trim() !== '';
   }
 
   textosParecidos(textoBase, textoComparado) {

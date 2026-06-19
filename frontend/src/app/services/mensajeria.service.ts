@@ -41,6 +41,6 @@ export class MensajeriaService {
   }
 
   marcarMensajeLeido(mensajeId: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/mensajes/${mensajeId}/leido`, {});
+    return this.http.put(`${this.apiUrl}/mensajes/${mensajeId}/leido`, null);
   }
 }

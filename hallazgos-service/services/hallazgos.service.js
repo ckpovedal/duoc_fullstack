@@ -79,7 +79,8 @@ class HallazgosService {
       const coincidencias = Array.isArray(resultado?.coincidencias) ? resultado.coincidencias : [];
 
       const relevantes = coincidencias.filter((coincidencia) =>
-        ['ALTA', 'MEDIA'].includes(String(coincidencia.nivel || '').toUpperCase())
+        ['ALTA', 'MEDIA'].includes(String(coincidencia.nivel || '').toUpperCase()) &&
+        this.coincidenciaNotificable(coincidencia)
       );
 
       const usuariosNotificados = new Set();
@@ -88,8 +89,14 @@ class HallazgosService {
         const perdida = coincidencia.perdida || coincidencia.reporte || {};
         const usuarioDestinoId = String(perdida.u_id || perdida.U_ID || '').trim();
         const perdidaId = String(perdida.p_id || perdida.P_ID || '').trim();
+        const tipoHallazgo = hallazgo.h_tipo ?? hallazgo.H_Tipo;
+        const tipoPerdida = perdida.p_tipo ?? perdida.P_Tipo;
 
         if (!usuarioDestinoId || !perdidaId || usuarioDestinoId === String(usuarioCreadorId)) {
+          continue;
+        }
+
+        if (!this.tiposIguales(tipoHallazgo, tipoPerdida)) {
           continue;
         }
 
@@ -118,6 +125,24 @@ class HallazgosService {
         hallazgoId: hallazgo?.h_id || hallazgo?.H_ID
       }, 'No fue posible notificar coincidencias del hallazgo');
     }
+  }
+
+  coincidenciaNotificable(coincidencia) {
+    const criterios = Array.isArray(coincidencia.criterios) ? coincidencia.criterios : [];
+
+    return this.tieneCriterioAdicional(criterios);
+  }
+
+  tieneCriterioAdicional(criterios) {
+    return criterios.some((criterio) => String(criterio || '').trim().toLowerCase() !== 'mismo tipo');
+  }
+
+  tiposIguales(tipoA, tipoB) {
+    if (tipoA === undefined || tipoA === null || tipoB === undefined || tipoB === null) {
+      return false;
+    }
+
+    return String(tipoA).trim().toLowerCase() === String(tipoB).trim().toLowerCase();
   }
 
   construirResumenHallazgo(hallazgo) {

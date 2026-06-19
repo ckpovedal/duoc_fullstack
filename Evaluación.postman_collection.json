@@ -144,6 +144,23 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Notificaciones Service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{notificaciones_service_url}}/health",
+              "host": [
+                "{{notificaciones_service_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -241,6 +258,32 @@
                 "api",
                 "usuarios",
                 "{{usuario_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Contacto Usuario",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/usuarios/contactos/{{usuario_contacto_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "usuarios",
+                "contactos",
+                "{{usuario_contacto_id}}"
               ]
             }
           },
@@ -431,6 +474,26 @@
           "response": []
         },
         {
+          "name": "Obtener Imagen Perdida",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/perdidas/{{perdida_id}}/imagen",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "perdidas",
+                "{{perdida_id}}",
+                "imagen"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Actualizar Perdida",
           "request": {
             "method": "PUT",
@@ -604,6 +667,26 @@
           "response": []
         },
         {
+          "name": "Obtener Imagen Hallazgo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/hallazgos/{{hallazgo_id}}/imagen",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "hallazgos",
+                "{{hallazgo_id}}",
+                "imagen"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Actualizar Hallazgo",
           "request": {
             "method": "PUT",
@@ -661,6 +744,26 @@
                 "api",
                 "buscador",
                 "{{perdida_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Coincidencias Por Hallazgo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/buscador/hallazgo/{{hallazgo_id}}",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "buscador",
+                "hallazgo",
+                "{{hallazgo_id}}"
               ]
             }
           },
@@ -1359,7 +1462,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"convId\": \"{{conversacion_id}}\",\n  \"uIdEmisor\": \"{{usuario_contacto_id}}\",\n  \"msgContenido\": \"Hola, creo que vi a tu mascota cerca de la plaza.\"\n}",
+              "raw": "{\n  \"convId\": \"{{conversacion_id}}\",\n  \"uIdEmisor\": \"{{usuario_id}}\",\n  \"msgContenido\": \"Hola, creo que vi a tu mascota cerca de la plaza.\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1403,6 +1506,257 @@
                 "{{mensaje_id}}",
                 "leido"
               ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notificaciones - API Gateway e Internos",
+      "item": [
+        {
+          "name": "Registrar Dispositivo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/notificaciones/dispositivos",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "dispositivos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"token-fcm-prueba\",\n  \"plataforma\": \"ANDROID\",\n  \"modelo\": \"Emulador Android\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Desactivar Dispositivo",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/notificaciones/dispositivos/desactivar",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "dispositivos",
+                "desactivar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"token-fcm-prueba\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Notificaciones",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/notificaciones",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Marcar Notificacion Leida",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/notificaciones/{{notificacion_id}}/leida",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "{{notificacion_id}}",
+                "leida"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Enviar Notificacion Prueba",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/notificaciones/enviar-prueba",
+              "host": [
+                "{{api_gateway_url}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "enviar-prueba"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Sanos y Salvos\",\n  \"cuerpo\": \"Notificacion de prueba\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Evento Mensaje Interno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Token",
+                "value": "{{internal_service_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{notificaciones_service_url}}/notificaciones/eventos/mensaje",
+              "host": [
+                "{{notificaciones_service_url}}"
+              ],
+              "path": [
+                "notificaciones",
+                "eventos",
+                "mensaje"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioDestinoId\": \"{{usuario_contacto_id}}\",\n  \"usuarioEmisorId\": \"{{usuario_id}}\",\n  \"conversacionId\": \"{{conversacion_id}}\",\n  \"mensajeId\": \"{{mensaje_id}}\",\n  \"contenido\": \"Mensaje de prueba interno\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Evento Coincidencia Interno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "X-Internal-Token",
+                "value": "{{internal_service_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{notificaciones_service_url}}/notificaciones/eventos/coincidencia",
+              "host": [
+                "{{notificaciones_service_url}}"
+              ],
+              "path": [
+                "notificaciones",
+                "eventos",
+                "coincidencia"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuarioDestinoId\": \"{{usuario_id}}\",\n  \"perdidaId\": \"{{perdida_id}}\",\n  \"hallazgoId\": \"{{hallazgo_id}}\",\n  \"nivel\": \"MEDIA\",\n  \"origen\": \"COINCIDENCIA\",\n  \"resumen\": \"Hay una posible coincidencia entre reportes.\",\n  \"criterios\": [\n    \"mismo tipo\",\n    \"misma comuna\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           },
           "response": []
@@ -1605,6 +1959,11 @@
       "type": "string"
     },
     {
+      "key": "notificaciones_service_url",
+      "value": "http://localhost:3008",
+      "type": "string"
+    },
+    {
       "key": "usuario_id",
       "value": "USR00001",
       "type": "string"
@@ -1640,6 +1999,11 @@
       "type": "string"
     },
     {
+      "key": "notificacion_id",
+      "value": "NOT00001",
+      "type": "string"
+    },
+    {
       "key": "donativo_id",
       "value": "DON00001",
       "type": "string"
@@ -1652,6 +2016,11 @@
     {
       "key": "token",
       "value": "",
+      "type": "string"
+    },
+    {
+      "key": "internal_service_token",
+      "value": "cambiar_por_un_token_interno_largo",
       "type": "string"
     }
   ]

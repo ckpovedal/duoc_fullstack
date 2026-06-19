@@ -7,9 +7,15 @@
     </div>
 
     <div class="navbar-acciones">
-      <button *ngIf="!estaLogueado" routerLink="/login"> Ingresar </button>
+      <button class="boton-auth" *ngIf="!estaLogueado" routerLink="/login" aria-label="Ingresar">
+        <ion-icon name="log-in-outline"></ion-icon>
+        <span>Ingresar</span>
+      </button>
 
-      <button *ngIf="!estaLogueado" routerLink="/nuevo-usuario"> Registro </button>
+      <button class="boton-auth" *ngIf="!estaLogueado" routerLink="/nuevo-usuario" aria-label="Registro">
+        <ion-icon name="person-add-outline"></ion-icon>
+        <span>Registro</span>
+      </button>
 
       <div class="notificaciones-navbar" *ngIf="estaLogueado">
         <button class="boton-notificaciones boton-con-badge" type="button" aria-label="Notificaciones" (click)="alternarPanelNotificaciones()">
@@ -65,7 +71,10 @@
         <span>Mi perfil</span>
       </button>
 
-      <button *ngIf="estaLogueado" (click)="logout()"> Logout </button>
+      <button class="boton-logout" *ngIf="estaLogueado" (click)="logout()" aria-label="Cerrar sesión">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Logout</span>
+      </button>
     </div>
   </header>
 

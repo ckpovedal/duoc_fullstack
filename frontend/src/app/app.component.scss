@@ -53,7 +53,9 @@
 
 .boton-notificaciones,
 .boton-mensajes,
-.boton-perfil {
+.boton-perfil,
+.boton-auth,
+.boton-logout {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -61,8 +63,14 @@
 
 .boton-notificaciones ion-icon,
 .boton-mensajes ion-icon,
-.boton-perfil ion-icon {
+.boton-perfil ion-icon,
+.boton-auth ion-icon,
+.boton-logout ion-icon {
   font-size: 20px;
+}
+
+.boton-auth ion-icon {
+  display: none;
 }
 
 .notificaciones-navbar {
@@ -298,9 +306,53 @@
 }
 
 @media (max-width: 520px) {
+  .navbar-global {
+    height: 58px;
+    padding: 0 12px;
+  }
+
+  .navbar-logo span {
+    display: none;
+  }
+
+  .navbar-logo img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .navbar-acciones {
+    gap: 8px;
+  }
+
+  .navbar-acciones > button,
+  .notificaciones-navbar > button {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navbar-acciones > button > span:not(.badge),
+  .notificaciones-navbar > button > span:not(.badge) {
+    display: none;
+  }
+
+  .navbar-acciones > button ion-icon,
+  .notificaciones-navbar > button ion-icon,
+  .boton-auth ion-icon {
+    display: block;
+    font-size: 22px;
+  }
+
+  .badge {
+    top: -4px;
+    right: -4px;
+  }
+
   .panel-notificaciones-navbar {
     position: fixed;
-    top: 72px;
+    top: 66px;
     left: 12px;
     right: 12px;
     width: auto;

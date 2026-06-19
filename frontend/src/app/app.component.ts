@@ -6,7 +6,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive} from '@angular/rou
 import { IonApp, IonIcon, IonRouterOutlet} from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
-import { addCircle, chatbubbleEllipsesOutline, homeOutline, mapOutline, notificationsOutline, pawOutline, personCircleOutline, searchOutline} from 'ionicons/icons';
+import { addCircle, chatbubbleEllipsesOutline, homeOutline, logInOutline, logOutOutline, mapOutline, notificationsOutline, pawOutline, personAddOutline, personCircleOutline, searchOutline} from 'ionicons/icons';
 import { Subscription, timeout } from 'rxjs';
 import { SesionService } from './services/sesion.service';
 import { NotificacionService } from './services/notificacion.service';
@@ -62,7 +62,7 @@ export class AppComponent implements OnDestroy {
     private mensajeriaEstadoService: MensajeriaEstadoService
   ) {
     this.titleService.setTitle('Sanos y Salvos');
-    addIcons({ addCircle, chatbubbleEllipsesOutline, homeOutline, mapOutline, notificationsOutline, pawOutline, personCircleOutline, searchOutline});
+    addIcons({ addCircle, chatbubbleEllipsesOutline, homeOutline, logInOutline, logOutOutline, mapOutline, notificationsOutline, pawOutline, personAddOutline, personCircleOutline, searchOutline});
     this.validarSesion();
     this.cargarBadgeNotificaciones();
     this.cargarBadgeMensajes();

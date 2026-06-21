@@ -3,8 +3,6 @@ require('dotenv').config({
   path: path.resolve(__dirname, '../.env'),
 });
 
-console.log('DEBUG GAC:', process.env.GOOGLE_APPLICATION_CREDENTIALS); // <-- temporal
-
 const http = require('http');
 const express = require('express');
 const cors = require('cors');

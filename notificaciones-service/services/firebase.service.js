@@ -1,4 +1,5 @@
-const admin = require('firebase-admin');
+const { initializeApp, applicationDefault, getApps } = require('firebase-admin/app');
+const { getMessaging } = require('firebase-admin/messaging');
 const { logger } = require('../middleware/logger');
 
 class FirebaseService {
@@ -7,7 +8,7 @@ class FirebaseService {
   }
 
   inicializar() {
-    const apps = Array.isArray(admin.apps) ? admin.apps : [];
+    const apps = getApps();
 
     if (this.inicializado || apps.length > 0) {
       this.inicializado = true;
@@ -22,8 +23,8 @@ class FirebaseService {
     }
 
     try {
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
+      initializeApp({
+        credential: applicationDefault(),
       });
 
       this.inicializado = true;
@@ -70,7 +71,7 @@ class FirebaseService {
       data: this.normalizarData(payload.data || {})
     }));
 
-    const resultado = await admin.messaging().sendEach(mensajes);
+    const resultado = await getMessaging().sendEach(mensajes);
 
     return {
       enviado: resultado.successCount > 0,

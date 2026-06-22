@@ -99,6 +99,8 @@ ion-content.contenido-pagina {
 .tarjeta-carrusel-grande {
   display: none;
   width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
   border: none;
   border-radius: var(--radio-panel);
   background: var(--color-superficie);
@@ -279,5 +281,9 @@ ion-content.contenido-pagina {
   .panel-principal .logo-pagina {
     width: 84px;
     height: 84px;
+  }
+
+  .tarjeta-carrusel-grande {
+    max-width: 100%;
   }
 }

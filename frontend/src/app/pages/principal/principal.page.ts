@@ -5,7 +5,7 @@ import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { chevronBackOutline, chevronForwardOutline, heartOutline, pawOutline } from 'ionicons/icons';
-import { finalize, timeout } from 'rxjs';
+import { Subscription, finalize, timeout } from 'rxjs';
 import { PerdidaService } from '../../services/perdida.service';
 import { SesionService } from '../../services/sesion.service';
 import {
@@ -46,6 +46,7 @@ export class PrincipalPage implements OnInit, OnDestroy {
 
   private autoplayIntervalo?: ReturnType<typeof setInterval>;
   private autoplayPausado = false;
+  private suscripcionSesion?: Subscription;
 
   constructor(
     private router: Router,
@@ -56,13 +57,17 @@ export class PrincipalPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.estaLogueado = this.sesionService.sesionActiva();
-    this.nombreUsuario = this.estaLogueado ? this.sesionService.obtenerNombreUsuario() : '';
+    this.suscripcionSesion = this.sesionService.usuarioCambios$.subscribe((usuario) => {
+      this.estaLogueado = !!usuario && this.sesionService.sesionActiva();
+      this.nombreUsuario = this.estaLogueado ? this.sesionService.obtenerNombreUsuario() : '';
+    });
+
     this.cargarPerdidasRecientes();
   }
 
   ngOnDestroy() {
     this.detenerAutoplay();
+    this.suscripcionSesion?.unsubscribe();
   }
 
   irDonativos() {

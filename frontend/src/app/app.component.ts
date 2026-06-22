@@ -51,6 +51,7 @@ export class AppComponent implements OnDestroy {
   private notificacionNuevaSubscription?: Subscription;
   private notificacionLeidaSubscription?: Subscription;
   private mensajesLeidosSubscription?: Subscription;
+  private usuarioCambiosSubscription?: Subscription;
 
   constructor(
     private titleService: Title,
@@ -63,7 +64,7 @@ export class AppComponent implements OnDestroy {
   ) {
     this.titleService.setTitle('Sanos y Salvos');
     addIcons({ addCircle, chatbubbleEllipsesOutline, homeOutline, logInOutline, logOutOutline, mapOutline, notificationsOutline, pawOutline, personAddOutline, personCircleOutline, searchOutline});
-    this.validarSesion();
+    this.configurarEstadoSesion();
     this.cargarBadgeNotificaciones();
     this.cargarBadgeMensajes();
     this.configurarSocketNotificaciones();
@@ -71,7 +72,6 @@ export class AppComponent implements OnDestroy {
 
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        this.validarSesion();
         this.cargarBadgeNotificaciones();
         this.cargarBadgeMensajes();
         this.configurarSocketNotificaciones();
@@ -164,7 +164,6 @@ export class AppComponent implements OnDestroy {
     this.notificacionService.desactivarDispositivoActual().finally(() => {
       this.desconectarSocketNotificaciones();
       this.sesionService.cerrarSesion();
-      this.estaLogueado = false;
       this.notificacionesNoLeidas = 0;
       this.mensajesNoLeidos = 0;
       this.notificacionesNavbar = [];
@@ -281,6 +280,14 @@ export class AppComponent implements OnDestroy {
   ngOnDestroy() {
     this.desconectarSocketNotificaciones();
     this.mensajesLeidosSubscription?.unsubscribe();
+    this.usuarioCambiosSubscription?.unsubscribe();
+  }
+
+  private configurarEstadoSesion() {
+    this.usuarioCambiosSubscription = this.sesionService.usuarioCambios$
+      .subscribe(() => {
+        this.validarSesion();
+      });
   }
 
   private configurarEstadoMensajeria() {

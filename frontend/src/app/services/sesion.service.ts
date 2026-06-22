@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SesionService {
+  private readonly usuario$ = new BehaviorSubject<any>(this.obtenerUsuario());
+
+  /** Observable al que cualquier componente puede suscribirse para reaccionar a cambios de sesión */
+  readonly usuarioCambios$ = this.usuario$.asObservable();
+
   guardarSesion(usuario: any, token: string) {
     localStorage.setItem('usuario', JSON.stringify(usuario));
 
@@ -16,6 +22,8 @@ export class SesionService {
     if (token) {
       localStorage.setItem('token', token);
     }
+
+    this.usuario$.next(usuario);
   }
 
   actualizarUsuario(usuario: any) {
@@ -30,6 +38,8 @@ export class SesionService {
     if (usuarioId) {
       localStorage.setItem('usuario_id', usuarioId);
     }
+
+    this.usuario$.next(usuario);
   }
 
   obtenerUsuario() {
@@ -96,5 +106,7 @@ export class SesionService {
     localStorage.removeItem('usuario');
     localStorage.removeItem('usuario_id');
     localStorage.removeItem('token');
+
+    this.usuario$.next(null);
   }
 }

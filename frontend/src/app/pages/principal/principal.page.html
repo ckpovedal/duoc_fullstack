@@ -1,8 +1,11 @@
-<ion-content [fullscreen]="true" class="contenido-pagina">
+<ion-content class="contenido-pagina">
   <main class="contenedor-pagina contenedor-con-padding contenedor-principal">
     <section class="panel-pagina panel-principal">
       <img src="assets/img/SanosySalvos.png" class="logo-pagina" alt="Logo">
-      <h1>Bienvenido</h1>
+
+      <h1 *ngIf="estaLogueado && nombreUsuario">Bienvenido, {{ nombreUsuario }}</h1>
+      <h1 *ngIf="!estaLogueado || !nombreUsuario">Bienvenido</h1>
+
       <p>Selecciona una sección para continuar.</p>
 
       <div class="acciones-principal">
@@ -11,6 +14,75 @@
           <span>Donar</span>
         </button>
       </div>
+    </section>
+
+    <section class="panel-pagina panel-carrusel" *ngIf="perdidasRecientes.length > 0">
+      <h2>Reportes recientes</h2>
+
+      <div
+        class="carrusel-perdidas"
+        (mouseenter)="pausarAutoplay()"
+        (mouseleave)="reanudarAutoplay()"
+        (touchstart)="pausarAutoplay()"
+        (touchend)="reanudarAutoplay()"
+      >
+        <button
+          type="button"
+          class="carrusel-flecha carrusel-flecha-izq"
+          *ngIf="perdidasRecientes.length > 1"
+          (click)="anteriorCarrusel()"
+          aria-label="Reporte anterior"
+        >
+          <ion-icon name="chevron-back-outline"></ion-icon>
+        </button>
+
+        <button
+          type="button"
+          class="tarjeta-carrusel-grande"
+          *ngFor="let perdida of perdidasRecientes; let i = index"
+          [class.activa]="i === indiceCarrusel"
+          (click)="irAlReporte(perdida)"
+        >
+          <div class="tarjeta-carrusel-grande-imagen">
+            <img *ngIf="perdida.imagen" [src]="perdida.imagen" [alt]="perdida.nombre">
+            <ion-icon *ngIf="!perdida.imagen" name="paw-outline"></ion-icon>
+          </div>
+
+          <div class="tarjeta-carrusel-grande-info">
+            <strong>{{ perdida.nombre }}</strong>
+            <span>{{ perdida.tipo }} · {{ perdida.comuna }}</span>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          class="carrusel-flecha carrusel-flecha-der"
+          *ngIf="perdidasRecientes.length > 1"
+          (click)="siguienteCarrusel()"
+          aria-label="Siguiente reporte"
+        >
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
+
+      <div class="carrusel-puntos" *ngIf="perdidasRecientes.length > 1">
+        <button
+          type="button"
+          class="carrusel-punto"
+          *ngFor="let perdida of perdidasRecientes; let i = index"
+          [class.activo]="i === indiceCarrusel"
+          (click)="irACarrusel(i)"
+          [attr.aria-label]="'Ir al reporte ' + (i + 1)"
+        ></button>
+      </div>
+    </section>
+
+    <section
+      class="panel-pagina panel-carrusel-vacio"
+      *ngIf="!cargandoPerdidas && perdidasRecientes.length === 0 && !errorPerdidas"
+    >
+      <ion-icon name="paw-outline"></ion-icon>
+      <p>No hay reportes activos por el momento.</p>
     </section>
   </main>
 </ion-content>

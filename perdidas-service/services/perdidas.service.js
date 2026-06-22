@@ -7,7 +7,6 @@ const AppError = require('../utils/AppError');
 const { logger } = require('../middleware/logger');
 
 const VENTANA_DUPLICADO_MS = 5 * 60 * 1000;
-const API_PUBLICA = process.env.API_PUBLIC_URL || 'http://localhost:3001/api';
 
 class PerdidasService {
   constructor() {
@@ -350,7 +349,7 @@ class PerdidasService {
 
     return {
       ...perdida,
-      p_imagen: id && imagen ? `${API_PUBLICA}/perdidas/${id}/imagen` : null
+      p_imagen: id && imagen ? `/perdidas/${id}/imagen` : null
     };
   }
 

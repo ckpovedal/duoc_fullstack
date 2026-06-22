@@ -1,7 +1,10 @@
 .navbar-global {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 30;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
   height: 64px;
   padding: 0 16px;
   display: flex;
@@ -287,11 +290,14 @@
 }
 
 .con-menu-movil ion-router-outlet {
-  padding-bottom: 68px;
+  padding-bottom: 0;
+}
+
+ion-router-outlet {
+  padding-top: 0;
 }
 
 @media (min-width: 768px) {
-
   .menu-movil {
     left: 50%;
     right: auto;

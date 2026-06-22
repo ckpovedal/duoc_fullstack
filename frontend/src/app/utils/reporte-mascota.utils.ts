@@ -1,3 +1,5 @@
+import { environment } from '../../environments/environment';
+
 export function obtenerImagenMascota(imagen: unknown): string {
   if (!imagen) {
     return '';
@@ -7,10 +9,13 @@ export function obtenerImagenMascota(imagen: unknown): string {
     if (
       imagen.startsWith('data:image/') ||
       imagen.startsWith('http://') ||
-      imagen.startsWith('https://') ||
-      imagen.startsWith('/')
+      imagen.startsWith('https://')
     ) {
       return imagen;
+    }
+
+    if (imagen.startsWith('/')) {
+      return `${environment.apiUrl}${imagen}`;
     }
 
     if (imagen.startsWith('\\x')) {

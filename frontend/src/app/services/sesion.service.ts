@@ -32,6 +32,25 @@ export class SesionService {
     }
   }
 
+  obtenerUsuario() {
+    const usuarioGuardado = localStorage.getItem('usuario');
+
+    if (!usuarioGuardado) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(usuarioGuardado);
+    } catch {
+      return null;
+    }
+  }
+
+  obtenerNombreUsuario() {
+    const usuario = this.obtenerUsuario();
+    return usuario?.nombre || usuario?.u_nombre || usuario?.U_NOMBRE || '';
+  }
+
   obtenerToken() {
     return localStorage.getItem('token');
   }

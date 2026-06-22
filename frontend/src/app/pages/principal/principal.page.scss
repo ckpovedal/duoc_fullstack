@@ -1,3 +1,8 @@
+ion-content.contenido-pagina {
+  --padding-top: 0;
+  --padding-bottom: 68px;
+}
+
 .imagen-salir {
   width: 42px;
   height: auto;
@@ -18,12 +23,23 @@
 }
 
 .panel-principal {
-  padding: 24px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
   text-align: center;
 }
 
+.panel-principal .logo-pagina {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+
 .panel-principal h1 {
-  margin: 0 0 8px;
+  margin: 0;
   font-size: 24px;
   font-weight: 700;
 }
@@ -35,7 +51,7 @@
 }
 
 .acciones-principal {
-  margin-top: 22px;
+  margin-top: 8px;
   display: flex;
   justify-content: center;
 }
@@ -61,10 +77,207 @@
   font-size: 20px;
 }
 
+.panel-carrusel {
+  margin-top: 18px;
+  padding: 20px 24px;
+}
+
+.panel-carrusel h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-texto);
+}
+
+.carrusel-perdidas {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tarjeta-carrusel-grande {
+  display: none;
+  width: 100%;
+  border: none;
+  border-radius: var(--radio-panel);
+  background: var(--color-superficie);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+  padding: 0;
+  flex-direction: column;
+  overflow: hidden;
+  text-align: left;
+  cursor: pointer;
+  animation: apareceCarrusel 0.35s ease-out;
+}
+
+.tarjeta-carrusel-grande.activa {
+  display: flex;
+}
+
+@keyframes apareceCarrusel {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.tarjeta-carrusel-grande-imagen {
+  width: 100%;
+  height: 220px;
+  display: grid;
+  place-items: center;
+  background: var(--color-superficie-suave);
+  overflow: hidden;
+}
+
+.tarjeta-carrusel-grande-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tarjeta-carrusel-grande-imagen ion-icon {
+  font-size: 48px;
+  color: var(--color-acento-fuerte);
+}
+
+.tarjeta-carrusel-grande-info {
+  padding: 14px 16px;
+  display: grid;
+  gap: 4px;
+}
+
+.tarjeta-carrusel-grande-info strong {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-texto);
+}
+
+.tarjeta-carrusel-grande-info span {
+  font-size: 13px;
+  color: var(--color-texto-suave);
+}
+
+.carrusel-flecha {
+  position: absolute;
+  top: 90px;
+  z-index: 5;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.55);
+  color: var(--color-superficie);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.carrusel-flecha:hover {
+  background: rgba(15, 23, 42, 0.75);
+}
+
+.carrusel-flecha ion-icon {
+  font-size: 20px;
+}
+
+.carrusel-flecha-izq {
+  left: 8px;
+}
+
+.carrusel-flecha-der {
+  right: 8px;
+}
+
+.carrusel-puntos {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.carrusel-punto {
+  width: 8px;
+  height: 8px;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  background: var(--color-borde);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.carrusel-punto.activo {
+  background: var(--color-acento-fuerte);
+  transform: scale(1.3);
+}
+
+.panel-carrusel-vacio {
+  margin-top: 18px;
+  padding: 24px;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--color-texto-suave);
+}
+
+.panel-carrusel-vacio ion-icon {
+  font-size: 30px;
+  color: var(--color-acento-fuerte);
+}
+
+.panel-carrusel-vacio p {
+  margin: 0;
+  font-size: 14px;
+}
+
 @media (min-width: 768px) {
+  ion-content.contenido-pagina {
+    --padding-top: 0;
+  }
+
   .contenedor-principal {
     margin-top: 24px;
     margin-bottom: 24px;
     border-radius: var(--radio-panel);
+  }
+
+  .carrusel-perdidas {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .tarjeta-carrusel-grande-imagen {
+    height: 220px;
+  }
+
+  .carrusel-flecha {
+    top: 92px;
+  }
+}
+
+@media (max-width: 520px) {
+  ion-content.contenido-pagina {
+    --padding-top: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .panel-principal {
+    padding: 32px 20px;
+    gap: 16px;
+  }
+
+  .panel-principal .logo-pagina {
+    width: 84px;
+    height: 84px;
   }
 }

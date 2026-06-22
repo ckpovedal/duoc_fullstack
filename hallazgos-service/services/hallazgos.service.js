@@ -7,7 +7,6 @@ const AppError = require('../utils/AppError');
 const { logger } = require('../middleware/logger');
 
 const VENTANA_DUPLICADO_MS = 5 * 60 * 1000;
-const API_PUBLICA = process.env.API_PUBLIC_URL || 'http://localhost:3001/api';
 
 class HallazgosService {
   constructor() {
@@ -320,7 +319,7 @@ class HallazgosService {
 
     return {
       ...hallazgo,
-      h_imagen: id && imagen ? `${API_PUBLICA}/hallazgos/${id}/imagen` : null
+      h_imagen: id && imagen ? `/hallazgos/${id}/imagen` : null
     };
   }
 

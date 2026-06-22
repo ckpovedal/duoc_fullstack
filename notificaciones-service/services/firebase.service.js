@@ -68,6 +68,12 @@ class FirebaseService {
         title: payload.titulo,
         body: payload.cuerpo
       },
+      android: {
+        priority: 'high',
+        notification: {
+          channelId: 'sanos_y_salvos_default'
+        }
+      },
       data: this.normalizarData(payload.data || {})
     }));
 
